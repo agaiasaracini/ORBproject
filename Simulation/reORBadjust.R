@@ -23,8 +23,6 @@ reORBadj <- function(a=NULL,
                      opt_method="L-BFGS-B",
                      lower = c(-5, 0.00001),
                      upper = c(5,5),
-                     CopasHR = FALSE,
-                     CopasHRperc = 0.5,
                      gam = 1.5
 ) {
   
@@ -48,10 +46,10 @@ reORBadj <- function(a=NULL,
   rho1 <- rho1
   rho2 <- rho2
   
-  #Parameter
+  #Parameter used in DGM and consequently to be used in DGM selection function for correct model specification
   gam <- gam
   
-  #If FALSE, we don't calculate the Wald CI - they are numerically unstable sometimes
+  #If FALSE, we do not calculate the Wald CI - they are numerically unstable sometimes
   if (Wald.CI){
     my.hessian <- TRUE
   } else{
@@ -64,16 +62,14 @@ reORBadj <- function(a=NULL,
   upper <- upper
   
   
-  
   #Binary input data to calculate log RR
   if (!is.null(a) & !is.null(c)){
     
     #Reported outcomes
-    #Indecies where we don't have unrep, i.e., reported outcomes
+    #Indecies where we do not have unrepoted outcomes, i.e., we have reported outcomes
     #If we turn C into numeric, the unreported become NA
-    #Where do we have low and were do we have unrep
+    
     Rep_index <- which(!is.na(as.numeric(a)))
-      
     HR_index <- which(a == "unrep")
     
     # a,c,n1,n2, n values for the reported studies
@@ -84,7 +80,7 @@ reORBadj <- function(a=NULL,
     
     if (length(a_rep == 0) | length(c_rep == 0) > 0){ #Continuity correction
       
-      a_0_index <- c(which(a_rep == 0), which(c_rep == 0)) #Where are the zero cell counts
+      a_0_index <- c(which(a_rep == 0), which(c_rep == 0)) #Where the zero cell counts are
       a_rep[a_0_index] <- a_rep[a_0_index] + 0.5
       c_rep[a_0_index] <- c_rep[a_0_index] + 0.5
       n1_rep[a_0_index] <- n1_rep[a_0_index] + 0.5
@@ -115,19 +111,18 @@ reORBadj <- function(a=NULL,
     
     
     #Imputed values of sigma squared for the unreported studies
-    #K value based on the reported studies
+    #K value based on the reported studies, see Copas et al. (2019)
     k <- sum(1/sigma_squared)/sum((n1_rep + n2_rep))
     
     #Mean differences as input data (continuous)
-  } else if (!is.null(mu1) & !is.null(mu2) & !is.null(sd1) & !is.null(sd2)){
+    #Same procedure
     
+  } else if (!is.null(mu1) & !is.null(mu2) & !is.null(sd1) & !is.null(sd2)){
     
     Rep_index <- which(!is.na(as.numeric(mu1)))
     
-      
     HR_index <- which(mu1 == "unrep")
       
-    
     #Unreported study sizes, we might have info from n1,n2 or just the total
     ntot <- as.numeric(n1) +as.numeric(n2)
     n_HR <- as.numeric(ntot[HR_index])
@@ -152,12 +147,12 @@ reORBadj <- function(a=NULL,
     k <- sum(1/sigma_squared)/sum((n1_rep + n2_rep))
     
     #We directly have the treatment effect and standard error
+    
   } else if (!is.null(y) & !is.null(s)) {
     
     #Indecies where we have the reported outcomes and the unreported HR
     Rep_index <- which(!is.na(as.numeric(y)))
     
-      
     HR_index <- which(y == "unrep")
     
     #Observed treatment effect, standard error^2, and sample sizes of reported outcomes
@@ -188,6 +183,7 @@ reORBadj <- function(a=NULL,
     sigma_squared_imputed <- (as.numeric(true.SE)[HR_index])^2
   } else {
     #Imputed variances for the HR studies
+    #See Copas et al. (2019)
     sigma_squared_imputed <- 1/(k*n_HR)
     
   }
@@ -239,9 +235,9 @@ reORBadj <- function(a=NULL,
   
   if(outcome == "benefit"){
     
-    z_alpha.copas <- qnorm(1-alpha_ben/2) #when using the copas.twosides it's always two sided!
+    z_alpha.copas <- qnorm(1-alpha_ben/2) #two-sided threshold
     
-    if (alpha_ben_one.sided == TRUE){ #for the other selection functions can choose
+    if (alpha_ben_one.sided == TRUE){ #one-sided threshold (reccomended for consistency with simulation process and literature)
       
       z_alpha <- qnorm(1-alpha_ben)
     } else {
@@ -368,9 +364,7 @@ reORBadj <- function(a=NULL,
                           lower = -10, upper = 10, subdivisions = 200, stop.on.error=FALSE)$value
               })))
               
-              
-              
-              
+            
             } else if (sel.ben == "DGM") {
               
               #Probability of reporting
