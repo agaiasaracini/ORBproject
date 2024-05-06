@@ -467,9 +467,37 @@ reORBadj <- function(a=NULL,
         pl.u(mu, logRR=logRR, sigma_squared=sigma_squared) - pl.u(mle.u, logRR=logRR, sigma_squared=sigma_squared) + 1/2*qchisq(0.95, df=1)
       }
       
+      
       eps <- sqrt(.Machine$double.eps)
-      lowerBound.u <- uniroot(f, interval = c(-10, mle.u), logRR=logRR, sigma_squared=sigma_squared)$root
-      upperBound.u <- uniroot(f, interval = c( mle.u, 10), logRR=logRR, sigma_squared=sigma_squared)$root
+      lowerBound.u <- uniroot(f, interval = c(-5, mle.u), logRR=logRR, sigma_squared=sigma_squared)$root
+      upperBound.u <- uniroot(f, interval = c( mle.u, 5), logRR=logRR, sigma_squared=sigma_squared)$root
+      
+      #Profile log-likelihood for tau squared
+      pl.u.tau <- function(tau_squared, logRR, sigma_squared) { #take in vector of tau_squares
+        
+        res <- tau_squared
+        
+        for (i in seq_along(tau_squared)) { #for all these values of mu
+          optimResult <- optim(par = init_param[1],
+                               fn = function(mu) ll.u(tau_squared[i], mu, logRR=logRR, sigma_squared = sigma_squared),
+                               method = "Brent",
+                               lower= -5,
+                               upper=5,
+                               control = list(fnscale = -1))
+          
+          res[i] <- optimResult$value
+        }
+        return(res)
+      }
+      
+      f.tau <- function(tau_squared, logRR, sigma_squared){
+        pl.u.tau(tau_squared, logRR=logRR, sigma_squared=sigma_squared) - pl.u.tau(mle.tau, logRR=logRR, sigma_squared=sigma_squared) + 1/2*qchisq(0.95, df=1)
+      }
+      
+      
+      eps <- sqrt(.Machine$double.eps)
+      lowerBound.u.tau <- max(uniroot(f.tau, interval = c(-10, mle.tau), logRR=logRR, sigma_squared=sigma_squared)$root,0)
+      upperBound.u.tau <- max(uniroot(f.tau, interval = c( mle.tau, 10), logRR=logRR, sigma_squared=sigma_squared)$root,0)
       
       
       #Adjusted benefit
@@ -477,8 +505,10 @@ reORBadj <- function(a=NULL,
       #Re-write log likelihood with two inputs instead of param = c(mu, tau_squared)
       ll.b <- function(mu, tau_squared, logRR, sigma_squared, sigma_squared_imputed) {
         
-        
-        
+        if(tau_squared < 0){
+          - Inf
+        } else {
+          
         #The contribution from the reported studies is always present
         -(1/2)*sum(log(sigma_squared + tau_squared) + ((logRR - mu)^2)/(sigma_squared + tau_squared)) +
           
@@ -627,12 +657,13 @@ reORBadj <- function(a=NULL,
           } else {
             0  # Return 0 if sigma_squared_imputed is empty
           }
-        
+          
+        }
         
         
       }
       
-      
+      #Adjusted profile log likelihood for mu
       pl.b <- function(mu, logRR, sigma_squared, sigma_squared_imputed) { #take in vector of mus
         
         res <- mu
@@ -666,6 +697,45 @@ reORBadj <- function(a=NULL,
                               sigma_squared=sigma_squared,
                               sigma_squared_imputed = sigma_squared_imputed)$root
       
+      #Adjusted profile log likelihood for tau squared
+      pl.b.tau <- function(tau_squared, logRR, sigma_squared, sigma_squared_imputed) { #take in vector of tau_squares
+        
+        res <- tau_squared
+        
+        for (i in seq_along(tau_squared)) { #for all these values of tau_squared
+          optimResult <- optim(par = init_param[1],
+                               fn = function(mu) ll.b(tau_squared[i], mu,
+                                                               logRR=logRR,
+                                                               sigma_squared = sigma_squared,
+                                                               sigma_squared_imputed = sigma_squared_imputed),
+                               method = "Brent",
+                               lower=-5,
+                               upper=5,
+                               
+                               control = list(fnscale = -1))
+          
+          res[i] <- optimResult$value
+        }
+        return(res)
+      }
+      
+      f.b.tau <- function(tau_squared, logRR, sigma_squared, sigma_squared_imputed){
+        
+        pl.b.tau(tau_squared, logRR=logRR, sigma_squared=sigma_squared, sigma_squared_imputed = sigma_squared_imputed) - pl.b.tau(mle.b.tau, logRR=logRR, sigma_squared=sigma_squared, sigma_squared_imputed = sigma_squared_imputed) + 1/2*qchisq(0.95, df=1)
+      }
+      
+      lowerBound.b.tau <- 
+        max(uniroot(f.tau, interval = c(-5, mle.b.tau), logRR=logRR,
+                              sigma_squared=sigma_squared)$root,
+            0)
+                           
+                              
+      
+      upperBound.b.tau <- 
+        uniroot(f.b.tau, interval = c(mle.b.tau, 5), logRR=logRR,
+                              sigma_squared=sigma_squared, sigma_squared_imputed=sigma_squared_imputed)$root
+   
+      
       
       
       if (Wald.CI){
@@ -697,7 +767,12 @@ reORBadj <- function(a=NULL,
                     LR_mu_adjusted_up = upperBound.b,
                     
                     tau_squared_unadjusted = mle.tau,
+                    LR_tau_squared_unadjusted_low = lowerBound.u.tau,
+                    LR_tau_squared_unadjusted_up = upperBound.u.tau,
+                    
                     tau_squared_adjusted = mle.b.tau,
+                    LR_tau_squared_adjusted_low = lowerBound.b.tau,
+                    LR_tau_squared_adjusted_up = upperBound.b.tau,
                     
                     
                     
@@ -723,7 +798,12 @@ reORBadj <- function(a=NULL,
                     LR_mu_adjusted_up = upperBound.b,
                     
                     tau_squared_unadjusted = mle.tau,
+                    LR_tau_squared_unadjusted_low = lowerBound.u.tau,
+                    LR_tau_squared_unadjusted_up = upperBound.u.tau,
+                    
                     tau_squared_adjusted = mle.b.tau,
+                    LR_tau_squared_adjusted_low = lowerBound.b.tau,
+                    LR_tau_squared_adjusted_up = upperBound.b.tau,
                     
                     
                     
