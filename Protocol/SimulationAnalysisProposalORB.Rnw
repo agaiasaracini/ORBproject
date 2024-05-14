@@ -1,0 +1,1434 @@
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{tocloft}
+%\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}} % Add dots between section titles and page numbers
+%\renewcommand{\contentsname}{Table of Contents} % Change the title of the table of contents
+\usepackage{tabularx}
+\usepackage{booktabs}
+%\usepackage{hyperref}
+\usepackage[numbers]{natbib}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+%\usepackage[numbers]{natbib}
+\bibliographystyle{chicago}
+%\usepackage{hyperref}chicago natbib
+%\usepackage[numbers]{natbib}
+
+\date{}
+
+
+<<setup, include=FALSE, cache=FALSE, echo=FALSE>>=
+opts_chunk$set(fig.path='figures/plots-', fig.align='center', fig.show='hold', eval=TRUE, echo=TRUE)
+options(replace.assign=TRUE,width=80)
+Sys.setenv(TEXINPUTS=getwd(),
+           BIBINPUTS=getwd(),
+           BSTINPUTS=getwd())
+
+@
+
+\title{ \huge{\textbf{Simulation Study Protocol}}\\[0.5em]
+Addressing Outcome Reporting Bias in Meta-analysis: A Selection Model Perspective}
+\author{Alessandra Saracini and Leonhard Held}
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+
+\newpage
+
+\section{Introduction}
+
+Outcome reporting bias (ORB) occurs when outcomes within a meta-analysis are selectively reported based on the significance or direction of results. Unlike publication bias (PB), a much better known and studied phenomenon, ORB occurs when studies are published in the literature, but they lack (sufficient) information for a certain outcome for it to be included in the meta-analysis. Standard meta-analysis methods, which only include studies which fully report the outcome of interest, implicitly assuming that unreported outcomes are missing at random, can result in biased estimation. Despite its critical implications, ORB remains an under-recognized problem area, with limited statistical adjustment methods available.
+
+\bigskip
+
+The most well-established ORB-adjustment method is that of \citet{Copas2019}. This methodology requires the unreported study outcomes to be classified according to the ORBIT methodology into risk of bias categories. This classification requires expert opinion and has been argued to be potentially limiting in certain settings \citep{protocolORB, dutch}. Once the classification is done, and thus assumed to be correct, \citet{Copas2019} include a contribution of unreported study outcomes classified as high risk of bias (HR), by making the assumption that unreported study outcomes at HR are not significant.
+
+\bigskip
+
+To overcome the need for an ORBIT classification, relax the missing data assumptions made by \citet{Copas2019}, and hence include a contribution from all unreported outcomes, not just the ones at HR, we investigate ORB-adjustment methods via a selection model perspective. 
+
+\bigskip
+
+Selection models are usually used in PB and consist in associating a weight function, representing the probability of publishing, to the published studies \citep{selection0, selection1, selection2, Begg, reviewselection, HedgesVev}. Let $y_i$ be the observed treatment effect estimate for study $i$ in the meta-analysis, with distribution $f_i(y)$, usually assumed to be normal. By using the following relation:
+
+\bigskip
+
+\begin{equation}
+\label{PB.selection11}
+\begin{aligned}
+f_i \left( y_i | i^{th} \, \text{study published} \right) = \frac{f_i(y_i; \theta) \cdot w_i(y_i)}{\int^{+\infty}_{-\infty} f_i(y; \theta) \cdot w_i(y) dy}
+\end{aligned}
+\end{equation}
+
+\bigskip
+
+the PB-adjusted log-likelihood $\ell_{\text{PB-adjusted}}\left(\theta \right)$ is derived \citep{HedgesVev, selection0, selection1, selection2}. The log-likelihood to be maximized for the parameter $\theta$ in turn has an additional contribution for the published studies, $i \in \text{Published}$, wherein $f_i(y)$ is weighted by $w_i(y)$, the selection function representing the probability of publishing.
+
+\bigskip
+
+\begin{equation}
+\label{lik.PB}
+\ell_{\text{PB-adjusted}}\left(\theta \right) \propto \sum_{i \in \operatorname{Published}} \log f_i(y_i; \theta) - \sum_{i \in \operatorname{Published}} \log \left[ \int_{-\infty}^{\infty} f_i(y; \theta) \cdot w_i(y)  d y \right]
+\end{equation}
+
+\bigskip
+
+In the context of ORB, we similarly can associate a weight function for the probability of (un)reporting to the missing study outcomes. In the ORB-adjusted log-likelihood, we thus have an additional contribution from the unreported study outcomes, $i \in \text{Unreported}$, which varies depending on the shape of the probability of (un)reporting, $1-w_i(y)$, i.e., a mathematical representation of the missing data mechanism assumed. Details of the result obtained in \eqref{lik.ORB} can be found in Chapter 2 of \citet{mythesis}.
+
+
+\bigskip
+
+\begin{equation}
+\label{lik.ORB}
+\ell_{\text{ORB-adjusted}}\left(\theta \right) \propto \sum_{i \in \operatorname{Reported}} \log f_i(y_i; \theta) + \sum_{i \in \operatorname{Unreported}} \log \left[ \int_{-\infty}^{\infty} f_i(y; \theta) \cdot \left( 1 - w_i(y) \right) d y \right]
+\end{equation}
+
+\bigskip
+
+
+In light of the \eqref{lik.ORB} framework, one can note that the \citet{Copas2019} method is a special case of the general ORB-adjustment proposed. Specifically, we obtain the \citet{Copas2019} ORB-adjusted log-likelihood when considering a subset of unreported outcomes, i.e., $i \in \text{HR}$ instead of all $i \in \text{Unreported}$ and a strict missing data assumption represented through $w_i(y)$. As previously noted, we propose to adjust for ORB by including the contribution from all unreported study outcomes and making more flexible missing data assumptions, represented via the probability of reporting $w_i(y)$. 
+
+
+\bigskip
+
+In order to assess the performance of the ORB-adjustment methodology proposed, as well as to gain a deeper insight into the impact of ORB across diverse meta-analysis settings, in particular in the presence of heterogeneity between studies, a simulation study is undertaken. This document outlines the planned steps for the ORB simulation study, including its objectives, data generation mechanism, analytical methods, and performance evaluation criteria \citep{simTemplate, sim}. This is essential in order to ensure transparency and reproducibility of study design and execution.
+
+
+\section{General Information}
+
+\begin{itemize}
+\item[]{\textbf{Title}. Investigating the impact of outcome reporting bias (ORB) and effectiveness of ORB-adjustment methods via a selection model perspective in meta-analysis with varying levels of heterogeneity.}
+
+\item[]{\textbf{Contributors}. Alessandra Gaia Saracini and Leonhard Held}
+
+\item[]{\textbf{Description}. The simulation study carried out simulates ORB in a meta-analysis in the presence of heterogeneity, i.e., under the random-effects model, and applies the ORB-adjustment method proposed. It is of interest to gain an understanding of the impact of ORB and of the effectiveness of its correction techniques, on the estimation and testing of the treatment effect and of the heterogeneity parameters under different meta-analysis settings.}
+
+\end{itemize}
+
+
+\section{Aims}
+
+The simulation study aims to comprehensively evaluate the impact of outcome reporting bias (ORB) on treatment effect estimation and heterogeneity parameter estimation within meta-analysis when using different estimation methods. The different estimation methods correspond to different assumed selection functions, i.e., different functions describing the probability of an outcome being reported. These assessments will be conducted across a spectrum of scenarios, varying characteristics such as the number of studies and the level of heterogeneity.
+
+\bigskip
+
+Naive estimation, involving maximum likelihood estimation with contributions solely from studies which report the outcome of interest, serves as a baseline for comparison. Naive estimation implicitly assumes that unreported study treatment effects in the meta-analysis are missing at random, i.e., that there is no selection mechanism dependent on the significance. It is of interest to assess the impact of ORB on naive estimation, under the different simulated meta-anlaysis settings.
+
+\bigskip
+
+A key objective is to then evaluate the effectiveness of the ORB-adjustment method \eqref{lik.ORB} in reducing the possible bias stemming from naive estimation. This methodology incorporates a contribution from unreported/missing studies outcomes into the maximum likelihood estimation. The shape of the ORB-adjusted likelihood differs depending on to the different selection function assumed for the probability of reporting, i.e., $w_i(y)$ in \eqref{lik.ORB}. Taking inspiration from selection functions typically used in the PB literature, along with qualitative assessment of reasons behind unreporting of outcomes in published studies, we test different selection functions.
+
+\bigskip
+
+Comparative analysis of the ORB-adjusted estimation methods, obtained from the different selection functions, is of paramount importance, striving to align their accuracy as closely as possible with the true value of the parameters of interest, known via the simulation study, and reducing the bias stemming from naive estimation.
+
+
+\section{Data-generating mechanism (DGM)}
+
+The DGM comprises two components. The first involves simulating a meta-analysis study, while the second involves simulating Outcome Reporting Bias (ORB) by strategically excluding certain studies from the meta-analysis, based on the direction and significance of the treatment effects.
+
+\subsection{Meta-analysis DGM}
+
+Each simulated meta-analysis dataset comprises $K$ studies. Each study, indexed by $i$, includes a treatment and control arm. We assume equal sample sizes for both arms \citep{MorenoSim}, for all studies, i.e., $n_i = n = 50$. This choice was motivated by a typical study size in the clinical trials include in meta-analysis \citep{IntHout2014, MorenoSim, FernandezSim} and the intention to reduce, in this simulation study, confounding stemming from differences in study trials. Every study reports an estimated treatment effect, denoted by $y_i$, along with its standard error $\sigma_i$. Furthermore, it is assumed that each study reports the size of the control and treatment arms $n_i$. We assume a positive direction of treatment, i.e., a positive value of $y_i$ indicates a beneficial effect of the intervention relative to placebo. To obtain simulated values of the treatment effects and standard errors, we follow the simulation process outlined by \citet{IntHout2014}. Of note, the values are generated independently for each study $i$, assuming no correlation between studies.
+
+\bigskip
+
+In order to generate the treatment effect values $y_i$, we first simulate the true study-specific treatment effects from a normal distribution centered around a global treatment effect $\mu$, with between-study heterogeneity variance $\tau^2$:
+
+\bigskip
+
+\begin{equation}\label{eq:random.eff2}
+\theta_i \sim \mathcal{N}(\mu, \tau^2)
+\end{equation}
+
+\bigskip
+
+These true study-specific treatment effects $\theta_i$ are then utilized to derive observed treatment effects $y_i$ for each study $i$. The observed treatment effects $y_i$ are sampled from a normal distribution centered around $\theta_i$, with variance $\sigma^2$:
+
+\bigskip
+
+\begin{equation}\label{eq:random.eff1}
+y_i \sim \mathcal{N}(\theta_i, \sigma^2)
+\end{equation}
+
+\bigskip
+Given that in our setting the sample sizes in the control and treatment arms $n_i$ are fixed and equal for each study $i \in 1,...,K$, i.e., $n_i = n$, the within-study variance used in \eqref{eq:random.eff1} is $\sigma^2 = 2\epsilon^2 /n$, where $\epsilon^2$ is the measurement error variance for the outcome. As per \citet{IntHout2014}, we set $\epsilon^2 = 1$ in the simulations, and thus $\sigma^2= 2/n$.
+
+\bigskip
+After having obtained the treatment effect estimates $y_i$, the individual within-study variances $\sigma_i^2$ are simulated from the following scaled $\chi^2$ distribution with $2n_i -2$ degrees of freedom \citep{IntHout2014}, such that $\text{E}(\sigma_i^2) = 2/n_i = 2/n = \sigma^2$:
+
+% Of note, the values are generated independently for each study, assuming no correlation between studies. While $\mu$ and $\tau^2$ are fixed parameters which are directly provided and varied in the simulation, $\sigma_i^2$ is 
+
+\bigskip
+
+\begin{equation}
+\label{sigma.sq.sim}
+\sigma_i^2 \sim \frac{\chi^2_{2n_i - 2}}{(n_i -1)n_i}
+\end{equation}
+
+
+\bigskip
+
+In the simulation study, we are interested in assessing the impact of ORB and the effectiveness of its adjustment techniques under different meta-analysis settings. To this end, we use the following parameter combinations:
+
+\bigskip
+
+\begin{itemize}
+\item[-]{Number of studies in the meta-analysis, $K \in \{5, 15, 30 \}$, following similar choices by \citet{MorenoSim, IntHout2014} for small, medium, and large meta-analysis studies of clinical trial.}
+\item[-]{True global treatment effect $\mu \in \{0 - 0.8 \}$ with $0.1$ increments, representing, e.g., standardized mean differences or log odds ratios, similar to choices in \citet{MorenoSim, FernandezSim} who note that, e.g., effect sizes of $0, 0.2, 0.5, 0.8$ could correspond to null, low, medium and high effects \citep{FernandezSim}.}
+\item[-]{Heterogeneity quantified by Higgins' $\text{I}^2 \in \{0 \%, 25 \%, 50 \%, 75 \%, 90 \% \}$ as done in \citet{IntHout2014}.}
+\end{itemize}
+
+\bigskip
+
+Higgins' $\text{I}^2$ is a quantity which is often used in meta-analysis to quantify heterogeneity \citep{HigginsI}. Compared to the $\tau^2$ heterogeneity variance, $\text{I}^2$ is deemed more interpretable, as it estimates the proportion of the variance in study estimates that is due to heterogeneity. Furthermore, it is preferred as it ranges from 0 to 1, which makes its magnitude easier to contextualize. However, in practice we need to use $\tau^2$, as this is our core parameter for estimation and analysis. We thus use the following equivalence, which defines $\tau^2$ in terms of $\text{I}^2$ and of the expected/typical within-study variance $\text{E}(\sigma_i^2) = \sigma^2$, as follows:
+
+\bigskip
+
+\begin{equation}
+\tau^2 = \frac{\text{I}^2}{1 - \text{I}^2}\cdot \sigma^2
+\label{tau_squared_from_I_squared1}
+\end{equation}
+
+\bigskip
+
+%Given that in our setting the sample sizes in the control and treatment arms $n_i$ are fixed and equal for each study $i \in 1,...,K$, i.e., $n_i = 50$, the expected within-study variance is easily derivable from \eqref{sigma.sq.sim}, as  $\text{E}(\sigma_i^2) = 2/n_i$. Using $\text{E}(\sigma_i^2) = 2/n_i$ and \eqref{tau_squared_from_I_squared1}, we establish that the values of Higgins' $\text{I}^2$ which we wish to vary in the simulation correspond to $\tau^2$ values of $\tau^2 \in \{ 0.01, 0.04, 0.36 \}$.
+
+Given that in our setting $n_i = n = 50$, we use $\sigma^2 = 2/n$ and \eqref{tau_squared_from_I_squared1} and establish that the values of Higgins' $\text{I}^2$ which we wish to vary in the simulation correspond to $\tau^2$ values of $\tau^2 \in \{ 0, 0.013, 0.04, 0.12, 0.36 \}$.
+
+%\bigskip
+
+%\begin{equation}
+%\begin{aligned}
+%\text{E}(\sigma_i^2) & = \frac{2n_i - 2}{(n_i - 1)n_i} = \frac{2}{n_i} = \frac{2}{50} = 0.04\\
+%\end{aligned}
+%\label{deriv}
+%\end{equation}
+
+%\bigskip
+
+%Using $\text{E}(\sigma_i^2) = 2/n_i$ and \eqref{tau_squared_from_I_squared1}, we establish that the values of Higgins' $\text{I}^2$ which we wish to vary in the simulation correspond to $\tau^2$ values of $\tau^2 \in \{ 0.01, 0.04, 0.36 \}$.
+
+
+\subsection{ORB DGM} \label{orbdgm}
+
+After simulating $K$ studies, each providing a treatment effect $y_i$ obtained from \eqref{eq:random.eff1}, standard error $\sigma_i$ obtained from \eqref{sigma.sq.sim}, and sample sizes $n_i$ for the control and treatment arms, the next step is to simulate Outcome Reporting Bias (ORB). This involves selectively removing certain treatment effects and standard errors based on their significance and/or direction, thus introducing missing values not at random.
+
+\bigskip
+
+Since we are implementing an ORB-adjustment via a selection model framework inspired by the publication bias (PB) literature, we simulate ORB similarly to how PB is often generated in its simulations studies. Namely, we remove study outcomes with a probability which is a decreasing function of the p-value, as done in, e.g., \citet{selection2, Begg, BeggUse1, selectionCont}
+
+\bigskip
+
+\begin{equation}
+P(\text{Reporting} \; \{y_i, \sigma_i \})= e^{-4 \cdot p_i^{\gamma}}
+\label{simORB}
+\end{equation}
+
+\bigskip
+
+Here, we use the one-sided $p$-value $p_i = \Phi(- y_i / \sigma_i)$. We use a one-sided $p$-value to simulate ORB as we assume that a significant value but in the negative direction, i.e., indicating a negative effect of the treatment relative to control, is unlikely to be reported \citep{HedgesVev, selectionCont, reviewselection}. 
+
+\bigskip
+
+Of note, in the PB literature, the number of selected/published studies included in each meta-analysis is typically fixed; this is obtained by making the decision to select a study for inclusion based on a simulated biased coin toss with probability weight \eqref{simORB} and repeating the procedure until the required number of studies is selected \citet{selection2, Begg, BeggUse1}. In the case of the ORB simulation, the total number studies (i.e., which report or do not report the outcome of interest) is fixed, and the selection is done using \eqref{simORB} as a probability for selecting the reported outcomes. Hence, in each simulation, the number of reported outcomes may vary. This approach was used by \citet{Copas2019} in the context of ORB simulation, as well as in \citet{FernandezSim} for both ORB and PB simulations. In our setting, as we need at least one study outcome to be reported for the ORB-adjustment methodology to be used, we repeat the simulation process if we obtain a dataset with no reported study outcomes. For each parameter combination, we will record the average number of reported study outcomes as well as the number of simulated datasets/trials needed to obtain the desired behavior.
+
+\bigskip
+
+
+%The $\gamma$ parameter in \eqref{simORB} used in certain PB simulation studies to determine strong PB is $\gamma=1.5$ \citep{selection2, Begg}. Using this function, the probbality of, e.g., publishing a trial with a p-value of a study with p-value of $0.01$ is $99.6 \%$, pvalue of $0.05$ is $95.6 \%$, and pvalue of $0.2$ is $69.9 \%$. While this makes sense to be considered strong for PB, one could hypothesize setting in which outcomes are not reported even for smaller p-value. In principle, these are published studies, which may decide to omit a certain outcome because it was not found particularly clinically relavent, or perhaps in a study with many positive/significant findings, this was not the most interesting one, or space constrains, although these are probably corrlated to the previous ones \citep{ORBreasons, moreORBevidence}. While the line of thinking is still that studies are omitted based on their signficance, one could believe that the threshold is lower, as outcomes may omitted for smaller reasons that PB. By using, e.g., a value of $\gamma=0.8$, the probability of an outcome being reported, for a p-value of $0.01$ is $90.4 \%$, pvalue of $0.05$ is $69.5 \%$, and pvalue of $0.2$ is $33.2 \%$. In this case, we allow for a small probability of significant outcomes to be unreported if, e.g., a result was statistically significant but not clinically relavant, or if there was numerouos significant outcomes in a trial adn this was less important. At the same time, for non-significant p-values, the probability of reporting drops fasts. Because of the nature of ORB compared to PB, we call the $\gamma=1.5$ settign moderate ORB and $\gamma=0.8$ strong ORB.
+
+The $\gamma$ value in \eqref{simORB} indicates the strength of bias. In PB, it has been argued that a value of $\gamma=1.5$ can be representative of strong PB. In this case, e.g., the probability of publishing a study with significant one-sided $p$-values $0.01, \; 0.05$ are $0.996, \; 0.962$ respectively and drop to $0.881, \; 0.699$ for non-significant values of $0.1, \; 0.2$ respectively. However, when considering ORB, given that studies are already published, the threshold for reporting could be less stringent. Factors such as clinical relevance or prioritizing more impactful findings \citep{ORBreasons, moreORBreasons} may lead to unreported outcomes with smaller p-values, compared to what one may expect in the context of PB. With this rationale, in the simulation study of ORB we use $\gamma=1.5$, for consistency with PB, but denote it as moderate bias; we additionally use $\gamma=0.5$ and denote it as strong bias. With this parameter, the probabilities of reporting are high only for very small $p$-values, e.g., the probability of reporting is $0.961$ for a $p$-value of $0.0001$, and drops substantially, e.g., the probability of reporting is $0.670$ for a significant $p$-value of $0.01$ and decreases to $0.282$ and $0.167$ for non-significant $p$-values of $0.1$ and $0.2$. The ORB DGM with $\gamma=0.5$ thus possibly results in unreported study outcomes with original $p$-values below the $0.05$ threshold, as opposed to the setting of $\gamma=1.5$, where the probability of reporting is almost one for significant $p$-values. It is of interest to investigate the impact of ORB in these different settings, as well as the extent to which different ORB-adjustment methods, with varying missing data assumptions, are sucessfull in correcting for the potential bias in the parameter estimation.
+
+%One could also envisage this parameter setting as a situation in which ORB is governed by the threshold of significance of the two-sided test, i.e., $p$-value $=0.025$, as probabilities of reporting are substantially lower after that threshold. The two different settings used to simulate ORB, i.e., with $\gamma=1.5, \gamma=0.5$ are shown in Figure \ref{ORBsim}.
+
+
+\begin{figure}[!hbt]
+\centering
+\caption{Function \eqref{simORB} with $\gamma=0.5$ and $\gamma=1.5$ used to simulate ORB: study outcomes are removed from a simulated meta-analysis according to this probability of reporting \citep{selection2}, based on one-sided $p$-value (left) and corresponding treatment effect size (right).}
+<<plot1, cache=TRUE, echo=FALSE, results='asis', fig.height=5, fig.width=12, message=FALSE, warning=FALSE>>=
+
+#par(mfrow=c(1,2))
+
+library(ggplot2)
+############################
+
+# Set the value of z_alpha and sigma
+z_alpha <- 1.96  # Change this value as needed
+sigma <- 0.1  # Change this value as needed
+
+# use in the thesis to simulate ORB
+thesisSIM <- function(y) {
+  
+  exp(-4*((1-pnorm(y/sigma)))^(1.5))
+}
+
+
+thesisSIM_stronger <- function(y) {
+  
+  exp(-4*((1-pnorm(y/sigma)))^(0.5))
+}
+
+
+
+
+# Create a sequence of y values
+y_values <- seq(-0.5, 0.8, by = 0.001)
+#y_values <- 1-pnorm(seq(-0.5, 0.5, by = 0.001)/sigma)
+
+# Create a data frame for plotting
+df <- data.frame(y = y_values)
+
+# Add the piece-wise, piecewise2, exponential, and sigmoid function values to the data frame
+df$p_thesis<- thesisSIM(y_values)
+
+df$p_thesis_stronger <- thesisSIM_stronger(y_values)
+
+main_plot <- ggplot(df, aes(x = 1-pnorm(y/sigma))) +
+#main_plot <- ggplot(df, aes(x = y)) +
+   geom_line(aes(y = p_thesis_stronger), size = 0.4, color = "darkgreen") + # Added piecewise2
+    geom_line(aes(y = p_thesis), size = 0.4, color = "navy", linetype="solid") +
+  geom_vline(xintercept = 0.01, color="gray", linetype="dashed", size=0.3)+
+  geom_vline(xintercept = 0.025, color="gray", linetype="dashed", size=0.3)+
+  geom_vline(xintercept = 0.05, color="gray", linetype="dashed", size=0.3)+
+  geom_vline(xintercept = 0.1, color="gray", linetype="dashed", size=0.3)+
+  geom_vline(xintercept = 0.2, color="gray", linetype="dashed", size=0.3)+
+  geom_vline(xintercept = 0.1, color="gray", linetype="dashed", size=0.3)+
+  #geom_line(aes(y = p_halfnorm), size = 0.5, color = "red", linetype="solid") +
+  #geom_line(aes(y = p_sigmoid), size = 0.5, color= "purple")+
+    #geom_line(aes(y = p_negexp), size = 0.8, color = "green", linetype="dotted") +
+  labs(x = "One-sided p-value", y = "Probability of reporting") +
+  scale_x_continuous(breaks = c(0.01, 0.025, 0.05, 0.1, 0.2, 1),
+                      labels = c("0.01","0.025", "0.05", "0.1","0.2","1")) +
+  theme_classic() +
+  theme(
+    legend.position = "topright",
+        axis.title.x = element_text(size = 9),
+    axis.text=element_text(size=6, angle=90),
+    axis.title.y = element_text(size = 9)
+  )
+
+#main_plot
+
+legend_plot <- ggplot() +
+  geom_line(aes(x = 1:2, y = 1, color = "Gamma = 0.5"), size = 0.4) +
+  geom_line(aes(x = 1:2, y = 2, color = "Gamma = 1.5"), size = 0.4, linetype = "solid") +
+  scale_color_manual(values = c("darkgreen", "navy"),
+                     labels = c(expression(gamma == 0.5), expression(gamma == 1.5))) +
+  labs(x = NULL, y = NULL) +
+  theme_minimal()+
+  theme(
+    legend.position = "top",
+    legend.direction = "horizontal",
+    legend.title = element_blank(),
+    legend.key.size = unit(2, "cm"),
+    legend.margin = margin(0, 0, 0, 0),
+    legend.spacing.x = unit(0.2, "cm"),
+    legend.text = element_text(size = 7)
+  )
+
+# Combine plots
+#plot_combined <- gridExtra::grid.arrange(main_plot, legend_plot, nrow = 2, heights = c(0.9, 0.1))
+
+# Display combined plot
+#plot_combined
+
+
+library(ggplot2)
+library(latex2exp)
+
+# Set the value of z_alpha and sigma
+z_alpha <- 1.96  # Change this value as needed
+sigma <- 0.1  # Change this value as needed
+
+# use in the thesis to simulate ORB
+thesisSIM <- function(y) {
+  
+  exp(-4*((1-pnorm(y/sigma)))^(1.5))
+}
+
+
+thesisSIM_stronger <- function(y) {
+  
+  exp(-4*((1-pnorm(y/sigma)))^(0.5))
+}
+
+# Create a sequence of y values
+y_values <- seq(-0.3, 0.4, by = 0.001)
+#y_values <- 1-pnorm(seq(-0.5, 0.5, by = 0.001)/sigma)
+
+# Create a data frame for plotting
+df <- data.frame(y = y_values)
+
+# Add the piece-wise, piecewise2, exponential, and sigmoid function values to the data frame
+df$p_thesis <- thesisSIM(y_values)
+df$p_thesis_stronger <- thesisSIM_stronger(y_values)
+
+
+#main_plot <- ggplot(df, aes(x = 1-pnorm(y/sigma))) +
+main_plot1 <- ggplot(df, aes(x = y)) +
+  geom_line(aes(y = p_thesis_stronger), size = 0.4, color = "darkgreen") + # Added piecewise2
+  geom_line(aes(y = p_thesis), size = 0.4, color = "navy", linetype="solid") +
+  geom_vline(xintercept = -1.96*sigma, color="gray", linetype="dashed", size=0.3)+
+    geom_vline(xintercept = -sigma, color="gray", linetype="dashed", size=0.3)+
+  geom_vline(xintercept = sigma, color="gray", linetype="dashed", size=0.3)+
+    geom_vline(xintercept = 0, color="gray", linetype="dashed", size=0.3)+
+    geom_vline(xintercept = 1.64*sigma, color="gray", linetype="dashed", size=0.3)+
+    geom_vline(xintercept = 1.96*sigma, color="gray", linetype="dashed", size=0.3)+
+  #geom_line(aes(y = p_halfnorm), size = 0.5, color = "red", linetype="solid") +
+  #geom_line(aes(y = p_sigmoid), size = 0.5, color= "purple")+
+    #geom_line(aes(y = p_negexp), size = 0.8, color = "green", linetype="dotted") +
+  labs(x = "Effect size y", y = " ") +
+  #xlim(c(-2*sigma, 3*sigma))+
+  scale_x_continuous(breaks = c(-1.96*sigma, -sigma, 0, sigma, 1.64*sigma, 1.96*sigma),
+                                labels = c(expression(-1.96*sigma), 
+                                           expression(-sigma),
+                                           expression(0),
+                                           expression(sigma),
+                                           expression(1.64*sigma),
+                                           expression(1.96*sigma)))+
+
+  theme_classic() +
+  theme(
+    legend.position = "topright",
+    axis.title.x = element_text(size = 9),
+    axis.text=element_text(size=6, angle=90),
+    axis.title.y = element_text(size = 9)
+  )
+
+#main_plot
+
+#main_plots_combined <- gridExtra::grid.arrange(main_plot, main_plot1, ncol = 2)
+
+#plot_combined <- gridExtra::grid.arrange(main_plots_combined, legend_plot, nrow = 2, heights = c(0.9, 0.1))
+
+
+#plot_combined
+
+final_plot <- gridExtra::grid.arrange(
+  gridExtra::arrangeGrob(main_plot, main_plot1, ncol = 2),
+  legend_plot,
+  ncol = 1,
+  heights = c(2, 0.1)
+)
+
+invisible(final_plot)
+
+
+@
+\label{ORBsim}
+\end{figure}
+
+
+%\subsubsection{Assumptions Rationale}
+
+\section{Estimands and Targets}
+
+Our primary estimand is the treatment effect size, derived from evidence pooled across multiple studies in the meta-analysis. This estimation is conducted via maximum likelihood, where the likelihood function is maximized. We perform both naive estimation, utilizing treatment effects solely from reported studies, and estimation using ORB-adjustment techniques. Additionally, our secondary target is the estimation of the heterogeneity variance. This is estimated concurrently with the treatment effect in both the naive and ORB-adjusted estimations. The statistical target of this simulation study is focused on estimation. Therefore, we aim to compare different estimation methods in terms of bias, mean squared error (MSE), and other relevant metrics.
+
+
+\section{Methods} \label{methods}
+
+For a given parameter of interest $\theta$ (i.e., the treatment effect, of primary interest, and the heterogeneity variance, of secondary interest), we use maximum likelihood estimation (MLE) to obtain its estimate. We thus maximize the log-likelihood function $\ell(\theta)$ with respect to $\theta$:
+
+\bigskip
+\begin{align}
+\hat{\theta}_{ML} = \arg\max_\mu \ell(\theta)
+\end{align}
+
+\bigskip
+
+Additionally, we compute the $95 \%$ confidence interval (CI) by considering the likelihood ratio (LR) CI. Specifically, we use the profile likelihood (PL) CI. The range of $\theta$ values within the PL CI are
+
+%\item{p-value}
+\bigskip
+
+\begin{align}
+\left\{ \theta \mid \ell_p(\mu) - \ell_p(\hat{\theta}) + \frac{1}{2}\chi^2_{\text{df}=1,0.95} \leq 0 \right\}
+\end{align}
+
+\bigskip
+
+The ML estimate and PL CI for $\theta$ are obtained using different log-likelihoods, depending on the information and/or missing data mechanism assumed, leading to a naive, full data, and ORB-adjusted estimation methods. We further differentiate various ORB-adjusted estimates based on the selection function assumed for the probability of reporting in \eqref{lik.ORB}. Of note, ML estimation (accompanied by and PL CI) in random effects meta-analysis is commonly used for the treatment effect estimate $\mu$. While this estimation method is also found for $\tau^2$ \citep{tauCI}, additional estimation techniques are present in the literature for the heterogeneity variance estimation \citep{tauCI, REML2, REML}. In our case, given that $\mu$ is the primary interest of the investigation, and that the ORB-adjustment method is intrinsically based on the likelihood function, we use ML-based methods also for $\tau^2$, as an exploratory investigation of the effect of ORB on $\tau^2$ estimation.
+
+\bigskip
+
+
+\subsection{Naive estimate}
+
+The naive log-likelihood includes the contribution only from reported study outcomes and disregards the unreported ones. The implicit assumption is that unreported study outcome are missing at random and are not associated with a selection mechanism \citep{Copas2019, reviewselection}.
+
+\bigskip
+
+\begin{equation}
+\label{loglik}
+\begin{split}
+\ell_{\text{Naive}} \left(\theta \right)
+=  \sum_{i \in \text{Reported}} \log f_i(y_i; \theta)
+\end{split}
+\end{equation}
+
+\bigskip
+
+\subsection{Complete data estimate}
+
+The complete data log-likelihood uses all studies in the meta-analysis before ORB is simulated, and is a proxy for the true treatment effect if there were no bias.
+
+\bigskip
+
+\begin{equation}
+\label{loglik.true}
+\begin{split}
+\ell_{\text{Complete}}\left(\theta \right)
+& = \sum_{i}^{K} \log f_i(y_i; \theta)
+\end{split}
+\end{equation}
+
+\bigskip
+
+
+\subsection{ORB-adjusted estimate} \label{methods:orb}
+
+Below we recall the ORB-adjusted log-likelihood of \eqref{lik.ORB} as a generic form of ORB-adjustment, which includes, compared to the naive estimate, an additional term with contributions from unreported study outcomes. The term makes use of the selection function for the probability of reporting, assumed to be associated with the missing outcomes. In the simulation study, we use a variety of selection functions for the probability of reporting, which, in the next subsections, we define in terms of the one sided p-value $w(p)$, where $p=\Phi \left(- \frac{y}{\sigma} \right)$.
+
+\bigskip
+
+\begin{equation}
+\label{lik.ORB2}
+\ell_{\text{ORB-adjusted}}\left(\theta \right) \propto \sum_{i \in \operatorname{Reported}} \log f_i(y_i; \theta) + \sum_{i \in \operatorname{Unreported}} \log \left[ \int_{-\infty}^{\infty} f_i(y; \theta) \cdot \left( 1 - w_i(y) \right) d y \right]
+\end{equation}
+
+\bigskip
+
+Firstly, in the ORB-adjustment, we use the two selection functions utilized for the ORB simulation, i.e., function \eqref{simORB} with $\gamma=1.5$ and $\gamma=0.8$, so as to have the correct function specification between ORB simulation and ORB adjustment. We then further test other selection functions, taking inspiration from those found in PB literature, as well as altering them to test scenarios which one may expect to occur in ORB.
+
+%\begin{equation}
+%\label{lik.rewritten.special.copas.case}
+%\ell_{\text{ORB-adjusted}}\left(\theta \right) \propto \sum_{i \in \text{Reported}} \log f_i(y_i; \theta) + \sum_{i \in \text{Unreported}} \log \left[ \int_{-\infty}^{\infty} f_i(y; \theta) \cdot \left( 1 - w_i(y) \right) d y \right]
+%\end{equation}
+
+
+
+%onesided
+
+%\citet{HedgesVev, selectionCont, reviewselection}
+
+\subsubsection{Piece-wise constant-constant}
+
+The simplest selection function used is \eqref{sel0}, shown in Figure \ref{specialFig0}. It is a piece-wise constant function, with probability of reporting 0 for non-significant studies and 1 for significant ones. The threshold for significance is a p-value of $p=0.05$. While this selection function can be found in the PB literature \citep{reviewselection, selection0, selection1}, it is also the one implicitly used in the \citet{Copas2019} adjustment. Of note, in \citet{Copas2019} it is used only in the contribution of unreported study outcomes classified as high risk of bias (HR) by the ORBIT methodology. Here, however, we apply it all unreported outcomes, as we are not using the ORBIT classification system beforehand.
+
+\bigskip
+
+\begin{equation}
+\begin{aligned}
+\label{sel0}
+w(p)= \begin{cases} 1 & \text{if } p \leq 0.05  \\
+0 & \text{if } p > 0.05 \end{cases}
+\end{aligned}
+\end{equation}
+
+\bigskip
+
+\begin{figure}[!hbt]
+\centering
+\caption{Piece-wise constant-constant selection function \eqref{sel0} used in \eqref{lik.ORB2} for ORB-adjustment. The selection function represents the probability of reporting (based on one-sided p-value, left, and corresponding treatment effect size, right) which is assumed to be associated with the unreported/missing study outcomes.}
+<<plot0, cache=TRUE, echo=FALSE, results='asis', fig.height=5, fig.width=11, message=FALSE, warning=FALSE>>=
+
+#par(mfrow=c(1,2))
+
+rho= 3
+
+############################
+
+# Set the value of z_alpha and sigma
+z_alpha <- 1.96  # Change this value as needed
+sigma <- 0.1  # Change this value as needed
+
+# use in the thesis to simulate ORB
+thesisSIM <- function(y) {
+  
+  p = pnorm(-y/sigma)
+  #p = y
+  
+  #ifelse(pnorm(-y/sigma) >= 0.05,
+   #      exp(-7*pnorm(-y/sigma)),
+    #     1)
+
+  ifelse(p <= 0.05, 
+         1,
+         #exp(-7*(p - 0.05)))
+         0)
+
+
+}
+
+
+
+
+
+# Create a sequence of y values
+y_values <- seq(0.11, 0.8, by = 0.0001)
+#y_values <- 1-pnorm(seq(-0.5, 0.5, by = 0.001)/sigma)
+
+# Create a data frame for plotting
+df <- data.frame(y = y_values)
+
+# Add the piece-wise, piecewise2, exponential, and sigmoid function values to the data frame
+df$p_thesis<- thesisSIM(y_values)
+
+
+main_plot <- ggplot(df, aes(x = pnorm(-y/sigma))) +
+#main_plot <- ggplot(df, aes(x = y)) +
+   #geom_line(aes(y = p_thesis_stronger), size = 0.1, color = "darkgreen") + # Added piecewise2
+    geom_line(aes(y = p_thesis), size = 0.4, color = "purple", linetype="solid") +
+  geom_vline(xintercept = 0.01, color="gray", linetype="dashed", size=0.3)+
+  geom_vline(xintercept = 0.025, color="gray", linetype="dashed", size=0.3)+
+  geom_vline(xintercept = 0.05, color="gray", linetype="dashed", size=0.3)+
+  geom_vline(xintercept = 0.1, color="gray", linetype="dashed", size=0.3)+
+  #geom_vline(xintercept = 0.2, color="gray", linetype="dashed", size=0.3)+
+  geom_vline(xintercept = 0.1, color="gray", linetype="dashed", size=0.3)+
+  #geom_line(aes(y = p_halfnorm), size = 0.5, color = "red", linetype="solid") +
+  #geom_line(aes(y = p_sigmoid), size = 0.5, color= "purple")+
+    #geom_line(aes(y = p_negexp), size = 0.8, color = "green", linetype="dotted") +
+  labs(x = "One-sided p-value", y = "Probability of reporting") +
+  #xlim(c(0,0.2))+
+  scale_x_continuous(breaks = c(0.01, 0.025, 0.05, 0.1),
+                      labels = c("0.01","0.025", "0.05", "0.1")) +
+  theme_classic() +
+  theme(
+    legend.position = "topright",
+        axis.title.x = element_text(size = 9),
+    axis.text=element_text(size=7, angle=90),
+    axis.title.y = element_text(size = 9)
+  )
+
+#main_plot
+
+
+
+
+library(ggplot2)
+library(latex2exp)
+
+# Set the value of z_alpha and sigma
+z_alpha <- 1.96  # Change this value as needed
+sigma <- 0.1  # Change this value as needed
+
+thesisSIM <- function(y) {
+  
+  p = pnorm(-y/sigma)
+  #p = y
+  
+  #ifelse(pnorm(-y/sigma) >= 0.05,
+   #      exp(-7*pnorm(-y/sigma)),
+    #     1)
+
+  ifelse(p <= 0.05, 
+         1,
+         #exp(-7*(p - 0.05)))
+         0)
+
+
+}
+
+
+
+# Create a sequence of y values
+y_values <- seq(0, 0.25, by = 0.001)
+#y_values <- 1-pnorm(seq(-0.5, 0.5, by = 0.001)/sigma)
+
+# Create a data frame for plotting
+df <- data.frame(y = y_values)
+
+# Add the piece-wise, piecewise2, exponential, and sigmoid function values to the data frame
+df$p_thesis <- thesisSIM(y_values)
+#df$p_thesis_stronger <- thesisSIM_stronger(y_values)
+
+
+#main_plot <- ggplot(df, aes(x = 1-pnorm(y/sigma))) +
+main_plot1 <- ggplot(df, aes(x = y)) +
+  #geom_line(aes(y = p_thesis_stronger), size = 0.1, color = "darkgreen") + # Added piecewise2
+  geom_line(aes(y = p_thesis), size = 0.4, color = "purple", linetype="solid") +
+  #geom_vline(xintercept = -1.96*sigma, color="gray", linetype="dashed", size=0.3)+
+   # geom_vline(xintercept = -sigma, color="gray", linetype="dashed", size=0.3)+
+  geom_vline(xintercept = sigma, color="gray", linetype="dashed", size=0.3)+
+    geom_vline(xintercept = 0, color="gray", linetype="dashed", size=0.3)+
+    geom_vline(xintercept = 1.64*sigma, color="gray", linetype="dashed", size=0.3)+
+    geom_vline(xintercept = 1.96*sigma, color="gray", linetype="dashed", size=0.3)+
+  #geom_line(aes(y = p_halfnorm), size = 0.5, color = "red", linetype="solid") +
+  #geom_line(aes(y = p_sigmoid), size = 0.5, color= "purple")+
+    #geom_line(aes(y = p_negexp), size = 0.8, color = "green", linetype="dotted") +
+  labs(x = "Effect size y", y = " ") +
+  scale_x_continuous(breaks = c( 0, sigma, 1.64*sigma, 1.96*sigma),
+                                labels = c(
+                                           expression(0),
+                                           expression(sigma),
+                                           expression(1.64*sigma),
+                                           expression(1.96*sigma)))+
+  theme_classic() +
+  theme(
+    legend.position = "topright",
+    axis.title.x = element_text(size = 9),
+    axis.text=element_text(size=7, angle=90),
+    axis.title.y = element_text(size = 9)
+  )
+
+#main_plot1
+
+
+
+final_plot <- gridExtra::grid.arrange(
+  main_plot, main_plot1,
+  ncol = 2
+)
+
+invisible(final_plot)
+
+
+@
+\label{specialFig0}
+\end{figure}
+
+
+\subsubsection{Piece-wise constant-continuous}
+
+One selection function also found in the PB literature \citep{reviewselection, selection1}, which relaxes the somewhat strict assumptions of the previous \eqref{sel0} is the following, shown in Figure \ref{specialFig1}:
+
+\bigskip
+
+\begin{equation}
+w(p) = 
+\begin{cases}
+1 & \text{if } p \leq 0.05 \\
+\frac{p^{-\beta}}{0.05^{-\beta}} & \text{if } p > 0.05
+\end{cases}
+\label{special1}
+\end{equation}
+
+\bigskip
+
+Here, for the non-significant study outcomes, the associated probability of reporting is a decreasing function of the $p$-value, while significant study outcomes have an associated probability of reporting of 1. In the simulation study we use $\beta=3$. With this parameter, the probability of reporting is high for $p$-values just above the threshold of $0.05$, e.g., a probability of $0.751$ for a one-sided $p$-value of $0.055$, but rapidly drops to, e.g., $0.125$ for a larger $p$-values of $0.1$.
+
+
+\begin{figure}[!hbt]
+\centering
+\caption{Piece-wise constant-continuous selection function \eqref{special1} used in \eqref{lik.ORB2} for ORB-adjustment. The selection function represents the probability of reporting (based on one-sided p-value, left, and corresponding treatment effect size, right) which is assumed to be associated with the unreported/missing study outcomes.}
+<<plot2, cache=TRUE, echo=FALSE, results='asis', fig.height=5, fig.width=11, message=FALSE, warning=FALSE>>=
+
+#par(mfrow=c(1,2))
+
+rho= 3
+
+############################
+
+# Set the value of z_alpha and sigma
+z_alpha <- 1.96  # Change this value as needed
+sigma <- 0.1  # Change this value as needed
+
+# use in the thesis to simulate ORB
+thesisSIM <- function(y) {
+  
+  p = pnorm(-y/sigma)
+  #p = y
+  
+  #ifelse(pnorm(-y/sigma) >= 0.05,
+   #      exp(-7*pnorm(-y/sigma)),
+    #     1)
+
+  ifelse(p <= 0.05, 
+         1,
+         #exp(-7*(p - 0.05)))
+         (p^(-rho))/(0.05^(-rho)))
+
+
+}
+
+
+
+
+
+# Create a sequence of y values
+y_values <- seq(0.09, 0.8, by = 0.0001)
+#y_values <- 1-pnorm(seq(-0.5, 0.5, by = 0.001)/sigma)
+
+# Create a data frame for plotting
+df <- data.frame(y = y_values)
+
+# Add the piece-wise, piecewise2, exponential, and sigmoid function values to the data frame
+df$p_thesis<- thesisSIM(y_values)
+
+
+main_plot <- ggplot(df, aes(x = pnorm(-y/sigma))) +
+#main_plot <- ggplot(df, aes(x = y)) +
+   #geom_line(aes(y = p_thesis_stronger), size = 0.1, color = "darkgreen") + # Added piecewise2
+    geom_line(aes(y = p_thesis), size = 0.4, color = "purple", linetype="solid") +
+  geom_vline(xintercept = 0.01, color="gray", linetype="dashed", size=0.3)+
+  geom_vline(xintercept = 0.025, color="gray", linetype="dashed", size=0.3)+
+  geom_vline(xintercept = 0.05, color="gray", linetype="dashed", size=0.3)+
+  geom_vline(xintercept = 0.1, color="gray", linetype="dashed", size=0.3)+
+  #geom_vline(xintercept = 0.2, color="gray", linetype="dashed", size=0.3)+
+  #geom_vline(xintercept = 0.1, color="gray", linetype="dashed", size=0.3)+
+  #geom_line(aes(y = p_halfnorm), size = 0.5, color = "red", linetype="solid") +
+  #geom_line(aes(y = p_sigmoid), size = 0.5, color= "purple")+
+    #geom_line(aes(y = p_negexp), size = 0.8, color = "green", linetype="dotted") +
+  labs(x = "One-sided p-value", y = "Probability of reporting") +
+  scale_x_continuous(breaks = c(0.01, 0.025, 0.05, 0.1),
+                      labels = c("0.01","0.025", "0.05", "0.1")) +
+  theme_classic() +
+  theme(
+    legend.position = "topright",
+        axis.title.x = element_text(size = 9),
+    axis.text=element_text(size=7, angle=90),
+    axis.title.y = element_text(size = 9)
+  )
+
+#main_plot
+
+
+
+
+library(ggplot2)
+library(latex2exp)
+
+# Set the value of z_alpha and sigma
+z_alpha <- 1.96  # Change this value as needed
+sigma <- 0.1  # Change this value as needed
+
+thesisSIM <- function(y) {
+  
+  p = pnorm(-y/sigma)
+  #p = y
+  
+  #ifelse(pnorm(-y/sigma) >= 0.05,
+   #      exp(-7*pnorm(-y/sigma)),
+    #     1)
+
+  ifelse(p <= 0.05, 
+         1,
+         #exp(-7*(p - 0.05)))
+         (p^(-rho))/(0.05^(-rho)))
+
+
+}
+
+
+
+# Create a sequence of y values
+y_values <- seq(0, 0.21, by = 0.001)
+#y_values <- 1-pnorm(seq(-0.5, 0.5, by = 0.001)/sigma)
+
+# Create a data frame for plotting
+df <- data.frame(y = y_values)
+
+# Add the piece-wise, piecewise2, exponential, and sigmoid function values to the data frame
+df$p_thesis <- thesisSIM(y_values)
+#df$p_thesis_stronger <- thesisSIM_stronger(y_values)
+
+
+#main_plot <- ggplot(df, aes(x = 1-pnorm(y/sigma))) +
+main_plot1 <- ggplot(df, aes(x = y)) +
+  #geom_line(aes(y = p_thesis_stronger), size = 0.1, color = "darkgreen") + # Added piecewise2
+  geom_line(aes(y = p_thesis), size = 0.4, color = "purple", linetype="solid") +
+  #geom_vline(xintercept = -1.96*sigma, color="black", linetype="dashed", size=0.1)+
+    #geom_vline(xintercept = -sigma, color="gray", linetype="dashed", size=0.3)+
+  geom_vline(xintercept = sigma, color="gray", linetype="dashed", size=0.3)+
+    geom_vline(xintercept = 0, color="gray", linetype="dashed", size=0.3)+
+    geom_vline(xintercept = 1.649*sigma, color="gray", linetype="dashed", size=0.3)+
+    geom_vline(xintercept = 1.96*sigma, color="gray", linetype="dashed", size=0.3)+
+  #geom_line(aes(y = p_halfnorm), size = 0.5, color = "red", linetype="solid") +
+  #geom_line(aes(y = p_sigmoid), size = 0.5, color= "purple")+
+    #geom_line(aes(y = p_negexp), size = 0.8, color = "green", linetype="dotted") +
+  labs(x = "Effect size y", y = " ") +
+  scale_x_continuous(breaks = c(#-1.96*sigma,
+                                 0, sigma, 1.649*sigma, 1.96*sigma),
+                                labels = c(#expression(-1.96*sigma), 
+                                           
+                                           expression(0),
+                                           expression(sigma),
+                                           expression(1.64*sigma),
+                                           expression(1.96*sigma)))+
+  theme_classic() +
+  theme(
+    legend.position = "topright",
+    axis.title.x = element_text(size = 9),
+    axis.text=element_text(size=7, angle=90),
+    axis.title.y = element_text(size = 9)
+  )
+
+#main_plot1
+
+
+
+final_plot <- gridExtra::grid.arrange(
+  main_plot, main_plot1,
+  ncol = 2
+)
+
+invisible(final_plot)
+
+
+@
+\label{specialFig1}
+\end{figure}
+
+\subsubsection{Piece-wise continuous-constant}
+
+Taking inspiration from the above, we additionally propose the following selection function, similar to what was done in \citet{mythesis}. 
+
+\bigskip
+
+\begin{equation}
+w(p) = 
+\begin{cases}
+1 - \frac{p^{\gamma}}{0.05^{\gamma}} & \text{if } p \leq 0.05 \\
+0 & \text{if } p > 0.05
+\end{cases}
+\label{special2}
+\end{equation}
+
+
+\bigskip
+
+
+The rationale is flipped compared to \eqref{special1} in that we assume that non-significant study outcomes have an associated probability of reporting 0, while significant study outcomes have an associated probability of reporting which is a decreasing function of the p-value. In cases in which ORB is due to, e.g., prioritizing more impactful or clinically relevant findings in a published study \citep{ORBreasons, moreORBreasons}, even outcomes with smaller p-values could have an associated probability of reporting smaller than 1. In the simulation study, we use $\gamma=3$. With this parameter value, the probability of reporting is close to $1$ only for very small $p$-values, and substantially drops to low values even for $p$-value slightly below the $0.05$ one-sided threshold, e.g., the probability is $0.992, \; 0.875$ for $p$-values $= 0.01, \; 0.025$ respectively and $0.271$ for $p$-value $= 0.45$. This setting is also plausible in instances in which ORB was somewhat influenced by the two-sided threshold of significance, i.e., with probabilities of reporting decreasing substantially for one-sided $p$-values above $0.025$.
+
+
+\begin{figure}[hbt]
+\centering
+\caption{Piece-wise continuous-constant selection function \eqref{special2} used in \eqref{lik.ORB2} for ORB-adjustment. The selection function represents the probability of reporting (based on one-sided p-value, left, and corresponding treatment effect size, right) which is assumed to be associated with the unreported/missing study outcomes.}
+<<plot3, cache=TRUE, echo=FALSE, results='asis', fig.height=5, fig.width=11, message=FALSE, warning=FALSE>>=
+
+
+#par(mfrow=c(1,2))
+
+rho=3
+
+############################
+
+# Set the value of z_alpha and sigma
+z_alpha <- 1.96  # Change this value as needed
+sigma <- 0.1  # Change this value as needed
+
+# use in the thesis to simulate ORB
+thesisSIM <- function(y) {
+  
+  p = pnorm(-y/sigma)
+  #p = y
+  
+  #ifelse(pnorm(-y/sigma) >= 0.05,
+   #      exp(-7*pnorm(-y/sigma)),
+    #     1)
+
+ifelse(p <= 0.05, 
+         
+        #1 - exp(rho*((p - 0.05)/0.05)),
+       
+       1-(p^rho)/(0.05^rho),
+        
+        0
+         
+         )
+
+
+}
+
+
+
+
+
+# Create a sequence of y values
+y_values <- seq(0.1, 0.3, by = 0.0001)
+#y_values <- 1-pnorm(seq(-0.5, 0.5, by = 0.001)/sigma)
+
+# Create a data frame for plotting
+df <- data.frame(y = y_values)
+
+# Add the piece-wise, piecewise2, exponential, and sigmoid function values to the data frame
+df$p_thesis<- thesisSIM(y_values)
+
+
+main_plot <- ggplot(df, aes(x = pnorm(-y/sigma))) +
+#main_plot <- ggplot(df, aes(x = y)) +
+   #geom_line(aes(y = p_thesis_stronger), size = 0.1, color = "darkgreen") + # Added piecewise2
+    geom_line(aes(y = p_thesis), size = 0.4, color = "purple", linetype="solid") +
+  geom_vline(xintercept = 0.01, color="gray", linetype="dashed", size=0.3)+
+  geom_vline(xintercept = 0.025, color="gray", linetype="dashed", size=0.3)+
+  geom_vline(xintercept = 0.05, color="gray", linetype="dashed", size=0.3)+
+  geom_vline(xintercept = 0.1, color="gray", linetype="dashed", size=0.3)+
+  #geom_vline(xintercept = 0.2, color="black", linetype="dashed", size=0.1)+
+  #geom_vline(xintercept = 0.1, color="black", linetype="dashed", size=0.1)+
+  #geom_line(aes(y = p_halfnorm), size = 0.5, color = "red", linetype="solid") +
+  #geom_line(aes(y = p_sigmoid), size = 0.5, color= "purple")+
+    #geom_line(aes(y = p_negexp), size = 0.8, color = "green", linetype="dotted") +
+  labs(x = "One-sided p-value", y = "Probability of reporting") +
+  scale_x_continuous(breaks = c(0.01, 0.025, 0.05, 0.1),
+                      labels = c("0.01", "0.025", "0.05", "0.1")) +
+  theme_classic() +
+  theme(
+    legend.position = "topright",
+        axis.title.x = element_text(size = 9),
+    axis.text=element_text(size=7, angle=90),
+    axis.title.y = element_text(size = 9)
+  )
+
+
+
+
+
+
+library(ggplot2)
+library(latex2exp)
+
+# Set the value of z_alpha and sigma
+z_alpha <- 1.96  # Change this value as needed
+sigma <- 0.1  # Change this value as needed
+
+
+thesisSIM <- function(y) {
+  
+  p = pnorm(-y/sigma)
+  #p = y
+  
+  #ifelse(pnorm(-y/sigma) >= 0.05,
+   #      exp(-7*pnorm(-y/sigma)),
+    #     1)
+
+ifelse(p <= 0.05, 
+         
+        #1 - exp(rho*((p - 0.05)/0.05)),
+       
+       1-(p^rho)/(0.05^rho),
+        
+        0
+         
+         )
+
+
+}
+
+
+
+
+# Create a sequence of y values
+y_values <- seq(0, 0.25, by = 0.001)
+#y_values <- 1-pnorm(seq(-0.5, 0.5, by = 0.001)/sigma)
+
+# Create a data frame for plotting
+df <- data.frame(y = y_values)
+
+# Add the piece-wise, piecewise2, exponential, and sigmoid function values to the data frame
+df$p_thesis <- thesisSIM(y_values)
+#df$p_thesis_stronger <- thesisSIM_stronger(y_values)
+
+
+#main_plot <- ggplot(df, aes(x = 1-pnorm(y/sigma))) +
+main_plot1 <- ggplot(df, aes(x = y)) +
+  #geom_line(aes(y = p_thesis_stronger), size = 0.1, color = "darkgreen") + # Added piecewise2
+  geom_line(aes(y = p_thesis), size = 0.4, color = "purple", linetype="solid") +
+  #geom_vline(xintercept = -1.96*sigma, color="black", linetype="dashed", size=0.1)+
+    #geom_vline(xintercept = -sigma, color="black", linetype="dashed", size=0.1)+
+  geom_vline(xintercept = sigma, color="gray", linetype="dashed", size=0.3)+
+    geom_vline(xintercept = 0, color="gray", linetype="dashed", size=0.3)+
+    geom_vline(xintercept = 1.64*sigma, color="gray", linetype="dashed", size=0.3)+
+    geom_vline(xintercept = 1.96*sigma, color="gray", linetype="dashed", size=0.3)+
+  #geom_line(aes(y = p_halfnorm), size = 0.5, color = "red", linetype="solid") +
+  #geom_line(aes(y = p_sigmoid), size = 0.5, color= "purple")+
+    #geom_line(aes(y = p_negexp), size = 0.8, color = "green", linetype="dotted") +
+  labs(x = "Effect size y", y = " ") +
+  scale_x_continuous(breaks = c( 0, sigma, 1.64*sigma, 1.96*sigma),
+                                labels = c( 
+                                         
+                                           expression(0),
+                                           expression(sigma),
+                                           expression(1.64*sigma),
+                                           expression(1.96*sigma)))+
+  theme_classic() +
+  theme(
+    legend.position = "topright",
+    axis.title.x = element_text(size = 9),
+    axis.text=element_text(size=7, angle=90),
+    axis.title.y = element_text(size = 9)
+  )
+
+
+
+
+final_plot <- gridExtra::grid.arrange(
+  main_plot, main_plot1,
+  ncol = 2
+)
+
+invisible(final_plot)
+
+
+@
+\label{specialFig2}
+\end{figure}
+
+\subsubsection{Piece-wise continuous-continuous}
+
+Lastly, we use the following selection function \eqref{general}, which combines \eqref{special1} and \eqref{special2} in a flexible way, further allowing to determine the assumed probability of reporting at the threshold for significance, i.e, $w_{0.05}$. Of note, setting $w_{0.05}=1$ in \eqref{general} results in \eqref{special1}, while setting $w_{0.05}=0$ results in \eqref{special2}. In the simulation, when using \eqref{general}, we use $w_{0.05}=0.5$, as the in-between value of the two extreme settings of\eqref{special1} and \eqref{special2}. Furthermore, in \eqref{general} we set $\gamma=7$, and $\beta=1.5$. This parameter choice corresponds to a setting in which we assume higher probabilities of reporting for $p$-values below $0.05$, compared to the setting of \eqref{special2}, and lower probabilities of reporting for $p$-values above $0.05$, compared to the setting of \eqref{special1}. For example, the probability of reporting is $0.996, \;, 0.760$ for $p$-values $0.025, \; 0.045$ respectively, and $0.433, \;, 0.177$ for $p$-values $0.55, \; 0.1$.
+
+%\begin{equation}
+%\label{my.sel.2}
+%w(p) = \begin{cases} 1 & \text{if }p \leq 0.05 \\
+%e^{-\gamma \cdot (p)} & \text{otherwise} \end{cases}
+%\end{equation}
+
+\bigskip
+
+\begin{equation}
+w(p) = 
+\begin{cases}
+1 - (1-w_{0.05})\left(\frac{p^{\gamma}}{0.05^{\gamma}}\right) & \text{if } p \leq 0.05 \\
+w_{0.05}\left(\frac{p^{-\beta}}{0.05^{-\beta}}\right) & \text{if } p > 0.05
+\end{cases}
+\label{general}
+\end{equation}
+
+\bigskip
+
+
+\begin{figure}[hbt]
+\centering
+\caption{Piece-wise continuous-continuous selection function \eqref{general} used in \eqref{lik.ORB2} for ORB-adjustment. The selection function represents the probability of reporting (based on one-sided p-value, left, and corresponding treatment effect size, right) which is assumed to be associated with the unreported/missing study outcomes.}
+<<plot5, cache=TRUE, echo=FALSE, results='asis', fig.height=5, fig.width=11, message=FALSE, warning=FALSE>>=
+
+#par(mfrow=c(1,2))
+
+#k <- 100
+#a <- 0.05
+
+rho1 <- 7
+rho2 <- 1.5
+
+library(ggplot2)
+############################
+
+# Set the value of z_alpha and sigma
+z_alpha <- 1.96  # Change this value as needed
+sigma <- 0.1  # Change this value as needed
+
+# use in the thesis to simulate ORB
+sigm <- function(y) {
+  
+  p <- pnorm(-y/sigma)
+  
+  #1-(1 / (1 + exp(-k * (p - a))))
+  #(p^rho)/(0.05^rho)
+  
+  ifelse(p <= 0.05, 
+        1 - (1-0.5)*(p^(rho1))/(0.05^(rho1)),  # Function before p = 0.05
+        0.5*(p^(-rho2))/(0.05^(-rho2)))
+  
+  
+}
+
+sigm2 <- function(y) {
+  
+  p <- pnorm(-y/sigma)
+  
+  #1-(1 / (1 + exp(-k * (p - a))))
+  #(p^rho)/(0.05^rho)
+  
+  ifelse(p <= 0.05, 
+        1 - (1-0.5)*(p^(1.5))/(0.05^(1.5)),  # Function before p = 0.05
+        0.5*(p^(-7))/(0.05^(-7)))
+  
+  
+}
+
+
+# Create a sequence of y values
+y_values <- seq(0.1, 0.8, by = 0.001)
+#y_values <- 1-pnorm(seq(-0.5, 0.5, by = 0.001)/sigma)
+
+# Create a data frame for plotting
+df <- data.frame(y = y_values)
+
+# Add the piece-wise, piecewise2, exponential, and sigmoid function values to the data frame
+df$p_sigm <- sigm(y_values)
+df$p_sigm2 <- sigm2(y_values)
+
+
+main_plot <- ggplot(df, aes(x = 1-pnorm(y/sigma))) +
+#main_plot <- ggplot(df, aes(x = y)) +
+   #geom_line(aes(y = p_thesis_stronger), size = 0.1, color = "darkgreen") + # Added piecewise2
+    geom_line(aes(y = p_sigm), size = 0.4, color = "purple", linetype="solid") +
+  geom_line(aes(y = p_sigm2), size = 0.4, color = "darkgreen", linetype="solid") +
+  geom_vline(xintercept = 0.01, color="gray", linetype="dashed", size=0.3)+
+  geom_vline(xintercept = 0.025, color="gray", linetype="dashed", size=0.3)+
+  geom_vline(xintercept = 0.05, color="black", linetype="dashed", size=0.3)+
+  geom_vline(xintercept = 0.1, color="gray", linetype="dashed", size=0.3)+
+  #geom_vline(xintercept = 0.2, color="gray", linetype="dashed", size=0.3)+
+  #geom_vline(xintercept = 0.1, color="black", linetype="dashed", size=0.1)+
+  #geom_line(aes(y = p_halfnorm), size = 0.5, color = "red", linetype="solid") +
+  #geom_line(aes(y = p_sigmoid), size = 0.5, color= "purple")+
+    #geom_line(aes(y = p_negexp), size = 0.8, color = "green", linetype="dotted") +
+  labs(x = "One-sided p-value", y = "Probability of reporting") +
+  scale_x_continuous(breaks = c(0.01, 0.025, 0.05,0.1),
+                      labels = c("0.01", "0.025", "0.05", "0.1")) +
+  theme_classic() +
+  theme(
+    legend.position = "topright",
+        axis.title.x = element_text(size = 9),
+    axis.text=element_text(size=7, angle=90),
+    axis.title.y = element_text(size = 9)
+  )
+
+
+
+
+
+
+library(ggplot2)
+library(latex2exp)
+
+# Set the value of z_alpha and sigma
+z_alpha <- 1.96  # Change this value as needed
+sigma <- 0.1  # Change this value as needed
+
+sigm <- function(y) {
+  
+  p <- pnorm(-y/sigma)
+  
+  #1-(1 / (1 + exp(-k * (p - a))))
+  #(p^rho)/(0.05^rho)
+  
+  ifelse(p <= 0.05, 
+        1 - (1-0.5)*(p^(rho1))/(0.05^(rho1)),  # Function before p = 0.05
+        0.5*(p^(-rho2))/(0.05^(-rho2)))
+  
+  
+}
+
+sigm2 <- function(y) {
+  
+  p <- pnorm(-y/sigma)
+  
+  #1-(1 / (1 + exp(-k * (p - a))))
+  #(p^rho)/(0.05^rho)
+  
+  ifelse(p <= 0.05, 
+        1 - (1-0.5)*(p^(1.5))/(0.05^(1.5)),  # Function before p = 0.05
+        0.5*(p^(-7))/(0.05^(-7)))
+  
+  
+}
+
+# Create a sequence of y values
+y_values <- seq(0, 0.22, by = 0.001)
+#y_values <- 1-pnorm(seq(-0.5, 0.5, by = 0.001)/sigma)
+
+# Create a data frame for plotting
+df <- data.frame(y = y_values)
+
+# Add the piece-wise, piecewise2, exponential, and sigmoid function values to the data frame
+df$p_sigm<- sigm(y_values)
+df$p_sigm2 <- sigm2(y_values)
+
+
+
+#main_plot <- ggplot(df, aes(x = 1-pnorm(y/sigma))) +
+main_plot1 <- ggplot(df, aes(x = y)) +
+  #geom_line(aes(y = p_thesis_stronger), size = 0.1, color = "darkgreen") + # Added piecewise2
+  geom_line(aes(y = p_sigm), size = 0.4, color = "purple", linetype="solid") +
+  geom_line(aes(y = p_sigm2), size = 0.4, color = "darkgreen", linetype="solid") +
+  
+  #geom_vline(xintercept = -1.96*sigma, color="black", linetype="dashed", size=0.1)+
+   # geom_vline(xintercept = -sigma, color="black", linetype="dashed", size=0.1)+
+  geom_vline(xintercept = sigma, color="gray", linetype="dashed", size=0.3)+
+    geom_vline(xintercept = 0, color="gray", linetype="dashed", size=0.3)+
+    geom_vline(xintercept = 1.64*sigma, color="black", linetype="dashed", size=0.3)+
+    geom_vline(xintercept = 1.96*sigma, color="gray", linetype="dashed", size=0.3)+
+  #geom_line(aes(y = p_halfnorm), size = 0.5, color = "red", linetype="solid") +
+  #geom_line(aes(y = p_sigmoid), size = 0.5, color= "purple")+
+    #geom_line(aes(y = p_negexp), size = 0.8, color = "green", linetype="dotted") +
+  labs(x = "Effect size y", y = " ") +
+  scale_x_continuous(breaks = c( 0, sigma, 1.64*sigma, 1.96*sigma),
+                                labels = c(
+                                           expression(0),
+                                           expression(sigma),
+                                           expression(1.64*sigma),
+                                           expression(1.96*sigma)))+
+  theme_classic() +
+  theme(
+    legend.position = "topright",
+    axis.title.x = element_text(size = 9),
+    axis.text=element_text(size=7, angle=90),
+    axis.title.y = element_text(size = 9)
+  )
+
+
+legend_plot <- ggplot() +
+  geom_line(aes(x = 1:2, y = 1, color = "Gamma = 7, Beta = 1.5"), size = 0.4) +
+  geom_line(aes(x = 1:2, y = 2, color = "Gamma = 1.5, Beta = 7"), size = 0.4, linetype = "solid") +
+  scale_color_manual(values = c("purple", "darkgreen"),
+                     labels = c(expression(paste(gamma, " = 7, ", beta, " = 1.5")), 
+                                expression(paste(gamma, " = 1.5, ", beta, " = 7"))))+
+  labs(x = NULL, y = NULL) +
+  theme_minimal()+
+  theme(
+    legend.position = "top",
+    legend.direction = "horizontal",
+    legend.title = element_blank(),
+    legend.key.size = unit(2, "cm"),
+    legend.margin = margin(0, 0, 0, 0),
+    legend.spacing.x = unit(0.2, "cm"),
+    legend.text = element_text(size = 7)
+  )
+
+
+#final_plot <- gridExtra::grid.arrange(
+ # main_plot, main_plot1,
+#  ncol = 2
+#)
+
+#invisible(final_plot)
+
+final_plot <- gridExtra::grid.arrange(
+  gridExtra::arrangeGrob(main_plot, main_plot1, ncol = 2),
+  legend_plot,
+  ncol = 1,
+  heights = c(2, 0.1)
+)
+
+invisible(final_plot)
+
+
+
+
+
+@
+\label{p75}
+\end{figure}
+
+
+
+%\subsubsection{Piece-wise exponential (strong)}
+
+%\subsubsection{Continuous (sigmoid)}
+
+
+%\subsubsection{Continuous (as simulated)}
+
+%\subsubsection{Assumptions Rationale}
+
+
+\section{Performance measures}
+
+
+The primary focus of the simulation study is estimation. We are thus interested in repeating the simulation process several times and comparing various performance measures between the naive and ORB-adjusted estimates.
+
+\bigskip
+
+We repeat the above-described simulation process and analyses $\text{N}_{\text{sim}}$ times, for each parameter setting (i.e., varying study size $K$, heterogeneity variance $\tau^2$, and global true treatment effect $\mu$). The number of simulations needed is calculated in the next section, \ref{simsize}. 
+
+\bigskip
+
+We record the performance measures for the parameter of interest $\theta$, i.e., $\theta=\mu$ or $\theta=\tau^2$. Of note, our primary parameter of interest is the treatment effect $\mu$, while the heterogeneity variance $\tau^2$ is our secondary parameter of interest, for which we will use the same performance measures as those for $\mu$. Table \ref{tab:performance_measures} includes the definitions, estimation methods, and Monte Carlo SE (MCSE) for each performance measure. The formulas for the MCSE for each of the performance measures are taken from \citet{sim} and will be reported via graphs, adding an error band of $\pm 1.96 \cdot \text{MCSE}$. 
+
+\bigskip
+
+\begin{table}[htbp]
+    \centering
+    \caption{Performance measures: deinfition, estimate, and Monte Carlo standard errors (MCSE)}
+    \label{tab:performance_measures}
+    \renewcommand{\arraystretch}{2.5} % Adjust vertical padding
+    \begin{tabular}{|p{4cm}|p{5.5cm}|p{5.5cm}|} % Adjust column width
+    %\begin{tabularx}{\textwidth}{|X|X|X|}
+    \hline
+    \textbf{Performance Measure} & \textbf{Estimate} & \textbf{MCSE} \\ \hline
+    Bias                          & $\frac{1}{N_{\text{sim}}} \sum_{j=1}^{N_{\text{sim}}} (\hat{\theta}_j - \theta)$ & $\sqrt{\frac{1}{N_{\text{sim}}(N_{\text{sim}}-1)} \sum_{j=1}^{N_{\text{sim}}} (\hat{\theta}_j - \bar{\theta})^2}$ \\ \hline
+    Empirical SE                  & $\sqrt{\frac{1}{N_{\text{sim}}-1} \sum_{j=1}^{N_{\text{sim}}} (\hat{\theta}_j - \bar{\theta})^2}$ & $\frac{\widehat{\text{SE}}}{\sqrt{2(N_{\text{sim}}-1)}}$ \\ \hline
+    MSE                           & $\frac{1}{N_{\text{sim}}} \sum_{j=1}^{N_{\text{sim}}} (\hat{\theta}_j - \theta)^2$ & $\sqrt{\frac{\sum_{j=1}^{N_{\text{sim}}} [(\hat{\theta}_j - \theta)^2 - \widehat{\text{MSE}}]}{N_{\text{sim}}(N_{\text{sim}} - 1)}}$ \\ \hline
+    Coverage                      & $\frac{1}{N_{\text{sim}}} \sum_{j=1}^{N_{\text{sim}}} (\hat{\theta}_{\text{low},j} \le \theta \le  \hat{\theta}_{\text{up},j})$ & $\sqrt{\frac{\widehat{\text{Cov}}(1-\widehat{\text{Cov}})}{N_{\text{sim}}}}$ \\ \hline
+    Power                         & $\frac{1}{N_{\text{sim}}} \sum_{j=1}^{N_{\text{sim}}} 1 (p_i \le 0.05)$ & $\sqrt{\frac{\widehat{\text{Power}}(1-\widehat{\text{Power}})}{N_{\text{sim}}}}$ \\ \hline
+    \end{tabular}
+\end{table}
+
+
+
+\subsection{Simulation Size} \label{simsize}
+
+
+Given that our primary estimand is treatment effect $\mu$, our key performance measure if bias. We thus establish the number of simulations needed based on that and on the MCSE required, e.g., 0.005 from \citet{IntHout2014, sim}.
+
+\bigskip
+
+\begin{align}
+\label{simN}
+\text{N}_{\text{sim}} = \frac{\text{Var}(\hat{\mu})}{(\text{MCSE Required})^2}
+\end{align}
+
+\bigskip
+
+From the above formula, we need to establish, in expectation, the $\text{Var}(\hat{\mu})$. Using the \citet{DerSimonian} estimate of the variance in the random effects model \citep{IntHout2014}, we have:
+
+\bigskip
+
+\begin{align}
+\text{Var}(\hat{\mu}) = \frac{1}{\sum_i^{K} w_i} && \text{where} && w_i =  \frac{1}{\sigma_i^2 + \tau^2} \approx \frac{1}{\text{E}(\sigma_i^2) + \tau^2}
+\end{align}
+
+\bigskip
+
+Using $\text{E}(\sigma_i^2) = \sigma^2 = 2/ n_i$ and noting that $n_i = n$ is constant, this corresponds to 
+
+\bigskip
+
+\begin{align}
+\text{Var}(\hat{\mu}) \approx \frac{1}{\sum_{i}^{K} \frac{1}{\frac{2}{n_i} + \tau^2}} = \frac{1}{K \cdot \left( \frac{1}{\frac{2}{n} + \tau^2} \right)}= \frac{\frac{2}{n} + \tau^2}{K}
+\end{align}
+
+
+\bigskip
+
+For the different parameter settings, i.e., varying study sizes $K \in 5, 15, 30$ and varying heterogeneity levels $\tau^2 \in 0.01, 0.04, 0.36$ we expect the following values of the standard errors, i.e., $\sqrt{\text{Var}(\hat{\mu})}$:
+
+\begin{table}[htbp]
+    \centering
+    \caption{Expected standard errors of $\hat{\mu}$ for varying $K$ and $\tau^2$}
+    \label{tab:meta_analysis}
+    \renewcommand{\arraystretch}{1.7}
+    \begin{tabular}{|p{1.5cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|}
+    \cline{2-4}
+    %\multicolumn{3}{c}{K values}\\
+    \multicolumn{1}{c|}{} & $K$ = 5 & $K$ = 15 & $K$ = 30 \\ \hline
+    $\tau^2$ = 0.01 & 0.1 & 0.06 & 0.04 \\ \hline
+    $\tau^2$ = 0.04 & 0.13 & 0.07 & 0.05 \\ \hline
+    $\tau^2$ = 0.36 & 0.28 & 0.16 & 0.11 \\ \hline
+    \end{tabular}
+\end{table}
+
+
+We utilize the smallest meta-analysis study size, i.e., $K=5$, and the largest heterogeneity value, i.e., $\tau^2=0.36$, as a worst-case scenario for the estimation of $\text{Var}(\hat{\mu})$. From this value and \eqref{simN} we determine the number of simulations required as:
+
+\bigskip
+
+\begin{align}
+\text{N}_{\text{sim}} = \frac{\text{Var}(\hat{\mu})}{(\text{MCSE Required})^2} = \frac{\frac{\frac{2}{50} + 0.36}{5}}{.005^2} = 3200
+\end{align}
+
+\bigskip
+
+We thus perform, for each parameter combination, $\text{N}_{\text{sim}}= 3200$ simulations.
+
+
+\section{Reproducibility and Error Handling}
+
+The above-described simulation process will be implemented in the software $\texttt{R}$, version $4.2.0$, and will be made available in the GitHub repository \href{https://github.com/agaiasaracini/ORBproject}{agaiasaracini/ORBproject}. The repository contains both the $\texttt{R}$ scripts of the simulations, as well as the $\texttt{Rnw}$ files used to obtain the pdf of the reports, including this protocol. The simulations are executed in using the Euler cluster for High Performance Computing (HPC) of ETH Zurich and/or additional computing services of the University of Zurich (UZH). To guarantee reproducibility, the random seed of the simulation will be fixed to $\texttt{seed = 123}$ and the $\texttt{R}$ package $\texttt{doRNG}$, version $1.8.6$, will be used to perform reproducible parallel foreach loops. A $\texttt{sessionInfo()}$ output with more information on $\texttt{R}$ environment and code to reproduce the simulation study will be made available in the GitHub repository.
+
+\bigskip
+
+The functions and $\texttt{R}$ scripts of the simulations process make use of the $\texttt{TryCatch()}$ functionality so as to stop the simulation in case of an error, and record the results up until that point. In case of convergence issues for the PL CI of the parameters of interest presented in the Methods Section \ref{methods}, the bounds of the CI will be denoted as $\texttt{NA}$ and excluded from the simulation results, i.e., they will not be replaced with new simulations. The number of valid PL CI per parameter combination will be recorded. Furthermore, as noted in Section \ref{orbdgm} on ORB DGM, as at least $2$ reported study outcomes are deemed necessary to conduct a meta-analysis and in particular to estimate the heterogeneity, simulated meta-analysis datasets with less than 2 reported outcomes will be excluded and the simulation will be repeated until a dataset with at least 2 reported outcomes is obtained. The number of trials needed to obtain this will be recorded per parameter combination. We do not expect severe issues in simulation process; however, in case of major problems and failures, the parameters of the simulation may be adjusted post hoc. This would be indicated in the discussion.
+
+
+\bibliographystyle{plainnat} % Choose natbib-compatible bibliography style
+\bibliography{biblio} % Replace 'biblio' with your actual BibTeX file name
+
+
+\end{document}
