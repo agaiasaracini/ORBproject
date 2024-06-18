@@ -1,0 +1,1108 @@
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{tocloft}
+%\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}} % Add dots between section titles and page numbers
+%\renewcommand{\contentsname}{Table of Contents} % Change the title of the table of contents
+\usepackage{tabularx}
+\usepackage{booktabs}
+%\usepackage{hyperref}
+\usepackage[numbers]{natbib}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\bibliographystyle{chicago}
+%\usepackage{hyperref}
+%\usepackage[numbers]{natbib}
+
+
+<<setup, include=FALSE, cache=FALSE, echo=FALSE>>=
+opts_chunk$set(fig.path='figures/plots-', fig.align='center', fig.show='hold', eval=TRUE, echo=TRUE)
+options(replace.assign=TRUE,width=80)
+Sys.setenv(TEXINPUTS=getwd(),
+           BIBINPUTS=getwd(),
+           BSTINPUTS=getwd())
+
+@
+
+\title{Overview of Selection Functions Used in Selection Models for Publication Bias (PB) Adjustment}
+\author{Alessandra Saracini and Leonhard Held, Prof. Dr.}
+
+
+\begin{document}
+\maketitle
+
+Selection models are commonly used to address publication bias (PB) in meta-analysis. These models incorporate a selection function, i.e., the probability of a study being published, into the weighted likelihood for estimation of the treatment effect. By doing so, the missing data mechanism assumed is directly modeled and incorporated into the PB-adjustment. While PB focuses on the likelihood of publishing studies, outcome reporting bias (ORB) concerns itself with the likelihood of reporting outcomes within published studies.  We extend the PB selection model framework to address ORB. Of note, while the selection function for PB adjustment is used in the conditional likelihood for published studies, for ORB, it contributes to the likelihood of missing/unreported study outcomes. Despite the differences in how the selection function influences the likelihood between PB and ORB, the underlying missing data mechanisms can be used for both PB and ORB. In the subsequent sections, we outline some commonly employed selection functions in PB, which can potentially be adapted for the selection model framework in ORB analyses.
+
+\bigskip
+
+Please note the notation used in the following sections. The threshold $z_{\alpha}\sigma$ consistently refers to the $95 \%$ threshold for significance, i.e., $1.96 \sigma$. The selection function representing the probability of publishing a study with a treatment effect $y$ is denoted as $w(y)$ or $w(p)$ if expressed in terms of the p-value $p$.
+
+\section{Dichotomous Selection Function}
+
+A straightforward selection function found in the literature is the dichotomous function, wherein the probability of publication is 1 for significant studies, and 0 otherwise \citet{reviewselection, selection0}. The selection function can be defined based on the p-value. In the case of a two-sided p-value, it is equivalent to expressing the function in terms of the treatment effect size $y$, where $-z_{\alpha}\sigma$ and $+z_{\alpha}\sigma$ represent the thresholds for negative and positive significance respectively. Alternatively, it can be established based on the one-sided p-value, focusing solely on one direction of significance in the corresponding treatment effect size formulation, e.g., $+z_{\alpha}\sigma$.
+
+\bigskip
+
+\begin{equation}
+\begin{aligned}
+\label{sel0}
+w(y)= \begin{cases} 0 & \text{if } |y| \leq z_{\alpha}\sigma  \\
+1 & \text{otherwise} \end{cases}
+\end{aligned}
+\end{equation}
+
+\bigskip
+
+\begin{figure}[!hbt]
+\centering
+\caption{Dichotomous Selection Funciton for the Probability of Publishing. Corresponds to Equation \eqref{sel0}}
+%\begin{subfigure}{0.2\textwidth}
+<<plot0try, cache=TRUE, echo=FALSE, results='asis', fig.height=2, fig.width=3, message=FALSE, warning=FALSE>>=
+
+par(mfrow=c(1,2))
+
+library(ggplot2)
+library(latex2exp)
+
+# Set the value of z_alpha and sigma
+pval <- 0.05
+
+# Define the piece-wise function
+psign <- function(p) {
+  ifelse(p <= pval, 1, 0)
+}
+
+
+
+# Create a sequence of y values
+p_values <- seq(0, 1, by = 0.001)
+
+# Create a data frame for plotting
+df <- data.frame(pp = p_values)
+
+# Add the piece-wise, piecewise2, exponential, and sigmoid function values to the data frame
+df$p_values <- psign(p_values)
+
+
+main_plot <- ggplot(df, aes(x = pp)) +
+  geom_line(aes(y = p_values), size = 0.5, color = "purple") + # Added piecewise2
+  #geom_line(aes(y = p_piecewise), size = 0.5, color = "green") +
+  #geom_line(aes(y = p_exponential), size = 0.5, color = "red") +
+  #geom_line(aes(y = p_sigmoid), size = 0.5, color= "purple")+
+  labs(x = "Two-sided p-value p", y = expression(w(p))) +
+  scale_x_continuous(breaks = c(0.05,1),
+                      labels = c("0.05", "1")) +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    axis.title.x = element_text(size = 7),
+    axis.title.y = element_text(size = 7)
+  )
+
+main_plot
+
+
+################################################################################
+
+
+library(ggplot2)
+library(latex2exp)
+
+# Set the value of z_alpha and sigma
+z_alpha <- 1.96  # Change this value as needed
+sigma <- 0.1  # Change this value as needed
+
+# Define the piece-wise function
+piecewise <- function(y) {
+  ifelse(y <= z_alpha * sigma, 1, 0)
+}
+
+# Define the exponential function
+exponential <- function(y, rho) {
+  ifelse(y > z_alpha * sigma, exp(-rho * (y - z_alpha * sigma)), 1)
+}
+
+# Define the sigmoid function
+sigmoid <- function(y, lambda) {
+  1 / (1 + exp(lambda * (y - z_alpha * sigma)))
+}
+
+# Define the piecewise2 function
+piecewise2 <- function(y) {
+  ifelse(y <= -z_alpha * sigma | y > z_alpha * sigma, 1, 0)
+}
+
+# Create a sequence of y values
+y_values <- seq(-0.5, 0.8, by = 0.001)
+
+# Create a data frame for plotting
+df <- data.frame(y = y_values)
+
+# Add the piece-wise, piecewise2, exponential, and sigmoid function values to the data frame
+df$p_piecewise <- piecewise(y_values)
+df$p_piecewise2 <- piecewise2(y_values)
+df$p_exponential <- exponential(y_values, rho = 7)  # Set rho as needed
+df$p_sigmoid <- sigmoid(y_values, lambda=7)
+
+main_plot <- ggplot(df, aes(x = y)) +
+  geom_line(aes(y = p_piecewise2), size = 0.5, color = "purple") + # Added piecewise2
+  #geom_line(aes(y = p_piecewise), size = 0.5, color = "green") +
+  #geom_line(aes(y = p_exponential), size = 0.5, color = "red") +
+  #geom_line(aes(y = p_sigmoid), size = 0.5, color= "purple")+
+  labs(x = "Effect size y", y = expression(w(y))) +
+  scale_x_continuous(breaks = c(-z_alpha * sigma, z_alpha*sigma),
+                                labels = c(expression(-z[alpha] * sigma), expression(z[alpha] * sigma))) +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    axis.title.x = element_text(size = 7),
+    axis.title.y = element_text(size = 7)
+  )
+
+main_plot
+
+
+
+
+
+@
+\end{figure}
+
+The selection function, particularly the one based on the two-sided threshold, is implicitly utilized by \citet{Copas2019} in ORB. It is assumed to represent the selection mechanism for the probability of reporting treatment effects for those missing study treatment effects classified as high risk of bias (HR) according to the ORBIT methodology. The authors hence assume that missing treatment effects classified as HR are absent because they were found to be non-significant.
+
+\section{Flexible Dichotomous Selection Function}
+
+More sophisticated and flexible versions of the simple dichotomized function are proposed by \citet{selection0}. These include, for example, a constant (but not necessarily zero) probability of publishing for non-significant studies (Equation \eqref{green}). Again, this can be conceptualized in terms of both the p-value and the treatment effect size. One could assume that the probability of publishing is 1 for significant studies, but for non-significant studies, it is a decreasing function of the p-value, or an increasing function as we approach the thresholds for significance on the effect size scale (Equation \eqref{red} from \citet{selection0}). In Figure \ref{sel1}, we utilize parameters $\gamma=2$ and $\beta=3$.
+
+
+\bigskip
+
+\begin{equation}
+w(y) = \begin{cases}
+e^{-\gamma} & \text{if } |y| \leq z_{\alpha}\sigma \\
+1 & \text{otherwise}
+\end{cases}
+\label{green}
+\end{equation}
+
+\begin{equation}
+w(y) = \begin{cases}
+\frac{|y|^{\beta}}{(z_\alpha \sigma)^{\beta}} & \text{if } |y| \leq z_{\alpha}\sigma \\
+1 & \text{otherwise}
+\end{cases}
+\label{red}
+\end{equation}
+
+\bigskip
+
+In cases where statistical significance is of interest only in one direction, or if symmetric p-value thresholding is not desired \citep{reviewselection}, it is possible to implement an asymmetric constant probability of publishing for different signs/directions of significance, as illustrated by Equation \ref{viola} from \citet{selection0, reviewselection} and plotted in the purple line in Figure \ref{sel1}, where the parameters used are $\delta=0.2$ and $\epsilon=1.5$.
+
+\bigskip
+
+\begin{equation}
+w(y) = \begin{cases}
+1 & \text{if } y > z_{\alpha}\sigma \\
+e^{-\delta} & \text{if } |y| \leq z_{\alpha}\sigma\\
+e^{-\epsilon} & \text{if } y < - z_{\alpha}\sigma
+\end{cases}
+\label{viola}
+\end{equation}
+
+
+
+\begin{figure}[!hbt]
+\centering
+\caption{Flexible Dichotomous Selection for the Probability of Publishing. Green: Equation \eqref{green}, Red: Equation \eqref{red}, Purple: Equation \eqref{viola}.}
+<<plot1, cache=TRUE, echo=FALSE, results='asis', fig.height=2, fig.width=3, message=FALSE, warning=FALSE>>=
+
+par(mfrow=c(1,2))
+
+
+##############################
+
+# Set the value of z_alpha and sigma
+z_alpha <- 1.96  # Change this value as needed
+sigma <- 0.1  # Change this value as needed
+
+# Define the exponential function
+exponential <- function(y) {
+  ifelse(y > z_alpha * sigma | y < -z_alpha * sigma, 
+         1,
+         (abs(y)^(3))/((z_alpha * sigma)^(3))
+         )
+}
+
+constantpiece <- function(y) {
+  ifelse(y > z_alpha * sigma | y < -z_alpha * sigma, 
+         1,
+         exp(-2))
+}
+
+
+asym <- function(y) {
+  ifelse(y > z_alpha * sigma,
+         1,
+         ifelse(y < -z_alpha * sigma, 
+                exp(-0.2),
+                exp(-1.5)))
+}
+
+
+# Create a sequence of y values
+y_values <- seq(-0.5, 0.8, by = 0.001)
+
+# Create a data frame for plotting
+df <- data.frame(y = y_values)
+
+# Add the piece-wise, piecewise2, exponential, and sigmoid function values to the data frame
+df$p_piecewise <- constantpiece(y_values)
+df$p_exponential <- exponential(y_values)  # Set rho as needed
+df$p_asym <- asym(y_values)
+
+main_plot <- ggplot(df, aes(x = 2*pnorm(-abs(y/sigma)))) +
+  #geom_line(aes(y = p_piecewise2), size = 0.5, color = "darkgreen") + # Added piecewise2
+    #geom_line(aes(y = p_asym), size = 0.5, color = "purple", linetype="dashed") +
+  geom_line(aes(y = p_exponential), size = 0.5, color = "red", linetype="solid") +
+  #geom_line(aes(y = p_sigmoid), size = 0.5, color= "purple")+
+    geom_line(aes(y = p_piecewise), size = 0.8, color = "green", linetype="dotted") +
+  labs(x = "Two-sided p-value p", y = expression(w(p))) +
+  scale_x_continuous(breaks = c(0.05,1),
+                      labels = c("0.05", "1")) +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+        axis.title.x = element_text(size = 7),
+    axis.title.y = element_text(size = 7)
+  )
+
+main_plot
+
+
+library(ggplot2)
+library(latex2exp)
+
+# Set the value of z_alpha and sigma
+z_alpha <- 1.96  # Change this value as needed
+sigma <- 0.1  # Change this value as needed
+
+# Define the exponential function
+exponential <- function(y) {
+  ifelse(y > z_alpha * sigma | y < -z_alpha * sigma, 
+         1,
+         (abs(y)^(3.33))/((z_alpha * sigma)^(3.33))
+         )
+}
+
+constantpiece <- function(y) {
+  ifelse(y > z_alpha * sigma | y < -z_alpha * sigma, 
+         1,
+         exp(-2.53))
+}
+
+
+asym <- function(y) {
+  ifelse(y > z_alpha * sigma,
+         1,
+         ifelse(y < -z_alpha * sigma, 
+                exp(-0.2),
+                exp(-1.53)))
+}
+
+
+# Create a sequence of y values
+y_values <- seq(-0.5, 0.8, by = 0.001)
+
+# Create a data frame for plotting
+df <- data.frame(y = y_values)
+
+# Add the piece-wise, piecewise2, exponential, and sigmoid function values to the data frame
+df$p_piecewise <- constantpiece(y_values)
+df$p_exponential <- exponential(y_values)  # Set rho as needed
+df$p_asym <- asym(y_values)
+
+main_plot <- ggplot(df, aes(x = y)) +
+  #geom_line(aes(y = p_piecewise2), size = 0.5, color = "darkgreen") + # Added piecewise2
+    geom_line(aes(y = p_asym), size = 0.5, color = "purple", linetype="dashed") +
+  geom_line(aes(y = p_exponential), size = 0.5, color = "red", linetype="solid") +
+  #geom_line(aes(y = p_sigmoid), size = 0.5, color= "purple")+
+    geom_line(aes(y = p_piecewise), size = 0.8, color = "green", linetype="dotted") +
+  labs(x = "Effect size y", y = expression(w(y))) +
+  scale_x_continuous(breaks = c(-z_alpha * sigma, z_alpha*sigma),
+                                labels = c(expression(-z[alpha] * sigma), expression(z[alpha] * sigma))) +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+        axis.title.x = element_text(size = 7),
+    axis.title.y = element_text(size = 7)
+  )
+
+main_plot
+
+
+
+
+
+@
+\label{sel1}
+\end{figure}
+
+
+\section{Step Selection Function}
+
+Another approach, which extends \eqref{viola}, is to employ a step function for numerous ranges of p-values or treatment effect sizes. Determining the intervals can be based on pre-defined rules or data-driven methods, as explored in \citet{selection2, selection1, reviewselection} and illustrated in Figure \ref{sel2}.
+
+\bigskip
+
+This selection function formulation can also involve a combination of step function partitioning across different p-value ranges, with some sections being continuous. This hybrid approach is demonstrated in \citet{selectionWeird}, where the authors assume a mix of different constant and/or continuous functions of the p-value. For visual representations of how this approach may appear, please refer to the source \citet{selectionWeird}.
+
+
+\begin{figure}[!hbt]
+\centering
+\caption{Step Function for the Probability of Publishing}
+<<plot2, cache=TRUE, echo=FALSE, results='asis', fig.height=2, fig.width=3, message=FALSE, warning=FALSE>>=
+
+par(mfrow=c(1,2))
+
+# Set the value of z_alpha and sigma
+z_alpha <- 1.96  # Change this value as needed
+sigma <- 0.1  # Change this value as needed
+
+# Define the exponential function
+
+  
+  #p = 1-pnorm(y/sigma)
+piece_p <- function(y) {
+  
+  p =  1-pnorm(y/sigma)
+  if (p == 1) {
+    return(0)
+  } else if (p >= 0.5) {
+    return(0.2)
+  } else if (p >= 0.1) {
+    return(0.3)
+  } else if (p >= 0.05) {
+    return(0.5)
+  } else if (p >= 0.01) {
+    return(0.7)
+  } else {
+    return(1)
+  }
+}
+
+
+# Create a sequence of y values
+y_values <- seq(-0.5, 0.8, by = 0.001)
+#y_values <- 1-pnorm(seq(-0.5, 0.5, by = 0.001)/sigma)
+#y_values <- seq(0,1, by=0.001)
+
+# Create a data frame for plotting
+df <- data.frame(y = y_values)
+
+# Add the piece-wise, piecewise2, exponential, and sigmoid function values to the data frame
+df$piece_pp <- unlist(lapply(y_values, piece_p))
+
+#main_plot <- ggplot(df, aes(x = 1-pnorm(y/sigma))) +
+main_plot <- ggplot(df, aes(x = 1-pnorm(y/sigma))) +
+  #geom_line(aes(y = p_piecewise2), size = 0.5, color = "darkgreen") + # Added piecewise2
+    geom_line(aes(y = piece_pp), size = 0.5, color = "purple", linetype="solid") +
+  #geom_line(aes(y = p_halfnorm), size = 0.5, color = "red", linetype="solid") +
+  #geom_line(aes(y = p_sigmoid), size = 0.5, color= "purple")+
+    #geom_line(aes(y = p_negexp), size = 0.8, color = "green", linetype="dotted") +
+  labs(x = "One-sided p-value p", y = expression(w(p))) +
+  scale_x_continuous(breaks = c(0.05, 1),
+                                labels = c("0.05","1"))+
+  theme_minimal() +
+  theme(
+    legend.position = "topright",
+        axis.title.x = element_text(size = 7),
+    axis.title.y = element_text(size = 7)
+  )
+
+main_plot
+
+
+
+
+
+# Set the value of z_alpha and sigma
+z_alpha <- 1.96  # Change this value as needed
+sigma <- 0.1  # Change this value as needed
+
+# Define the exponential function
+
+  
+  #p = 1-pnorm(y/sigma)
+piece_p <- function(y) {
+  
+  p =  1-pnorm(y/sigma)
+  if (p == 1) {
+    return(0)
+  } else if (p >= 0.5) {
+    return(0.2)
+  } else if (p >= 0.1) {
+    return(0.3)
+  } else if (p >= 0.05) {
+    return(0.5)
+  } else if (p >= 0.01) {
+    return(0.7)
+  } else {
+    return(1)
+  }
+}
+
+
+# Create a sequence of y values
+y_values <- seq(-0.5, 0.8, by = 0.001)
+#y_values <- 1-pnorm(seq(-0.5, 0.5, by = 0.001)/sigma)
+#y_values <- seq(0,1, by=0.001)
+
+# Create a data frame for plotting
+df <- data.frame(y = y_values)
+
+# Add the piece-wise, piecewise2, exponential, and sigmoid function values to the data frame
+df$piece_pp <- unlist(lapply(y_values, piece_p))
+
+#main_plot <- ggplot(df, aes(x = 1-pnorm(y/sigma))) +
+main_plot <- ggplot(df, aes(x = y)) +
+  #geom_line(aes(y = p_piecewise2), size = 0.5, color = "darkgreen") + # Added piecewise2
+    geom_line(aes(y = piece_pp), size = 0.5, color = "purple", linetype="solid") +
+  #geom_line(aes(y = p_halfnorm), size = 0.5, color = "red", linetype="solid") +
+  #geom_line(aes(y = p_sigmoid), size = 0.5, color= "purple")+
+    #geom_line(aes(y = p_negexp), size = 0.8, color = "green", linetype="dotted") +
+  labs(x = "Effect size y", y = expression(w(y))) +
+  scale_x_continuous(breaks = c(-z_alpha * sigma, z_alpha*sigma),
+                                labels = c(expression(-z[alpha] * sigma), expression(z[alpha] * sigma))) +
+  theme_minimal() +
+  theme(
+    legend.position = "topright",
+        axis.title.x = element_text(size = 7),
+    axis.title.y = element_text(size = 7)
+  )
+
+main_plot
+
+
+
+library(ggplot2)
+library(latex2exp)
+
+
+
+
+@
+\label{sel2}
+\end{figure}
+
+
+%\begin{figure}[hbt]
+%\centering
+%\caption{Selection funciton for the probability of publishing}
+<<plot22, eval=FALSE, cache=TRUE, echo=FALSE, results='asis', fig.height=2, fig.width=3, message=FALSE, warning=FALSE>>=
+
+
+library(ggplot2)
+library(latex2exp)
+
+# Set the value of z_alpha and sigma
+z_alpha <- 1.96  # Change this value as needed
+sigma <- 0.1  # Change this value as needed
+
+# Define the exponential function
+
+  
+  #p = 1-pnorm(y/sigma)
+piece_p <- function(y) {
+  
+  p =  1-pnorm(y/sigma)
+  if (p == 1) {
+    return(0)
+  } else if (p >= 0.5) {
+    return(0.2)
+  } else if (p >= 0.1) {
+    return(0.3)
+  } else if (p >= 0.05) {
+    return(0.5)
+  } else if (p >= 0.01) {
+    return(0.7)
+  } else {
+    return(1)
+  }
+}
+
+
+# Create a sequence of y values
+y_values <- seq(-0.5, 0.5, by = 0.001)
+#y_values <- 1-pnorm(seq(-0.5, 0.5, by = 0.001)/sigma)
+#y_values <- seq(0,1, by=0.001)
+
+# Create a data frame for plotting
+df <- data.frame(y = y_values)
+
+# Add the piece-wise, piecewise2, exponential, and sigmoid function values to the data frame
+df$piece_pp <- unlist(lapply(y_values, piece_p))
+
+#main_plot <- ggplot(df, aes(x = 1-pnorm(y/sigma))) +
+main_plot <- ggplot(df, aes(x = y)) +
+  #geom_line(aes(y = p_piecewise2), size = 0.5, color = "darkgreen") + # Added piecewise2
+    geom_line(aes(y = piece_pp), size = 0.5, color = "purple", linetype="solid") +
+  #geom_line(aes(y = p_halfnorm), size = 0.5, color = "red", linetype="solid") +
+  #geom_line(aes(y = p_sigmoid), size = 0.5, color= "purple")+
+    #geom_line(aes(y = p_negexp), size = 0.8, color = "green", linetype="dotted") +
+  labs(x = expression(y), y = expression(w(y))) +
+  scale_x_continuous(breaks = c(-z_alpha * sigma, z_alpha*sigma),
+                                labels = c(expression(-z[alpha] * sigma), expression(z[alpha] * sigma))) +
+  theme_minimal() +
+  theme(
+    legend.position = "topright"
+  )
+
+main_plot
+
+
+
+@
+%\label{sel22}
+%\end{figure}
+
+
+\section{Continuous Selection Function}
+
+More recent literature on selection models has shown a preference for employing continuous selection functions - although an example of a continuous sigmoid selection function can be found also in \citet{reviewselection}. In \citet{selectionCont}, a selection function based on the one-sided p-value is proposed, utilizing, e.g., half normal (Equation \eqref{norm}), negative exponential (Equation \eqref{exp}), and logistic (Equation \eqref{log}) selection functions. Unlike previous methods, this approach does not involve thresholding. The functions can be expressed in terms of the one sided p-value (as done in \citet{selectionCont}), or regarding the positive threshold for significance. In Figure \ref{sel3}, which illustrates functions \eqref{exp} to\eqref{log}, we use $\eta=7$ as an illustrative example.
+
+\bigskip
+
+\begin{align}
+w(y) &= e^{\left(-\eta \left(\Phi\left(- \frac{y}{\sigma}\right)\right) \right)} \label{exp} \\
+w(y) &= e^{\left(- \eta \left(\Phi\left(- \frac{y}{\sigma}\right)\right)^2 \right)} \label{norm} \\
+w(y) &= \frac{2 \cdot e^{\left(\eta \left(\Phi\left(-\frac{y}{\sigma}\right)\right)\right)}}{1 + e^{\left(- \eta \left( \Phi\left(-\frac{y}{\sigma}\right)\right)\right)}}
+\label{log}
+\end{align}
+
+
+\bigskip
+
+
+\begin{figure}[hbt]
+\centering
+\caption{Continuous Selection Function for the Probability of Publishing \citep{selectionCont}. Red: Equation \eqref{norm}, Green: Equation \eqref{exp}, Purple: Equation \eqref{log}}
+<<plot3, cache=TRUE, echo=FALSE, results='asis', fig.height=2, fig.width=3, message=FALSE, warning=FALSE>>=
+
+par(mfrow=c(1,2))
+
+
+############################
+
+# Set the value of z_alpha and sigma
+z_alpha <- 1.96  # Change this value as needed
+sigma <- 0.1  # Change this value as needed
+
+# Define the exponential function
+cont_negexp <- function(y) {
+  
+  exp(-7*((1-pnorm(y/sigma))))
+}
+
+# Define the half normal function
+cont_halfnorm <- function(y) {
+  
+  exp(-7*((1-pnorm(y/sigma))^2))
+}
+
+# Define the logistic
+cont_logistic <- function(y) {
+  
+  (2*exp(-7*(1-pnorm(y/sigma))))/(1+exp(-7*(1-pnorm(y/sigma))))
+}
+
+
+
+
+# Create a sequence of y values
+y_values <- seq(-0.5, 0.8, by = 0.001)
+#y_values <- 1-pnorm(seq(-0.5, 0.5, by = 0.001)/sigma)
+
+# Create a data frame for plotting
+df <- data.frame(y = y_values)
+
+# Add the piece-wise, piecewise2, exponential, and sigmoid function values to the data frame
+df$p_halfnorm <- cont_halfnorm(y_values)
+df$p_logistic <- cont_logistic(y_values)  # Set rho as needed
+df$p_negexp <- cont_negexp(y_values)
+
+main_plot <- ggplot(df, aes(x = 1-pnorm(y/sigma))) +
+#main_plot <- ggplot(df, aes(x = y)) +
+  #geom_line(aes(y = p_piecewise2), size = 0.5, color = "darkgreen") + # Added piecewise2
+    geom_line(aes(y = p_logistic), size = 0.5, color = "purple", linetype="dashed") +
+  geom_line(aes(y = p_halfnorm), size = 0.5, color = "red", linetype="solid") +
+  #geom_line(aes(y = p_sigmoid), size = 0.5, color= "purple")+
+    geom_line(aes(y = p_negexp), size = 0.8, color = "green", linetype="dotted") +
+  labs(x = "One-sided p-value p", y = expression(w(p))) +
+  scale_x_continuous(breaks = c(0.05,1),
+                      labels = c("p=0.05", "p=1")) +
+  theme_minimal() +
+  theme(
+    legend.position = "topright",
+        axis.title.x = element_text(size = 7),
+    axis.title.y = element_text(size = 7)
+  )
+
+main_plot
+
+
+
+
+library(ggplot2)
+library(latex2exp)
+
+# Set the value of z_alpha and sigma
+z_alpha <- 1.96  # Change this value as needed
+sigma <- 0.1  # Change this value as needed
+
+# Define the exponential function
+cont_negexp <- function(y) {
+  
+  exp(-7*((1-pnorm(y/sigma))))
+}
+
+# Define the half normal function
+cont_halfnorm <- function(y) {
+  
+  exp(-7*((1-pnorm(y/sigma))^2))
+}
+
+# Define the logistic
+cont_logistic <- function(y) {
+  
+  (2*exp(-7*(1-pnorm(y/sigma))))/(1+exp(-7*(1-pnorm(y/sigma))))
+}
+
+
+
+
+# Create a sequence of y values
+y_values <- seq(-0.5, 0.8, by = 0.001)
+#y_values <- 1-pnorm(seq(-0.5, 0.5, by = 0.001)/sigma)
+
+# Create a data frame for plotting
+df <- data.frame(y = y_values)
+
+# Add the piece-wise, piecewise2, exponential, and sigmoid function values to the data frame
+df$p_halfnorm <- cont_halfnorm(y_values)
+df$p_logistic <- cont_logistic(y_values)  # Set rho as needed
+df$p_negexp <- cont_negexp(y_values)
+
+#main_plot <- ggplot(df, aes(x = 1-pnorm(y/sigma))) +
+main_plot <- ggplot(df, aes(x = y)) +
+  #geom_line(aes(y = p_piecewise2), size = 0.5, color = "darkgreen") + # Added piecewise2
+    geom_line(aes(y = p_logistic), size = 0.5, color = "purple", linetype="dashed") +
+  geom_line(aes(y = p_halfnorm), size = 0.5, color = "red", linetype="solid") +
+  #geom_line(aes(y = p_sigmoid), size = 0.5, color= "purple")+
+    geom_line(aes(y = p_negexp), size = 0.8, color = "green", linetype="dotted") +
+  labs(x = "Effect size y", y = expression(w(y))) +
+  scale_x_continuous(breaks = c(-z_alpha * sigma, z_alpha*sigma),
+                                labels = c(expression(-z[alpha] * sigma), expression(z[alpha] * sigma))) +
+  theme_minimal() +
+  theme(
+    legend.position = "topright",
+        axis.title.x = element_text(size = 7),
+    axis.title.y = element_text(size = 7)
+  )
+
+main_plot
+
+
+
+
+@
+\label{sel3}
+\end{figure}
+
+
+%Same parameters but in terms of the one sided p value
+
+%\begin{figure}[hbt]
+%\centering
+%\caption{Selection funciton for the probability of publishing}
+<<plot33, eval=FALSE, cache=TRUE, echo=FALSE, results='asis', fig.height=2, fig.width=3, message=FALSE, warning=FALSE>>=
+
+
+library(ggplot2)
+library(latex2exp)
+
+# Set the value of z_alpha and sigma
+z_alpha <- 1.96  # Change this value as needed
+sigma <- 0.1  # Change this value as needed
+
+# Define the exponential function
+cont_negexp <- function(y) {
+  
+  exp(-7*((1-pnorm(y/sigma))))
+}
+
+# Define the half normal function
+cont_halfnorm <- function(y) {
+  
+  exp(-7*((1-pnorm(y/sigma))^2))
+}
+
+# Define the logistic
+cont_logistic <- function(y) {
+  
+  (2*exp(-7*(1-pnorm(y/sigma))))/(1+exp(-7*(1-pnorm(y/sigma))))
+}
+
+
+
+
+# Create a sequence of y values
+y_values <- seq(-0.5, 0.5, by = 0.001)
+#y_values <- 1-pnorm(seq(-0.5, 0.5, by = 0.001)/sigma)
+
+# Create a data frame for plotting
+df <- data.frame(y = y_values)
+
+# Add the piece-wise, piecewise2, exponential, and sigmoid function values to the data frame
+df$p_halfnorm <- cont_halfnorm(y_values)
+df$p_logistic <- cont_logistic(y_values)  # Set rho as needed
+df$p_negexp <- cont_negexp(y_values)
+
+main_plot <- ggplot(df, aes(x = 1-pnorm(y/sigma))) +
+#main_plot <- ggplot(df, aes(x = y)) +
+  #geom_line(aes(y = p_piecewise2), size = 0.5, color = "darkgreen") + # Added piecewise2
+    geom_line(aes(y = p_logistic), size = 0.5, color = "purple", linetype="dashed") +
+  geom_line(aes(y = p_halfnorm), size = 0.5, color = "red", linetype="solid") +
+  #geom_line(aes(y = p_sigmoid), size = 0.5, color= "purple")+
+    geom_line(aes(y = p_negexp), size = 0.8, color = "green", linetype="dotted") +
+  labs(x = expression(p), y = expression(w(p))) +
+  scale_x_continuous(breaks = 0.05,
+                                labels = "p-value=0.05") +
+  theme_minimal() +
+  theme(
+    legend.position = "topright"
+  )
+
+main_plot
+
+
+
+@
+%\label{sel33}
+%\end{figure}
+
+\bigskip
+
+One important observation to highlight is that while the all of the aforementioned selection functions are assumed in the publication bias (PB) adjustment, they may not necessarily correspond to those used in simulating PB. For instance, in \citet{selection2}, a step function is used for PB-adjustment, but Equation \eqref{sel4} is utilized for PB simulation. In Figure \ref{sel6} we visualize the selection function using $\gamma=1.5$.
+
+\bigskip
+
+\begin{equation}
+\label{sel4}
+w(y) = e^{-4\cdot \left(\Phi\left(- \frac{y}{\sigma}\right)\right)^{\gamma}}
+\end{equation}
+
+
+\bigskip
+
+The missing data mechanism represented via the selection function \eqref{sel4} was also used in the Master Thesis to simulate ORB, specifically to generate missing study outcomes classified as high risk of bias (HR). Low risk of bias (LR) missingness was determined only subsequently, via random selection. It would perhaps be beneficial to establish a unified mechanism to generate all unreported/missing outcomes due to ORB (i.e., without having a separate mechanism to simulate HR and LR studies). More thoughts on this in Section \ref{gen}.
+
+%If we wish to then use the original approach of \cite{Copas2019} to adjust for ORB, which is to applied only to HR studies, we can identify the missing studies that were significant and designate them as HR. (More on this)
+
+\begin{figure}[hbt]
+\centering
+\caption{Continuous Selection Function for the Probability of Publishing \citep{selection2}}
+<<plot6, cache=TRUE, echo=FALSE, results='asis', fig.height=2, fig.width=3, message=FALSE, warning=FALSE>>=
+
+par(mfrow=c(1,2))
+
+
+############################
+
+# Set the value of z_alpha and sigma
+z_alpha <- 1.96  # Change this value as needed
+sigma <- 0.1  # Change this value as needed
+
+# use in the thesis to simulate ORB
+thesisSIM <- function(y) {
+  
+  exp(-4*((1-pnorm(y/sigma)))^(1.5))
+}
+
+
+thesisSIM_stronger <- function(y) {
+  
+  exp(-4*((1-pnorm(y/sigma)))^(0.5))
+}
+
+
+
+
+# Create a sequence of y values
+y_values <- seq(-0.5, 0.8, by = 0.001)
+#y_values <- 1-pnorm(seq(-0.5, 0.5, by = 0.001)/sigma)
+
+# Create a data frame for plotting
+df <- data.frame(y = y_values)
+
+# Add the piece-wise, piecewise2, exponential, and sigmoid function values to the data frame
+df$p_thesis<- thesisSIM(y_values)
+
+df$p_thesis_stronger <- thesisSIM_stronger(y_values)
+
+main_plot <- ggplot(df, aes(x = 1-pnorm(y/sigma))) +
+#main_plot <- ggplot(df, aes(x = y)) +
+   geom_line(aes(y = p_thesis_stronger), size = 0.5, color = "darkgreen") + # Added piecewise2
+    geom_line(aes(y = p_thesis), size = 0.5, color = "purple", linetype="solid") +
+  #geom_line(aes(y = p_halfnorm), size = 0.5, color = "red", linetype="solid") +
+  #geom_line(aes(y = p_sigmoid), size = 0.5, color= "purple")+
+    #geom_line(aes(y = p_negexp), size = 0.8, color = "green", linetype="dotted") +
+  labs(x = "One-sided p-value p", y = expression(w(p))) +
+  scale_x_continuous(breaks = c(0.01, 0.05,0.1, 0.2, 1),
+                      labels = c("0.01","0.05", "0.1","0.2","1")) +
+  theme_minimal() +
+  theme(
+    legend.position = "topright",
+        axis.title.x = element_text(size = 7),
+    axis.title.y = element_text(size = 7)
+  )
+
+main_plot
+
+
+
+
+library(ggplot2)
+library(latex2exp)
+
+# Set the value of z_alpha and sigma
+z_alpha <- 1.96  # Change this value as needed
+sigma <- 0.1  # Change this value as needed
+
+# use in the thesis to simulate ORB
+thesisSIM <- function(y) {
+  
+  exp(-4*((1-pnorm(y/sigma)))^(1.5))
+}
+
+
+thesisSIM_stronger <- function(y) {
+  
+  exp(-4*((1-pnorm(y/sigma)))^(0.5))
+}
+
+# Create a sequence of y values
+y_values <- seq(-0.5, 0.8, by = 0.001)
+#y_values <- 1-pnorm(seq(-0.5, 0.5, by = 0.001)/sigma)
+
+# Create a data frame for plotting
+df <- data.frame(y = y_values)
+
+# Add the piece-wise, piecewise2, exponential, and sigmoid function values to the data frame
+df$p_thesis <- thesisSIM(y_values)
+df$p_thesis_stronger <- thesisSIM_stronger(y_values)
+
+
+#main_plot <- ggplot(df, aes(x = 1-pnorm(y/sigma))) +
+main_plot <- ggplot(df, aes(x = y)) +
+  geom_line(aes(y = p_thesis_stronger), size = 0.5, color = "darkgreen") + # Added piecewise2
+    geom_line(aes(y = p_thesis), size = 0.5, color = "purple", linetype="solid") +
+  #geom_line(aes(y = p_halfnorm), size = 0.5, color = "red", linetype="solid") +
+  #geom_line(aes(y = p_sigmoid), size = 0.5, color= "purple")+
+    #geom_line(aes(y = p_negexp), size = 0.8, color = "green", linetype="dotted") +
+  labs(x = "Effect size y", y = expression(w(y))) +
+  scale_x_continuous(breaks = c(-z_alpha * sigma, z_alpha*sigma),
+                                labels = c(expression(-z[alpha] * sigma), expression(z[alpha] * sigma))) +
+  theme_minimal() +
+  theme(
+    legend.position = "topright",
+        axis.title.x = element_text(size = 7),
+    axis.title.y = element_text(size = 7)
+  )
+
+main_plot
+
+
+
+
+@
+\label{sel6}
+\end{figure}
+
+\section{Selection Functions from Master Thesis}
+
+In the Master Thesis we used Equation \eqref{sel4} for ORB generation, i.e., to simulate missing study outcomes at HR. However, we assumed different selection functions for the ORB-adjustment. First, we used a one-sided version of the one proposed by \citet{Copas2019}, i.e., Equation \eqref{sel0} on HR missing studies only (as was done in the original \citet{Copas2019} method). Additionally, we used the following two selection functions for ORB-adjustment, applied to all unreported study outcomes: Equation \eqref{w.my} and Equation \eqref{my.sel.2}. The reasoning behind Equation \eqref{w.my} was especially tied to the HR/LR considerations of \citet{Copas2019} (more thoughts on this Section \ref{gen}).
+
+\bigskip
+
+Of note, in the Master Theis the selection functions for ORB-adjustment were consistently framed in terms of the probability of unreporting rather than the probability of reporting, and were presented as functions of the treatment effect size, rather than the p-value. This approach was chosen because i) in ORB, the selection function enters the likelihood as the probability of unreporting, and ii) we were interested in the positive direction of significance. To ensure comparability with the PB selection functions presented in this summary, the selection functions used in the Master Thesis for ORB-adjustment are presented in terms of the probability of reporting, and are also scaled to the one-sided p-value. In Figure \ref{sel66} we illustrate Equations \eqref{w.my} and \eqref{my.sel.2} using $\lambda=7$ and $\rho=7$.
+
+\bigskip
+
+\begin{equation}
+\label{w.my}
+w(y) = 1 - \frac{1}{1+ e^{\lambda(y- z_{\alpha}\sigma)}}
+\end{equation}
+
+
+\begin{equation}
+\label{my.sel.2}
+w(y) = 1 -  \begin{cases} 1 & \text{if }y > z_{\alpha}\sigma \\
+e^{-\rho \cdot (y - z_{\alpha}\sigma)} & \text{otherwise} \end{cases}
+\end{equation}
+
+\bigskip
+
+
+\begin{figure}[hbt]
+\centering
+\caption{Master Thesis Selection Function for the Probability of Reporting}
+<<plot66, cache=TRUE, echo=FALSE, results='asis', fig.height=2, fig.width=3, message=FALSE, warning=FALSE>>=
+
+par(mfrow=c(1,2))
+
+
+############################
+
+
+
+library(ggplot2)
+library(latex2exp)
+
+# Set the value of z_alpha and sigma
+z_alpha <- 1.96  # Change this value as needed
+sigma <- 0.1  # Change this value as needed
+
+# use in the thesis to simulate ORB
+thesisEXPunrep <- function(y) {
+  
+  ifelse(y < z_alpha*sigma, 
+         1,
+         exp(-7*(y - z_alpha*sigma)))
+}
+
+
+thesisSIGM <- function(y) {
+  exp(7 * (y - z_alpha * sigma))/(1 + exp(7 * (y - z_alpha * sigma)))
+}
+
+
+
+# Create a sequence of y values
+y_values <- seq(-0.5, 0.8, by = 0.001)
+#y_values <- 1-pnorm(seq(-0.5, 0.5, by = 0.001)/sigma)
+
+# Create a data frame for plotting
+df <- data.frame(y = y_values)
+
+# Add the piece-wise, piecewise2, exponential, and sigmoid function values to the data frame
+df$p_thesisEXP<- 1-thesisEXPunrep(y_values)
+df$p_thesisSIGN<- thesisSIGM(y_values)
+
+main_plot <- ggplot(df, aes(x = 1-pnorm(y/sigma))) +
+#main_plot <- ggplot(df, aes(x = y)) +
+  #geom_line(aes(y = p_piecewise2), size = 0.5, color = "darkgreen") + # Added piecewise2
+    geom_line(aes(y = p_thesisEXP), size = 0.5, color = "red", linetype="solid") +
+    geom_line(aes(y = p_thesisSIGN), size = 0.5, color = "blue", linetype="solid") +
+  #geom_line(aes(y = p_sigmoid), size = 0.5, color= "purple")+
+    #geom_line(aes(y = p_negexp), size = 0.8, color = "green", linetype="dotted") +
+  labs(x = "One-sided p-value", y = expression(w(p))) +
+  scale_x_continuous(breaks = c(0.05, 1),
+                                labels = c("0.05", "1")) +
+  ylim(c(0,1))+
+  theme_minimal() +
+  theme(
+    legend.position = "topright",
+        axis.title.x = element_text(size = 7),
+    axis.title.y = element_text(size = 7)
+  )
+
+main_plot
+
+
+# Set the value of z_alpha and sigma
+z_alpha <- 1.96  # Change this value as needed
+sigma <- 0.1  # Change this value as needed
+
+# use in the thesis to simulate ORB
+thesisEXPunrep <- function(y) {
+  
+  ifelse(y < z_alpha*sigma, 
+         1,
+         exp(-7*(y - z_alpha*sigma)))
+}
+
+
+thesisSIGM <- function(y) {
+  exp(7 * (y - z_alpha * sigma))/(1 + exp(7 * (y - z_alpha * sigma)))
+}
+
+
+
+# Create a sequence of y values
+y_values <- seq(-0.5, 0.8, by = 0.001)
+#y_values <- 1-pnorm(seq(-0.5, 0.5, by = 0.001)/sigma)
+
+# Create a data frame for plotting
+df <- data.frame(y = y_values)
+
+# Add the piece-wise, piecewise2, exponential, and sigmoid function values to the data frame
+df$p_thesisEXP<- 1-thesisEXPunrep(y_values)
+df$p_thesisSIGN<- thesisSIGM(y_values)
+
+main_plot <- ggplot(df, aes(x = y)) +
+#main_plot <- ggplot(df, aes(x = y)) +
+  #geom_line(aes(y = p_piecewise2), size = 0.5, color = "darkgreen") + # Added piecewise2
+    geom_line(aes(y = p_thesisEXP), size = 0.5, color = "red", linetype="solid") +
+    geom_line(aes(y = p_thesisSIGN), size = 0.5, color = "blue", linetype="solid") +
+  #geom_line(aes(y = p_sigmoid), size = 0.5, color= "purple")+
+    #geom_line(aes(y = p_negexp), size = 0.8, color = "green", linetype="dotted") +
+  labs(x = "Effect size y", y = expression(w(y))) +
+  scale_x_continuous(breaks = c(-z_alpha * sigma, z_alpha*sigma),
+                                labels = c(expression(-z[alpha] * sigma), expression(z[alpha] * sigma))) +
+  ylim(c(0,1))+
+  theme_minimal() +
+  theme(
+    legend.position = "topright",
+        axis.title.x = element_text(size = 7),
+    axis.title.y = element_text(size = 7)
+  )
+
+main_plot
+
+
+
+
+
+
+
+@
+\label{sel66}
+\end{figure}
+
+\section{General Considerations} \label{gen}
+
+General considerations/thoughts regarding selection model used for ORB simulation and adjustment:
+
+\begin{itemize}
+
+\item[-]{Should the missing data mechanism used to simulate ORB align with the missing data mechanism used in the ORB-adjustment? In \citet{selection2} and more recent work by \citet{selectionWeird}, a misspecification between simulation and adjustment is used. A lot of the motivation behind the simulation/adjustment process in the Master Thesis was tied to the ORBIT classification into high risk of bias (HR) and low risk of bias (LR), and being able to compare extensions proposed to the original method of \citet{Copas2019}. However, after thorough review of the PB and ORB literature on selection models, I am currently leaning slightly away from this ORBIT-based way of simulating the data, and more towards, e.g., one possible outline for simulating ORB:}
+
+\begin{itemize}
+\item[1. ]{Choose a generic selection function to simulate ORB: this function will result in some study outcomes being unreported, without a separate missing data mechanism for HR/LR classification. This would be well aligned with the PB literature.}
+\item[2. ]{Apply (possibly various different) selection functions in the ORB-adjustment (i.e., through selection model framework from Master Thesis), one of which should be the one used to simulate ORB, as a base reference. The ORB-adjustment via the selection functions would hence be on all unreported study outcomes.}
+\item[3. ]{To compare these different new selection functions used in the ORB-adjustment to the original \citet{Copas2019} method, we could apply the \citet{Copas2019} dichotomous selection function to the unreported studies which were non-significant. This corresponds to the assumption that \citet{Copas2019} made about the HR unreported study outcomes, i.e., they are missing because they were non-significant. We have access to the truth regarding significance because we are simulating the data, so, of course, here we are implicitly making the important assumption that the ORBIT classification into HR is correct - something that was discussed in \citet{Copas2014}.}
+\end{itemize}
+
+
+\item[-]{Should the selection function for ORB be defined in terms of the p-value or of the treatment effect size? In PB we find both, with p-value-based ones being perhaps more common due to their straight-forward interpretation. In ORB, if we assume that significant results, but in the "wrong" direction, are unlikely to be reported, we may opt for i) a selection function in terms of the one-sided p-value; ii) a selection function in terms of the effect size which uses the positive $1.96 \sigma$ threshold; iii) a selection function in terms of the effect size which uses the positive $1.64 \sigma$ threshold (aligned with one-sided p-value). In the Master Thesis, i) was used for ORB-simulation, and ii) for ORB-adjustment - I think an alignment between the two would be more transparent?}
+
+\item[-]{Building on the previous point, further considerations on one-sided vs. two-sided significance choice can be taken into account. In the PB selection models literature, both are used. The main arguments for two-sided significance, from, e.g., \citet{reviewselection}, include: i) in early research stages, results in either direction are important, ii) in later research stages, when the preponderance of the evidence has supported one direction, significant reversals are often more important than further replications. Arguments for one-sided significance are, e.g., if the expected beneficial effect of treatment results in a negative outcome, or even worse, a negatively significant outcome, the likelihood of reporting is very low \citep{selectionCont, selectionWeird}.}
+
+\end{itemize}
+
+
+\pagebreak
+
+\bibliographystyle{plainnat} % Choose natbib-compatible bibliography style
+\bibliography{biblio} % Replace 'biblio' with your actual BibTeX file name
+
+\end{document}

@@ -40,7 +40,7 @@ Addressing Outcome Reporting Bias in Meta-analysis: A Selection Model Perspectiv
 
 \section{Introduction}
 
-Outcome reporting bias (ORB) occurs when outcomes within a meta-analysis are selectively reported based on the significance or direction of results. Unlike publication bias (PB), a much better known and studied phenomenon, ORB occurs when studies are published in the literature, but they lack (sufficient) information for a certain outcome for it to be included in the meta-analysis. Standard meta-analysis methods, which only include studies which fully report the outcome of interest, implicitly assuming that unreported outcomes are missing at random, can result in biased estimation. Despite its critical implications, ORB remains an under-recognized problem area, with limited statistical adjustment methods available.
+Outcome reporting bias (ORB) occurs when outcomes within a meta-analysis are selectively reported based on the significance or direction of results. Unlike publication bias (PB), a much better known and studied phenomenon, ORB occurs when studies are published in the literature, but they lack (sufficient) information for a certain outcome for it to be included in the meta-analysis. Standard meta-analysis methods, which only include studies that fully report the outcome of interest, implicitly assuming that unreported outcomes are missing at random, can result in biased estimation. Despite its critical implications, ORB remains an under-recognized problem area, with limited statistical adjustment methods available.
 
 \bigskip
 
@@ -119,7 +119,7 @@ Naive estimation, involving maximum likelihood estimation with contributions sol
 
 \bigskip
 
-A key objective is to then evaluate the effectiveness of the ORB-adjustment method \eqref{lik.ORB} in reducing the possible bias stemming from naive estimation. This methodology incorporates a contribution from unreported/missing studies outcomes into the maximum likelihood estimation. The shape of the ORB-adjusted likelihood differs depending on to the different selection function assumed for the probability of reporting, i.e., $w_i(y)$ in \eqref{lik.ORB}. Taking inspiration from selection functions typically used in the PB literature, along with qualitative assessment of reasons behind unreporting of outcomes in published studies, we test different selection functions.
+A key objective is to then evaluate the effectiveness of the ORB-adjustment method \eqref{lik.ORB} in reducing the possible bias stemming from naive estimation. This methodology incorporates a contribution from unreported/missing study outcomes into the maximum likelihood function. The shape of the ORB-adjusted likelihood differs depending on the different selection function assumed for the probability of reporting, i.e., $w_i(y)$ in \eqref{lik.ORB}. Taking inspiration from selection functions typically used in the PB literature, along with qualitative assessment of reasons behind unreporting of outcomes in published studies, we test different selection functions.
 
 \bigskip
 
@@ -178,7 +178,7 @@ In the simulation study, we are interested in assessing the impact of ORB and th
 
 \begin{itemize}
 \item[-]{Number of studies in the meta-analysis, $K \in \{5, 15, 30 \}$, following similar choices by \citet{MorenoSim, IntHout2014} for small, medium, and large meta-analysis studies of clinical trial.}
-\item[-]{True global treatment effect $\mu \in \{0 - 0.8 \}$ with $0.1$ increments, representing, e.g., standardized mean differences or log odds ratios, similar to choices in \citet{MorenoSim, FernandezSim} who note that, e.g., effect sizes of $0, 0.2, 0.5, 0.8$ could correspond to null, low, medium and high effects \citep{FernandezSim}.}
+\item[-]{True global treatment effect $\mu \in \{0, ..., 0.8 \}$ with $0.1$ increments, representing, e.g., standardized mean differences or log odds ratios, similar to choices in \citet{MorenoSim, FernandezSim} who note that, e.g., effect sizes of $0, 0.2, 0.5, 0.8$ could correspond to null, low, medium and high effects \citep{FernandezSim}.}
 \item[-]{Heterogeneity quantified by Higgins' $\text{I}^2 \in \{0 \%, 25 \%, 50 \%, 75 \%, 90 \% \}$ as done in \citet{IntHout2014}.}
 \end{itemize}
 
@@ -234,21 +234,21 @@ Here, we use the one-sided $p$-value $p_i = \Phi(- y_i / \sigma_i)$. We use a on
 
 \bigskip
 
-Of note, in the PB literature, the number of selected/published studies included in each meta-analysis is typically fixed; this is obtained by making the decision to select a study for inclusion based on a simulated biased coin toss with probability weight \eqref{simORB} and repeating the procedure until the required number of studies is selected \citet{selection2, Begg, BeggUse1}. In the case of the ORB simulation, the total number studies (i.e., which report or do not report the outcome of interest) is fixed, and the selection is done using \eqref{simORB} as a probability for selecting the reported outcomes. Hence, in each simulation, the number of reported outcomes may vary. This approach was used by \citet{Copas2019} in the context of ORB simulation, as well as in \citet{FernandezSim} for both ORB and PB simulations. In our setting, as we need at least one study outcome to be reported for the ORB-adjustment methodology to be used, we repeat the simulation process if we obtain a dataset with no reported study outcomes. For each parameter combination, we will record the average number of reported study outcomes as well as the number of simulated datasets/trials needed to obtain the desired behavior.
+Of note, in the PB simulation study literature, the number of selected/published studies included in each meta-analysis is typically fixed; this is obtained by making the decision to select a study for inclusion based on a simulated biased coin toss with probability weight \eqref{simORB} and repeating the procedure until the required number of studies is selected \citep{selection2, Begg, BeggUse1}. In the case of the ORB simulation, the total number studies (i.e., which report or do not report the outcome of interest) is fixed, and the selection is done using \eqref{simORB} as a probability for selecting the reported outcomes. Hence, in each simulation, the number of reported outcomes may vary. This approach was used by \citet{Copas2019} in the context of ORB simulation, as well as in \citet{FernandezSim} for both ORB and PB simulations. In our setting, as we require at least two study outcomes to be reported for anive estimation of the treatment effect and heterogeneity variance; hence, we repeat the simulation process if we obtain a dataset with less than 2 reported study outcomes. For each parameter combination, we will record the average number of reported study outcomes as well as the number of simulated datasets/trials needed to obtain the desired behavior.
 
 \bigskip
 
 
 %The $\gamma$ parameter in \eqref{simORB} used in certain PB simulation studies to determine strong PB is $\gamma=1.5$ \citep{selection2, Begg}. Using this function, the probbality of, e.g., publishing a trial with a p-value of a study with p-value of $0.01$ is $99.6 \%$, pvalue of $0.05$ is $95.6 \%$, and pvalue of $0.2$ is $69.9 \%$. While this makes sense to be considered strong for PB, one could hypothesize setting in which outcomes are not reported even for smaller p-value. In principle, these are published studies, which may decide to omit a certain outcome because it was not found particularly clinically relavent, or perhaps in a study with many positive/significant findings, this was not the most interesting one, or space constrains, although these are probably corrlated to the previous ones \citep{ORBreasons, moreORBevidence}. While the line of thinking is still that studies are omitted based on their signficance, one could believe that the threshold is lower, as outcomes may omitted for smaller reasons that PB. By using, e.g., a value of $\gamma=0.8$, the probability of an outcome being reported, for a p-value of $0.01$ is $90.4 \%$, pvalue of $0.05$ is $69.5 \%$, and pvalue of $0.2$ is $33.2 \%$. In this case, we allow for a small probability of significant outcomes to be unreported if, e.g., a result was statistically significant but not clinically relavant, or if there was numerouos significant outcomes in a trial adn this was less important. At the same time, for non-significant p-values, the probability of reporting drops fasts. Because of the nature of ORB compared to PB, we call the $\gamma=1.5$ settign moderate ORB and $\gamma=0.8$ strong ORB.
 
-The $\gamma$ value in \eqref{simORB} indicates the strength of bias. In PB, it has been argued that a value of $\gamma=1.5$ can be representative of strong PB. In this case, e.g., the probability of publishing a study with significant one-sided $p$-values $0.01, \; 0.05$ are $0.996, \; 0.962$ respectively and drop to $0.881, \; 0.699$ for non-significant values of $0.1, \; 0.2$ respectively. However, when considering ORB, given that studies are already published, the threshold for reporting could be less stringent. Factors such as clinical relevance or prioritizing more impactful findings \citep{ORBreasons, moreORBreasons} may lead to unreported outcomes with smaller p-values, compared to what one may expect in the context of PB. With this rationale, in the simulation study of ORB we use $\gamma=1.5$, for consistency with PB, but denote it as moderate bias; we additionally use $\gamma=0.5$ and denote it as strong bias. With this parameter, the probabilities of reporting are high only for very small $p$-values, e.g., the probability of reporting is $0.961$ for a $p$-value of $0.0001$, and drops substantially, e.g., the probability of reporting is $0.670$ for a significant $p$-value of $0.01$ and decreases to $0.282$ and $0.167$ for non-significant $p$-values of $0.1$ and $0.2$. The ORB DGM with $\gamma=0.5$ thus possibly results in unreported study outcomes with original $p$-values below the $0.05$ threshold, as opposed to the setting of $\gamma=1.5$, where the probability of reporting is almost one for significant $p$-values. It is of interest to investigate the impact of ORB in these different settings, as well as the extent to which different ORB-adjustment methods, with varying missing data assumptions, are sucessfull in correcting for the potential bias in the parameter estimation.
+The $\gamma$ value in \eqref{simORB} indicates the strength of bias. In PB, it has been argued that a value of $\gamma=1.5$ can be representative of strong PB. In this case, e.g., the probability of publishing a study with significant one-sided $p$-values $0.01, \; 0.05$ is $0.996, \; 0.962$ respectively and drop to $0.881, \; 0.699$ for non-significant values of $0.1, \; 0.2$ respectively. However, when considering ORB, given that studies are already published, the threshold for reporting could be less stringent. Factors such as clinical relevance or prioritizing more impactful findings \citep{ORBreasons, moreORBreasons} may lead to unreported outcomes with smaller p-values, compared to what one may expect in the context of PB. With this rationale, in the simulation study of ORB we use $\gamma=1.5$, for consistency with PB; we additionally use $\gamma=0.5$. With this parameter, the probabilities of reporting are high only for very small $p$-values, e.g., the probability of reporting is $0.961$ for a $p$-value of $0.0001$, and drops substantially, e.g., the probability of reporting is $0.670$ for a significant $p$-value of $0.01$ and decreases to $0.282$ and $0.167$ for non-significant $p$-values of $0.1$ and $0.2$. The ORB DGM with $\gamma=0.5$ thus possibly results in unreported study outcomes with original $p$-values below the $0.05$ threshold, as opposed to the setting of $\gamma=1.5$, where the probability of reporting is almost one for significant $p$-values. It is of interest to investigate the impact of ORB in these different settings, as well as the extent to which different ORB-adjustment methods, with varying missing data assumptions, are successful in correcting for the potential bias in the parameter estimation.
 
 %One could also envisage this parameter setting as a situation in which ORB is governed by the threshold of significance of the two-sided test, i.e., $p$-value $=0.025$, as probabilities of reporting are substantially lower after that threshold. The two different settings used to simulate ORB, i.e., with $\gamma=1.5, \gamma=0.5$ are shown in Figure \ref{ORBsim}.
 
 
 \begin{figure}[!hbt]
 \centering
-\caption{Function \eqref{simORB} with $\gamma=0.5$ and $\gamma=1.5$ used to simulate ORB: study outcomes are removed from a simulated meta-analysis according to this probability of reporting \citep{selection2}, based on one-sided $p$-value (left) and corresponding treatment effect size (right).}
+\caption{Function \eqref{simORB} with $\gamma=0.5$ and $\gamma=1.5$ used to simulate ORB: study outcomes are removed from a simulated meta-analysis according to the probability of reporting \citep{selection2}, based on one-sided $p$-value (left) and corresponding treatment effect size (right).}
 <<plot1, cache=TRUE, echo=FALSE, results='asis', fig.height=5, fig.width=12, message=FALSE, warning=FALSE>>=
 
 #par(mfrow=c(1,2))
@@ -427,7 +427,7 @@ invisible(final_plot)
 
 \section{Estimands and Targets}
 
-Our primary estimand is the treatment effect size, derived from evidence pooled across multiple studies in the meta-analysis. This estimation is conducted via maximum likelihood, where the likelihood function is maximized. We perform both naive estimation, utilizing treatment effects solely from reported studies, and estimation using ORB-adjustment techniques. Additionally, our secondary target is the estimation of the heterogeneity variance. This is estimated concurrently with the treatment effect in both the naive and ORB-adjusted estimations. The statistical target of this simulation study is focused on estimation. Therefore, we aim to compare different estimation methods in terms of bias, mean squared error (MSE), and other relevant metrics.
+Our primary estimand is the treatment effect size, derived from evidence pooled across multiple studies in the meta-analysis. This estimation is conducted via maximum likelihood (ML), where the likelihood function is maximized. We perform both naive estimation, utilizing treatment effects solely from reported studies, and estimation using ORB-adjustment techniques. Additionally, our secondary target is the estimation of the heterogeneity variance. This is estimated concurrently with the treatment effect in both the naive and ORB-adjusted estimations. The statistical target of this simulation study is focused on estimation. Therefore, we aim to compare different estimation methods in terms of bias, mean squared error (MSE), and other relevant metrics.
 
 
 \section{Methods} \label{methods}
@@ -447,7 +447,7 @@ Additionally, we compute the $95 \%$ confidence interval (CI) by considering the
 \bigskip
 
 \begin{align}
-\left\{ \theta \mid \ell_p(\mu) - \ell_p(\hat{\theta}) + \frac{1}{2}\chi^2_{\text{df}=1,0.95} \leq 0 \right\}
+\left\{ \theta \mid \ell_p(\theta) - \ell_p(\hat{\theta}) + \frac{1}{2}\chi^2_{\text{df}=1,0.95} \leq 0 \right\}
 \end{align}
 
 \bigskip
@@ -492,7 +492,7 @@ The complete data log-likelihood uses all studies in the meta-analysis before OR
 
 \subsection{ORB-adjusted estimate} \label{methods:orb}
 
-Below we recall the ORB-adjusted log-likelihood of \eqref{lik.ORB} as a generic form of ORB-adjustment, which includes, compared to the naive estimate, an additional term with contributions from unreported study outcomes. The term makes use of the selection function for the probability of reporting, assumed to be associated with the missing outcomes. In the simulation study, we use a variety of selection functions for the probability of reporting, which, in the next subsections, we define in terms of the one sided p-value $w(p)$, where $p=\Phi \left(- \frac{y}{\sigma} \right)$.
+Below we recall the ORB-adjusted log-likelihood of \eqref{lik.ORB} as a generic form of ORB-adjustment, which includes, compared to the naive estimate, an additional term with contributions from unreported study outcomes. The term makes use of the selection function for the probability of reporting, assumed to be associated with the missing outcomes. In the simulation study, we use a variety of selection functions $w_i(y_i)$ for the probability of reporting, which, in the next subsections, we define in terms of the one sided $p$-value, $w_i(p_i)$ where $p_i=\Phi \left(- \frac{y_i}{\sigma_i} \right)$ is simply a transformation of $y_i$ and $\sigma_i$.
 
 \bigskip
 
@@ -503,7 +503,7 @@ Below we recall the ORB-adjusted log-likelihood of \eqref{lik.ORB} as a generic 
 
 \bigskip
 
-Firstly, in the ORB-adjustment, we use the two selection functions utilized for the ORB simulation, i.e., function \eqref{simORB} with $\gamma=1.5$ and $\gamma=0.8$, so as to have the correct function specification between ORB simulation and ORB adjustment. We then further test other selection functions, taking inspiration from those found in PB literature, as well as altering them to test scenarios which one may expect to occur in ORB.
+Firstly, in the ORB-adjustment, we use the two selection functions utilized for the ORB simulation, i.e., function \eqref{simORB} with $\gamma=1.5$ and $\gamma=0.5$, so as to have the correct function specification between ORB simulation and ORB adjustment. We then further test other selection functions, taking inspiration from those found in PB literature, as well as altering them to test scenarios which one may expect to occur in ORB.
 
 %\begin{equation}
 %\label{lik.rewritten.special.copas.case}
@@ -518,7 +518,7 @@ Firstly, in the ORB-adjustment, we use the two selection functions utilized for 
 
 \subsubsection{Piece-wise constant-constant}
 
-The simplest selection function used is \eqref{sel0}, shown in Figure \ref{specialFig0}. It is a piece-wise constant function, with probability of reporting 0 for non-significant studies and 1 for significant ones. The threshold for significance is a p-value of $p=0.05$. While this selection function can be found in the PB literature \citep{reviewselection, selection0, selection1}, it is also the one implicitly used in the \citet{Copas2019} adjustment. Of note, in \citet{Copas2019} it is used only in the contribution of unreported study outcomes classified as high risk of bias (HR) by the ORBIT methodology. Here, however, we apply it all unreported outcomes, as we are not using the ORBIT classification system beforehand.
+The simplest selection function used is \eqref{sel0}, shown in Figure \ref{specialFig0}. It is a piece-wise constant function, with probability of reporting 0 for non-significant studies and 1 for significant ones. The threshold for significance is a $p$-value of $p=0.05$. While this selection function can be found in the PB literature \citep{reviewselection, selection0, selection1}, it is also the one implicitly used in the \citet{Copas2019} adjustment. Of note, in \citet{Copas2019} it is used only in the contribution of unreported study outcomes classified as high risk of bias (HR) by the ORBIT methodology. Here, however, we apply it all unreported outcomes, as we are not using the ORBIT classification system beforehand.
 
 \bigskip
 
@@ -710,7 +710,7 @@ w(p) =
 
 \bigskip
 
-Here, for the non-significant study outcomes, the associated probability of reporting is a decreasing function of the $p$-value, while significant study outcomes have an associated probability of reporting of 1. In the simulation study we use $\beta=3$. With this parameter, the probability of reporting is high for $p$-values just above the threshold of $0.05$, e.g., a probability of $0.751$ for a one-sided $p$-value of $0.055$, but rapidly drops to, e.g., $0.125$ for a larger $p$-values of $0.1$.
+Here, for the non-significant study outcomes, the associated probability of reporting is a decreasing function of the $p$-value, while significant study outcomes have an associated probability of reporting of 1. In the simulation study we use $\beta=3$. With this parameter, the probability of reporting is high for $p$-values just above the threshold of $0.05$, e.g., a probability of $0.751$ for a one-sided $p$-value of $0.055$, but rapidly drops to, e.g., $0.125$ for a larger $p$-value of $0.1$.
 
 
 \begin{figure}[!hbt]
@@ -893,7 +893,7 @@ w(p) =
 \bigskip
 
 
-The rationale is flipped compared to \eqref{special1} in that we assume that non-significant study outcomes have an associated probability of reporting 0, while significant study outcomes have an associated probability of reporting which is a decreasing function of the p-value. In cases in which ORB is due to, e.g., prioritizing more impactful or clinically relevant findings in a published study \citep{ORBreasons, moreORBreasons}, even outcomes with smaller p-values could have an associated probability of reporting smaller than 1. In the simulation study, we use $\gamma=3$. With this parameter value, the probability of reporting is close to $1$ only for very small $p$-values, and substantially drops to low values even for $p$-value slightly below the $0.05$ one-sided threshold, e.g., the probability is $0.992, \; 0.875$ for $p$-values $= 0.01, \; 0.025$ respectively and $0.271$ for $p$-value $= 0.45$. This setting is also plausible in instances in which ORB was somewhat influenced by the two-sided threshold of significance, i.e., with probabilities of reporting decreasing substantially for one-sided $p$-values above $0.025$.
+The rationale is flipped compared to \eqref{special1} in that we assume that non-significant study outcomes have an associated probability of reporting 0, while significant study outcomes have an associated probability of reporting which is a decreasing function of the p-value. In cases in which ORB is due to, e.g., prioritizing more impactful or clinically relevant findings in a published study \citep{ORBreasons, moreORBreasons}, even outcomes with smaller p-values could have an associated probability of reporting smaller than 1. At the same time, this setting, resulting in unreported significance outcomes, could be viewed as ORB stemming from less severe forms of bias \citep{mythesis}. In the simulation study, we use $\gamma=3$. With this parameter value, the probability of reporting is close to $1$ only for very small $p$-values, and substantially drops to low values even for $p$-value slightly below the $0.05$ one-sided threshold, e.g., the probability is $0.992, \; 0.875$ for $p$-values $= 0.01, \; 0.025$ respectively and $0.271$ for $p$-value $= 0.45$.
 
 
 \begin{figure}[hbt]
@@ -1070,7 +1070,7 @@ invisible(final_plot)
 
 \subsubsection{Piece-wise continuous-continuous}
 
-Lastly, we use the following selection function \eqref{general}, which combines \eqref{special1} and \eqref{special2} in a flexible way, further allowing to determine the assumed probability of reporting at the threshold for significance, i.e, $w_{0.05}$. Of note, setting $w_{0.05}=1$ in \eqref{general} results in \eqref{special1}, while setting $w_{0.05}=0$ results in \eqref{special2}. In the simulation, when using \eqref{general}, we use $w_{0.05}=0.5$, as the in-between value of the two extreme settings of\eqref{special1} and \eqref{special2}. Furthermore, in \eqref{general} we set $\gamma=7$, and $\beta=1.5$. This parameter choice corresponds to a setting in which we assume higher probabilities of reporting for $p$-values below $0.05$, compared to the setting of \eqref{special2}, and lower probabilities of reporting for $p$-values above $0.05$, compared to the setting of \eqref{special1}. For example, the probability of reporting is $0.996, \;, 0.760$ for $p$-values $0.025, \; 0.045$ respectively, and $0.433, \;, 0.177$ for $p$-values $0.55, \; 0.1$.
+Lastly, we use the following selection function \eqref{general}, which combines \eqref{special1} and \eqref{special2} in a flexible way, further allowing to specify the assumed probability of reporting at the threshold for significance, i.e, $w_{0.05}$. Of note, setting $w_{0.05}=1$ in \eqref{general} results in \eqref{special1}, while setting $w_{0.05}=0$ results in \eqref{special2}. In the simulation, when using \eqref{general}, we use $w_{0.05}=0.5$, as the in-between value of the two extreme settings of\eqref{special1} and \eqref{special2}. Furthermore, in \eqref{general} we set $\gamma=7$, and $\beta=1.5$. This parameter choice corresponds to a setting in which we assume higher probabilities of reporting for $p$-values below $0.05$, compared to the setting of \eqref{special2}, and lower probabilities of reporting for $p$-values above $0.05$, compared to the setting of \eqref{special1}. For example, the probability of reporting is $0.996, \; 0.760$ for $p$-values $0.025, \; 0.045$ respectively, and $0.433, \; 0.177$ for $p$-values $0.55, \; 0.1$. For completeness, we also examine the opposite setting, wherein $\gamma=1.5$, and $\beta=7$.
 
 %\begin{equation}
 %\label{my.sel.2}
@@ -1387,7 +1387,7 @@ Using $\text{E}(\sigma_i^2) = \sigma^2 = 2/ n_i$ and noting that $n_i = n$ is co
 
 \bigskip
 
-For the different parameter settings, i.e., varying study sizes $K \in 5, 15, 30$ and varying heterogeneity levels $\tau^2 \in 0.01, 0.04, 0.36$ we expect the following values of the standard errors, i.e., $\sqrt{\text{Var}(\hat{\mu})}$:
+For the different parameter settings, i.e., varying study sizes $K \in \{5, 15, 30 \}$ and varying heterogeneity levels $\tau^2 \in \{ 0, 0.013, 0.04, 0.12, 0.36 \}$ we expect the following values of the standard errors, i.e., $\sqrt{\text{Var}(\hat{\mu})}$:
 
 \begin{table}[htbp]
     \centering
@@ -1398,33 +1398,33 @@ For the different parameter settings, i.e., varying study sizes $K \in 5, 15, 30
     \cline{2-4}
     %\multicolumn{3}{c}{K values}\\
     \multicolumn{1}{c|}{} & $K$ = 5 & $K$ = 15 & $K$ = 30 \\ \hline
-    $\tau^2$ = 0.01 & 0.1 & 0.06 & 0.04 \\ \hline
+    $\tau^2$ = 0 & 0.09 & 0.05 & 0.04 \\ \hline
+    $\tau^2$ = 0.01 & 0.10 & 0.06 & 0.04 \\ \hline
     $\tau^2$ = 0.04 & 0.13 & 0.07 & 0.05 \\ \hline
-    $\tau^2$ = 0.36 & 0.28 & 0.16 & 0.11 \\ \hline
+    $\tau^2$ = 0.12 & 0.18 & 0.10 & 0.07 \\ \hline
+    $\tau^2$ = 0.36 & 0.28 & 0.16 & 0.12 \\ \hline
     \end{tabular}
 \end{table}
 
 
 We utilize the smallest meta-analysis study size, i.e., $K=5$, and the largest heterogeneity value, i.e., $\tau^2=0.36$, as a worst-case scenario for the estimation of $\text{Var}(\hat{\mu})$. From this value and \eqref{simN} we determine the number of simulations required as:
 
-\bigskip
 
 \begin{align}
 \text{N}_{\text{sim}} = \frac{\text{Var}(\hat{\mu})}{(\text{MCSE Required})^2} = \frac{\frac{\frac{2}{50} + 0.36}{5}}{.005^2} = 3200
 \end{align}
 
-\bigskip
 
 We thus perform, for each parameter combination, $\text{N}_{\text{sim}}= 3200$ simulations.
 
 
 \section{Reproducibility and Error Handling}
 
-The above-described simulation process will be implemented in the software $\texttt{R}$, version $4.2.0$, and will be made available in the GitHub repository \href{https://github.com/agaiasaracini/ORBproject}{agaiasaracini/ORBproject}. The repository contains both the $\texttt{R}$ scripts of the simulations, as well as the $\texttt{Rnw}$ files used to obtain the pdf of the reports, including this protocol. The simulations are executed in using the Euler cluster for High Performance Computing (HPC) of ETH Zurich and/or additional computing services of the University of Zurich (UZH). To guarantee reproducibility, the random seed of the simulation will be fixed to $\texttt{seed = 123}$ and the $\texttt{R}$ package $\texttt{doRNG}$, version $1.8.6$, will be used to perform reproducible parallel foreach loops. A $\texttt{sessionInfo()}$ output with more information on $\texttt{R}$ environment and code to reproduce the simulation study will be made available in the GitHub repository.
+The above-described simulation process will be implemented in the software $\texttt{R}$, version $4.2.0$, and will be made available in the GitHub repository \href{https://github.com/agaiasaracini/ORBproject}{agaiasaracini/ORBproject}. The repository contains both the $\texttt{R}$ scripts of the simulations, as well as the $\texttt{Rnw}$ files used to obtain the pdf of the reports, including this protocol. The simulations are executed using the Euler cluster for High Performance Computing (HPC) of ETH Zurich and/or additional computing services of the University of Zurich (UZH). To guarantee reproducibility, the random seed of the simulation will be fixed to $\texttt{seed = 123}$ and the $\texttt{R}$ package $\texttt{doRNG}$, version $1.8.6$, will be used to perform reproducible parallel foreach loops. A $\texttt{sessionInfo()}$ output with more information on $\texttt{R}$ environment and code to reproduce the simulation study will be made available in the GitHub repository.
 
 \bigskip
 
-The functions and $\texttt{R}$ scripts of the simulations process make use of the $\texttt{TryCatch()}$ functionality so as to stop the simulation in case of an error, and record the results up until that point. In case of convergence issues for the PL CI of the parameters of interest presented in the Methods Section \ref{methods}, the bounds of the CI will be denoted as $\texttt{NA}$ and excluded from the simulation results, i.e., they will not be replaced with new simulations. The number of valid PL CI per parameter combination will be recorded. Furthermore, as noted in Section \ref{orbdgm} on ORB DGM, as at least $2$ reported study outcomes are deemed necessary to conduct a meta-analysis and in particular to estimate the heterogeneity, simulated meta-analysis datasets with less than 2 reported outcomes will be excluded and the simulation will be repeated until a dataset with at least 2 reported outcomes is obtained. The number of trials needed to obtain this will be recorded per parameter combination. We do not expect severe issues in simulation process; however, in case of major problems and failures, the parameters of the simulation may be adjusted post hoc. This would be indicated in the discussion.
+The functions and $\texttt{R}$ scripts of the simulations process make use of the $\texttt{TryCatch()}$ functionality so as to stop the simulation in case of an error, and record the results up until that point. In case of convergence issues for the MLE and/or PL CI of the parameters of interest presented in the Methods Section \ref{methods}, the estimate and/or bounds of the CI will be denoted as $\texttt{NA}$ and excluded from the simulation results, i.e., they will not be replaced with new simulations. The number of valid outputs per parameter combination will be recorded. Furthermore, as noted in Section \ref{orbdgm} on ORB DGM, as at least $2$ reported study outcomes are deemed necessary to conduct a meta-analysis and in particular to estimate the heterogeneity, simulated meta-analysis datasets with less than 2 reported outcomes will be excluded and the simulation will be repeated until a dataset with at least 2 reported outcomes is obtained. The number of trials needed to obtain this will be recorded per parameter combination. We do not expect severe issues in simulation process, also based on the exploratory simulations conducted in \citet{mythesis}; however, in case of major problems and failures, the parameters of the simulation may be adjusted post hoc. This would be indicated in the discussion.
 
 
 \bibliographystyle{plainnat} % Choose natbib-compatible bibliography style
