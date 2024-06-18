@@ -62,8 +62,8 @@ simulate_ORB_data <- function(n_studies,
     # Generate meta-analysis dataset
     data <- simulate_single_dataset(n_studies, mu, tau_squared, n_treatment, n_control, gamma)
     
-    # Check if there's at least one study outcome that is not "unrep"
-    if (!all(data$y_ORB == "unrep")) {
+    # Check if there's at least two studies outcomes that is not "unrep"
+    if (sum(!(data$y_ORB == "unrep")) > 2) {
       break  # Exit the loop if condition met
     }
   }

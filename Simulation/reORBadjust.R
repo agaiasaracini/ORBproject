@@ -86,6 +86,24 @@ reORBadj <- function(a=NULL,
       n1_rep[a_0_index] <- n1_rep[a_0_index] + 0.5
       n2_rep[a_0_index] <- n2_rep[a_0_index] + 0.5 #Add 0.5 to the cell counts with 0
       
+      a_0_both <- which(a_rep == 0.5 & c_rep == 0.5)
+      
+      if (length(a_0_both)>0){
+        
+        a_rep <- a_rep[-a_0_both]
+        c_rep <- c_rep[-a_0_both]
+        n1_rep <- n1_rep[-a_0_both]
+        n2_rep <- n2_rep[-a_0_both]
+        
+      } else {
+        
+        a_rep <- a_rep
+        c_rep <- c_rep
+        n1_rep <- n1_rep
+        n2_rep <- n2_rep
+        
+      }
+      
     } else {
       
       a_rep <- a_rep
@@ -430,8 +448,6 @@ reORBadj <- function(a=NULL,
     mle.b.tau <- max(fit.adj.b$par[2],0)
     
     
-    
-    
     #LIKELIHOOD RATIO CONFIDENCE INTERVALS
     
     if (LR.CI){
@@ -724,16 +740,27 @@ reORBadj <- function(a=NULL,
         pl.b.tau(tau_squared, logRR=logRR, sigma_squared=sigma_squared, sigma_squared_imputed = sigma_squared_imputed) - pl.b.tau(mle.b.tau, logRR=logRR, sigma_squared=sigma_squared, sigma_squared_imputed = sigma_squared_imputed) + 1/2*qchisq(0.95, df=1)
       }
       
+      lowerBound.b.tau <- 0
+      
+      tryCatch({
+        
       lowerBound.b.tau <- 
-        max(uniroot(f.tau, interval = c(-5, mle.b.tau), logRR=logRR,
-                              sigma_squared=sigma_squared)$root,
-            0)
-                           
-                              
+        uniroot(f.b.tau, interval = c(-5, fit.adj.b$par[2]), logRR=logRR,
+                              sigma_squared=sigma_squared, extendInt = "yes")$root
+      }, error = function(e) {
+        
+        lowerBound.b.tau <- 0})
+             
+      upperBound.b.tau <- 0
+      
+      tryCatch({                        
       
       upperBound.b.tau <- 
-        uniroot(f.b.tau, interval = c(mle.b.tau, 5), logRR=logRR,
-                              sigma_squared=sigma_squared, sigma_squared_imputed=sigma_squared_imputed)$root
+        uniroot(f.b.tau, interval = c(fit.adj.b$par[2], 5), logRR=logRR,
+                              sigma_squared=sigma_squared, sigma_squared_imputed=sigma_squared_imputed, extendInt="yes")$root
+      }, error = function(e) {
+        
+        upperBound.b.tau <- 0})
    
       
       
