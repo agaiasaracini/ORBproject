@@ -28,22 +28,6 @@ calculate_mse_mcse <- function(theta_hat, theta) {
 }
 
 # Function to calculate Coverage and MCSE
-#calculate_coverage_mcse <- function(theta_hat_low, theta_hat_up, theta) {
- # N_sim <- length(theta_hat_low)
-  #coverage <- mean(theta_hat_low <= theta & theta <= theta_hat_up)
-  #mcse <- sqrt(coverage * (1 - coverage) / N_sim)
-  #return(list(coverage = coverage, mcse = mcse))
-#}
-
-# Function to calculate Power and MCSE
-#calculate_power_mcse <- function(theta_hat_low, theta_hat_up) {
- # N_sim <- length(theta_hat_low)
-#  power <- mean(theta_hat_low <= 0 & theta_hat_up >= 0)
- ## mcse <- sqrt(power * (1 - power) / N_sim)
-#  return(list(power = power, mcse = mcse))
-#}
-
-# Function to calculate Coverage and MCSE
 calculate_coverage_mcse <- function(theta_hat_low, theta_hat_up, theta) {
   # Remove NA values
   valid_indices <- !is.na(theta_hat_low) & !is.na(theta_hat_up)
@@ -71,8 +55,6 @@ calculate_power_mcse <- function(theta_hat_low, theta_hat_up) {
 }
 
 
-
-
 ############# Summary statistics function ######################################
 
 # Function to calculate summary statistics for a given method
@@ -94,7 +76,6 @@ calculate_summary <- function(theta_hats, theta_hats_low, theta_hats_up, theta) 
   
   # Calculate Power and MCSE
   power_mcse <- calculate_power_mcse(theta_hats_low, theta_hats_up)
-  
   
   # Combine all the summary statistics into a list
   summary <- list(

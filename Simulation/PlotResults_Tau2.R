@@ -7,12 +7,9 @@ library(ggplot2)
 library(dplyr)
 library(gridExtra)
 
-#dat.new <- readRDS("/Users/alessandrasaracini/Downloads/AdjustResults.rds")
-
-#dattt <- readRDS("/Users/alessandrasaracini/Downloads/AdjustResults.rds")
-
-#d <- readRDS("/Users/alessandrasaracini/Downloads/parDATA_76.rds")
-dat.new <- readRDS("/Users/alessandrasaracini/Downloads/AdjustResults3200k_15.rds")
+dat.new15 <- readRDS("/Users/alessandrasaracini/Downloads/AdjustResults3200k_15.rds")
+dat.new05 <- readRDS("/Users/alessandrasaracini/Downloads/AdjustResults3200k_05.rds")
+dat.new <- rbind(dat.new05, dat.new15)
 
 ##################### Bias #####################################################
 
