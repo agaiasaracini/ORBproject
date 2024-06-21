@@ -42,4 +42,8 @@ In order to make edits to the manuscript, download this repository as a .zip fil
 
 In order to re-run simulations, execute the files ORBSimAdj_15.R and ORBSimAdj_05.R in R or in the desired server. The simulations will output .rds files with the final data. These files, defined in (5) and (7) of the Simulation Folder above, are called in the ORB2.Rnw file to generate the desired plots for the manuscript.
 
+## Setting Working Directory
+
+When downloading the .zip file with the content of this project and opening it in R studio as an R studio project, make sure to check that the working directory is set to the project directory. This can be done on Session > Set Working Directory > To Project Directory. This way, the .R script files and .rds data files called within the manuscript can be found and the .Rnw file is directly executable.
+
 
