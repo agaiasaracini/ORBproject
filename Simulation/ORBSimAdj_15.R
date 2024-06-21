@@ -16,7 +16,7 @@ seed <- 123
 
 # Grid of parameters for the DGM
 parDATA <- expand.grid(
-  mu_values = seq(0, 0.8, by=0.1),
+  mu_values = seq(0, 0.8, by=0.2),
   k_values = c(5, 15, 30),
   tau_squared_values = c(0, 0.013333, 0.04, 0.12, 0.36),
   gamma = c(1.5),
@@ -311,12 +311,12 @@ for (i in 1:nrow(parDATA)) {
     
     
     # Save parDATA until this point
-    saveRDS(parDATA, file = paste0("parDATA05_", i, ".rds"))
+    saveRDS(parDATA, file = paste0("parDATA15_", i, ".rds"))
     
     
     # Remove previous intermediate files
     if (i > 1) {
-      previous_files <- paste0("parDATA05_", 1:(i-1), ".rds")
+      previous_files <- paste0("parDATA15_", 1:(i-1), ".rds")
       file.remove(previous_files)
     }
     

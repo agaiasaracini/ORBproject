@@ -1793,12 +1793,12 @@ library(ggplot2)
 
 p1 <- ggplot(data, aes(x = Method, y = Estimate, ymin = CI_Low, ymax = CI_High)) +
   geom_pointrange(aes(color = CustomLabel), size = 0.4) +
-  ylim(c(0.1,1.5))+
+  ylim(c(0.1,2))+
   coord_flip() +  # Flips the coordinates to make the CIs horizontal
   theme_void()+
   labs(title = " ",
        x = " ",
-       y = "\n50% Seizure Frequency Reduction\n") +
+       y = "\nlog RR 50% Seizure Frequency Reduction\n") +
   scale_color_manual(
     values = c("blue", "#00BA38", "red", "purple", "orange", "magenta"),
     labels = c(
@@ -1810,7 +1810,7 @@ p1 <- ggplot(data, aes(x = Method, y = Estimate, ymin = CI_Low, ymax = CI_High))
       "Naive"
     )
   ) +
-  scale_y_continuous(limits=c(0.1,1.5), breaks= seq(0.6, 1.4,  by=0.2))+
+  scale_y_continuous(limits=c(0.1,2), breaks= seq(0.6, 1.4,  by=0.2))+
   #theme(legend.title = element_blank())
   theme(legend.position = "none",
         legend.title = element_blank(), 
@@ -1825,7 +1825,40 @@ p1 <- p1 + geom_text(aes(y = 0.1,
                      hjust = +0.05, 
                      vjust = -0.5,
                      size = 3,
-                     position = position_nudge(x = -0.2))
+                     position = position_nudge(x = -0.25))+
+
+geom_text(aes(x = "Naive", y = 1.7, label = "Naive"), parse = TRUE, 
+           hjust = +0.05, 
+           vjust = -0.5,
+            size = 2.2,
+             position = position_nudge(x = -0.2))+
+  geom_text(aes(x = "LL", y = 1.7, label = paste0(expression(w[A]))), parse = TRUE, 
+            hjust = +0.05, 
+                     vjust = -0.5,
+            size = 2.2,
+             position = position_nudge(x = -0.2))+
+    geom_text(aes(x = "LC", y = 1.7, label = paste0(expression(w[B](gamma == 3)))), parse = TRUE, 
+            hjust = +0.05, 
+                     vjust = -0.5,
+            size = 2.2,
+             position = position_nudge(x = -0.2))+
+  geom_text(aes(x = "CL", y = 1.7, label = paste0(expression(w[C](gamma == 3)))), parse = TRUE, 
+           hjust = +0.05, 
+                     vjust = -0.5,
+            size = 2.2,
+             position = position_nudge(x = -0.2))+
+  geom_text(aes(x = "CC2", y = 1.7, label = paste0(expression(w[D](gamma == 7 ~ "," ~ beta == 1.5)))), parse = TRUE, 
+           hjust = +0.05, 
+                     vjust = -0.5,
+            size = 2.2,
+             position = position_nudge(x = -0.2))+
+  geom_text(aes(x = "CC1", y = 1.7, label = paste0(expression(w[D](gamma == 1.5 ~ "," ~ beta == 7.5)))), parse = TRUE, 
+           hjust = +0.05, 
+                     vjust = -0.5,
+            size = 2.2,
+             position = position_nudge(x = -0.2))
+  
+  
 
 
 
@@ -1880,12 +1913,12 @@ library(ggplot2)
 
 p <- ggplot(dataFree, aes(x = Method, y = Estimate, ymin = CI_Low, ymax = CI_High)) +
   geom_pointrange(aes(color = CustomLabel), size=0.4) +
-   ylim(c(-1.9, 2.23))+
+   ylim(c(-2.2, 2.4))+
   coord_flip() +  # Flips the coordinates to make the CIs horizontal
   theme_void()+
   labs(title = " ",
        x = " ",
-       y = "\nSeizure Freedom\n") +
+       y = "\nlog RR Seizure Freedom\n") +
   scale_color_manual(
     values = c("blue", "#00BA38", "red", "purple", "orange", "magenta"),
     labels = c(
@@ -1900,7 +1933,7 @@ p <- ggplot(dataFree, aes(x = Method, y = Estimate, ymin = CI_Low, ymax = CI_Hig
       override.aes = list(shape = NA, linetype = 1, size = 0.7)  # Only lines, smaller size
     )
   ) +
-  scale_y_continuous(limits=c(-1.9, 2.23), breaks= seq(-0.5, 2,  by=0.5))+
+  scale_y_continuous(limits=c(-2.2, 2.4), breaks= seq(-0.5, 2,  by=0.5))+
   theme(legend.position = "none",
         legend.title = element_blank(), 
         axis.title=element_text(size=9),
@@ -1911,11 +1944,16 @@ p <- ggplot(dataFree, aes(x = Method, y = Estimate, ymin = CI_Low, ymax = CI_Hig
         axis.ticks.x = element_blank())
 
 # Add text annotations for the point estimates and CIs
-p <- p + geom_text(aes(y = -1.9, 
+p <- p + geom_text(aes(y = -2.2, 
                        label = paste0(" ", round(Estimate, 2), " [", round(CI_Low, 2), ", ", round(CI_High, 2), "]")), 
               hjust = -0.1, vjust = -0.8, size = 3,
               position = position_nudge(x = -0.3))
+  
+  
 
+  
+
+#print(p)
 
 
 legend_plot_example <- ggplot() +
@@ -1967,9 +2005,11 @@ legend_plot_example <- ggplot() +
  # widths = c(5, 1))
 
 
-grid.arrange(p1, p, legend_plot_example, ncol = 3, widths = c(3, 3.5, 1))
+#grid.arrange(p1, p, legend_plot_example, ncol = 3, widths = c(3, 3.5, 1))
             # left = grid::textGrob("", rot = 90, gp = grid::gpar(fontsize = 8)),
              #bottom = grid::textGrob("log OR", gp = grid::gpar(fontsize = 8)))
+
+grid.arrange(p1, p, ncol = 2, widths = c(3.4, 3.2))
 
   
 
@@ -2041,7 +2081,7 @@ Applying ORB-adjustment to real-world meta-analyses on epilepsy \citet{Copas2019
 
 %\subsection{Limitations}
 
-The ORB-adjustment methodology proposed is flexible and broadly applicable, but several limitations exist. The framework operates on individual outcomes in meta-analyses, not accounting for correlations between outcomes. Future research could explore methods to incorporate such correlations. The current approach to imputing missing variances, as done in previous works \citep{Copas2014, Copas2019, bay, mythesis}, might be extended through multiple imputation techniques. Adjustments were made for normally distributed outcomes, which might not be precise for binary data \citep{Copas2014, Copas2019}. Exploring a binomial likelihood for such cases could be a potential avenue \citep{mythesis}.
+The ORB-adjustment methodology proposed is flexible and broadly applicable, but several limitations exist. The framework operates on individual outcomes in meta-analyses, not accounting for correlations between outcomes. Future research could explore methods to incorporate such correlations. The current approach to imputing missing variances, as done in previous works \citep{Copas2014, Copas2019, Bay, mythesis}, might be extended through multiple imputation techniques. Adjustments were made for normally distributed outcomes, which might not be precise for binary data \citep{Copas2014, Copas2019}. Exploring a binomial likelihood for such cases could be a potential avenue \citep{mythesis}.
 
 Maximum likelihood estimation (MLE) was used for estimating heterogeneity variance due to its connection to ORB-adjustment, though more sophisticated methods like restricted maximum likelihood (REML) could be considered \citep{REML, tauCI, REML2, mythesis}. Our focus was on beneficial outcomes, but the methodology can be extended to harmful outcomes by adjusting the selection functions for a different missing data mechanism accordingly.
 
@@ -2054,10 +2094,10 @@ One further possible avenue for future research can be the multiple imputation
 
 This study highlights the significant impact of ORB on treatment effect estimation and demonstrates the efficacy of a flexible ORB-adjustment framework. Despite limitations, the methodology shows promise in mitigating ORB across various settings, with potential for further refinement and broader application.
 
-\begin{figure*}[!hbt]
-\centering
-\caption{Bias in the estimation of the treatment effect for ORB simulated with $\gamma=1.5$}
-\hline
+%\begin{figure*}[!hbt]
+%\centering
+%\caption{Bias in the estimation of the treatment effect for ORB simulated with $\gamma=1.5$}
+%\hline
 <<echo=FALSE, results='asis', fig.height=12, fig.width=9, message=FALSE, warning=FALSE>>=
 
 #Plots
@@ -2065,7 +2105,7 @@ library(ggplot2)
 library(dplyr)
 library(gridExtra)
 
-dat.new <- readRDS("/Users/alessandrasaracini/Downloads/AdjustResults1k.rds")
+#dat.new <- readRDS("/Users/alessandrasaracini/Downloads/AdjustResults1k.rds")
 
 #dattt <- readRDS("/Users/alessandrasaracini/Downloads/AdjustResults.rds")
 
@@ -2235,33 +2275,33 @@ wrap_plot_bias <- function(data) {
 
 
 # Filter the data for gamma = 1.5
-parDATA_15 <- dat.new %>% filter(gamma == 1.5)
+#parDATA_15 <- dat.new %>% filter(gamma == 1.5)
 
 # Generate plots
-plots_bias <- parDATA_15 %>%
-  group_by(tau_squared_values, k_values) %>%
-  do(plot = wrap_plot_bias(.)) %>%
-  pull(plot)
+#plots_bias <- parDATA_15 %>%
+ # group_by(tau_squared_values, k_values) %>%
+#  do(plot = wrap_plot_bias(.)) %>%
+ # pull(plot)
 
 # Arrange the plots and legend
-final_plot <- grid.arrange(
-  arrangeGrob(grobs = plots_bias, nrow = 5, ncol = 3),
-  legend_plot_results,
-  nrow = 1,
-  widths = c(5, 0.6),
-  left = grid::textGrob(expression(E(hat(mu)) - mu), rot = 90, gp = grid::gpar(fontsize = 8)),
-  bottom = grid::textGrob(expression(mu), gp = grid::gpar(fontsize = 8))
-)
+#final_plot <- grid.arrange(
+ # arrangeGrob(grobs = plots_bias, nrow = 5, ncol = 3),
+#  legend_plot_results,
+ # nrow = 1,
+#  widths = c(5, 0.6),
+ # left = grid::textGrob(expression(E(hat(mu)) - mu), rot = 90, gp = grid::gpar(fontsize = 8)),
+#  bottom = grid::textGrob(expression(mu), gp = grid::gpar(fontsize = 8))
+#)
 
-invisible(final_plot)
+#invisible(final_plot)
 
 
 
 
 @
-\hline
-\label{res1}
-\end{figure*}
+%\hline
+%\label{res1}
+%\end{figure*}
 
 
 \begin{figure*}[!hbt]
@@ -2275,7 +2315,7 @@ library(ggplot2)
 library(dplyr)
 library(gridExtra)
 
-dat.new <- readRDS("/Users/alessandrasaracini/Downloads/AdjustResults1k.rds")
+dat.new <- readRDS("../Simulation/AdjustResults3200k_05.rds")
 
 #dattt <- readRDS("/Users/alessandrasaracini/Downloads/AdjustResults.rds")
 
@@ -2364,65 +2404,66 @@ library(gridExtra)
 
 wrap_plot_bias <- function(data) {
   ggplot(data) +
-    geom_line(aes(x = mu_values, y = Unadj_bias), color = "#F8766D", linewidth = 0.6) + #Naive
-    geom_line(aes(x = mu_values, y = DGM_bias), color = "#00BA38", linewidth = 0.6) + #DGM
+    geom_line(aes(x = mu_values, y = Unadj_bias), color = "magenta", linewidth = 0.6) + #Naive
+    geom_line(aes(x = mu_values, y = DGM_bias), color = "gray", linewidth = 0.6) + #DGM
     geom_line(aes(x = mu_values, y = LL_bias), color = "#619CFF", linewidth = 0.6) + #w_{0}
-    geom_line(aes(x = mu_values, y = LC_bias), color = "#F564E3", linewidth = 0.6) + #w_{1, gamma=3}
-    geom_line(aes(x = mu_values, y = CL_bias), color = "#00C19F", linewidth = 0.6) + #w_{2, beta=3}
-    geom_line(aes(x = mu_values, y = CC1_bias), color = "#FF61C3", linewidth = 0.6) + #w_{3, gamma=7, beta=1.5}
-    geom_line(aes(x = mu_values, y = CC2_bias), color = "#FFB000", linewidth = 0.6) + #w_{3, gamma=1.5, beta=7}
-    geom_hline(yintercept = 0, color = "black", linetype = "dashed", linewidth = 0.4) +
+    #geom_line(aes(x = mu_values, y = LC_bias), color = "#00BA38", linewidth = 0.6) + #w_{1, gamma=3}
+    geom_line(aes(x = mu_values, y = CL_bias), color = "red", linewidth = 0.6) + #w_{2, beta=3}
+    geom_line(aes(x = mu_values, y = CC1_bias), color = "orange", linewidth = 0.6) + #w_{3, gamma=7, beta=1.5}
+    geom_line(aes(x = mu_values, y = CC2_bias), color = "purple", linewidth = 0.6) + #w_{3, gamma=1.5, beta=7}
+    geom_line(aes(x = mu_values, y = LC_bias), color = "#00BA38", linewidth = 0.6) + #w_{1, gamma=3}
+    geom_hline(yintercept = 0, color = "black", linetype = "dashed", linewidth = 0.2) +
     labs(
       x = "", 
       y = "", 
       title = bquote("K" == .(data$k_values) ~ "," ~ I^2 == .(round(data$tau_squared_values / (data$tau_squared_values + 2 / 50), 2)))
     ) +
-    ylim(-0.2, 0.65) +
+    ylim(-0.2, 0.8) +
     theme_minimal() +
     theme(
       legend.position = "none",
       axis.text = element_text(size = 7),
       axis.title = element_text(size = 7),
-      plot.title = element_text(size = 7)
+      plot.title = element_text(size = 8)
     )
 }
 
 # Create a separate plot for the legend
 legend_plot_bias <- ggplot() +
-  geom_line(aes(x = 0, y = 0, color = "#F8766D")) +
-  geom_line(aes(x = 0, y = 0, color = "#00BA38")) +
+  geom_line(aes(x = 0, y = 0, color = "magenta")) +
+  geom_line(aes(x = 0, y = 0, color = "gray")) +
   geom_line(aes(x = 0, y = 0, color = "#619CFF")) +
-  geom_line(aes(x = 0, y = 0, color = "#F564E3")) +
-  geom_line(aes(x = 0, y = 0, color = "#00C19F")) +
-  geom_line(aes(x = 0, y = 0, color = "#FF61C3")) +
-  geom_line(aes(x = 0, y = 0, color = "#FFB000")) +
+  geom_line(aes(x = 0, y = 0, color = "#00BA38")) +
+  geom_line(aes(x = 0, y = 0, color = "red")) +
+  geom_line(aes(x = 0, y = 0, color = "orange")) +
+  geom_line(aes(x = 0, y = 0, color = "purple")) +
   
   scale_color_manual(
     values = c(
-      "#F8766D", 
-      "#00BA38", 
+      "magenta", 
+      "gray", 
        "#619CFF", 
-       "#F564E3",
-       "#00C19F", 
-       "#FF61C3", 
-      "#FFB000"
+       "#00BA38",
+       "red", 
+       "orange", 
+      "purple"
     ),
     labels = c(
       expression(Naive),
       expression(w[DGM]),
-      expression(w[0]),
-      expression(w[1] ~ gamma == 3),
-      expression(w[2] ~ beta == 3),
-      expression(w[3] ~ gamma == 7 ~ "," ~ beta == 1.5),
-      expression(w[3] ~ gamma == 1.5 ~ "," ~ beta == 7)
+      expression(w[A]),
+      expression(w[B] ~ gamma == 3),
+      expression(w[C] ~ beta == 3),
+      expression(w[D] ~ gamma == 7 ~ "," ~ beta == 1.5),
+      expression(w[D] ~ gamma == 1.5 ~ "," ~ beta == 7)
     )
   ) +
   
    
   theme_void() +
   theme(
-    legend.text = element_text(size = 6),
-    legend.key.size = unit(2, "mm"),
+    legend.text = element_text(size = 8),
+    legend.key.size = unit(3, "mm"),
     axis.title.x = element_blank(),
     axis.title.y = element_blank()
   ) +
@@ -2442,9 +2483,9 @@ final_plot <- grid.arrange(
   arrangeGrob(grobs = plots_bias, nrow = 5, ncol = 3),
   legend_plot_bias,
   nrow = 1,
-  widths = c(5, 0.6),
-  left = grid::textGrob(expression(E(hat(mu)) - mu), rot=90, gp = grid::gpar(fontsize = 8)), 
-             bottom = grid::textGrob(expression(mu), gp = grid::gpar(fontsize = 8)))
+  widths = c(4.8, 0.7),
+  left = grid::textGrob(expression(E(hat(mu)) - mu), rot=90, gp = grid::gpar(fontsize = 10)), 
+             bottom = grid::textGrob(expression(mu), gp = grid::gpar(fontsize = 12)))
 
 
 
