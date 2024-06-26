@@ -6,8 +6,9 @@ library(ggplot2)
 library(dplyr)
 library(gridExtra)
 
-dat.new15 <- readRDS("/Users/alessandrasaracini/Downloads/AdjustResults3200k_15.rds")
-dat.new05 <- readRDS("/Users/alessandrasaracini/Downloads/AdjustResults3200k_05.rds")
+setwd("~/Documents/ORB_Paper/ORBproject/Simulation") #change as needed
+dat.new15 <- readRDS("AdjustResults3200k_15.rds")
+dat.new05 <- readRDS("AdjustResults3200k_05.rds")
 dat.new <- rbind(dat.new05, dat.new15)
 
 ##################### Bias #####################################################
@@ -110,7 +111,7 @@ invisible(final_plot)
 
 ###################### Bias setting 0.5 ########################################
 
-parDATA_05 <- dat.new %>% filter(gamma == 0.5)
+parDATA_05 <- dat.new05 %>% filter(gamma == 0.5)
 
 
 # Generate plots

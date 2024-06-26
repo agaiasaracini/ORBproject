@@ -375,7 +375,7 @@ With the selection model framework for ORB adjustment presented in this work, on
 \centering
 \caption{Possible Selection Functions for ORB-adjustment. Function $w_A(y)$ from equation \eqref{sel0} in (a), function $w_B(y; \beta = 3)$ from equation \eqref{special1} in (b), function $w_C(y; \gamma = 3)$ from equation \eqref{special2} in (c), and functions $w_D(y; \beta = 1.5, \gamma = 7)$ and $w_D(y; \beta = 7, \gamma = 1.5)$  from equation\eqref{special3} shown in (d).\\[0.5em]}
 %\hline
-<<echo=FALSE, results='asis', fig.height=4.5, fig.width=7, message=FALSE, warning=FALSE>>=
+<<echo=FALSE, results='asis', fig.height=4.2, fig.width=7, message=FALSE, warning=FALSE>>=
 
 
 global_size = 10
@@ -672,22 +672,6 @@ invisible(final_final_plot)
 %\end{@twocolumnfalse}
 %]
 
-
-\subsubsection{Application to Motivating Example}
-
-We applied the ORB-adjustment framework to the Epilepsy data from \citet{topiramate, Copas2019}, using the selection functions proposed in this study. These selection functions utilize a one-sided $p$-value for significance with a threshold of $\alpha=0.05$, in contrast to \citet{Copas2019}, which used a two-sided $p$-value. While a one-sided threshold defines the underlying missing data mechanism, two-sided significance is used to construct profile likelihood (PL) confidence intervals (CIs) for the treatment effect estimate.
-
-Figure \ref{example} presents the point estimates and $95\%$ CI for the log RR of the treatment effect for two beneficial outcomes in the meta-analysis: a $50\%$ reduction in seizure frequency and seizure freedom. For both outcomes, the naive log RR estimate shows a significant positive treatment effect compared to the control.
-
-For the $50\%$ seizure frequency reduction, the ORB-adjusted estimates are slightly shifted towards the null value and are consistent across different selection functions. This minor shift is expected since only one study had unreported outcomes. However, for the seizure freedom outcome, with several unreported study outcomes, the ORB-adjusted estimates show a substantial shift towards the null, even negating the significance of the results. The differences between the ORB-adjusted estimates using various selection functions are more pronounced here.
-
-The strictness of different ORB-adjustments, derived from the selection functions, is intuitive and stems from their underlying assumptions about unreported study outcomes. The estimate obtained using $w_B(\gamma=3)$ is more conservative than that obtained with $w_A$. The selection function $w_A$ assumes a probability of unreporting of 1 for non-significant studies, regardless of the $p$-value magnitude, while $w_B(\gamma=3)$ assumes a higher probability of unreporting for larger $p$-values, implying greater bias and thus stricter correction. Conversely, $w_C$ is less conservative than $w_A$, as it assumes that some unreported outcomes may still be significant, indicating less bias and thus a less strict adjustment. Functions $w_D(\gamma=1.5, \beta=7)$ and $w_D(\gamma=7, \beta=1.5)$ align with $w_B(\gamma=3)$ and $w_C(\beta=3)$, respectively, suggesting that the larger parameter between $\gamma$ and $\beta$ drives the estimate.
-
-Since the true underlying data mechanism is unknown in this example, we further investigate the ORB-adjustment effect in a simulation study. This allows us to evaluate the ORB adjustment implementation using both correctly specified and misspecified models of the missing data mechanism.
-
-%Figure \ref{example} shows the point estimates and $95\%$ CI for the log RR of the treatment effect for the two beneficial outcomes of the meta-analysis study, i.e., $50 \%$ seizure frequency reduction, and seizure freedom. For both outcomes, the naive log RR estimate indicates a significant, positive effect of treatment compared to control. For the $50\%$ seizure frequency reduction outcome, we observe that the ORB-adjusted estimates are slightly shifted towards the null value, and are similar in their results. Of note, we recall that for this outcome, there was only one unreported study. For the outcome seizure freedom on the other hand, for which we had XXX unreported study outcomes, we observed a substantial shift towards the null for the ORB-adjusted estimates, even overturning the significance of the results. Furthermore, here we observe a more substantial difference in the ORB-adjusted estimate between the various selection functions used. Firstly, we note that $W_B$ is more strict than the $W_A$. This result is intuitive, given that, assuming the probability of reporting $W_A$ associated with the missing study outcomes, one is implicitly assuming that missing outcomes had an associated probability of unreporting is 1 if they are non-significant, independent of the strength of the significance. On the other hand, with $W_B$ one is assuming that the probability of unreporting, is 1 for very large $p$-value, thus suggesting more bias depending on the strength of association and thus stricter resulting adjustment. On the other hand, we observed that $W_C$ is less strict in its ORB adjustment. This is also intuitive in that we are assuming that unreported outcomes which are non-significant, had an associated probability of unreporting which was greater than 1. We note that function $W_D(XX)$ is similar to $W_B$ and function $W_D$ is similar to function $W_C$, in this case suggesting that the larger parameter between $\gamma$ and $\beta$ drives the resulting estimate.
-
-%Alessandra is the future!! Keep up the awesome work :) [Paper was hijacked ;)]
 
 <<echo=FALSE>>=
 
@@ -1738,7 +1722,7 @@ resultCC2_SeizureFree <- reORBadj(a = meta_data_miss$a_SeizureFree,
 \centering
 \caption{Application of ORB-adjustment to example data \citep{Copas2019, topiramate}, using the different selection functions showcased in Figure \ref{new.weight.fig}. In addition, the naive estimate, without ORB-adjustment, is shown for comparison.}
 %\hline
-<<example, echo=FALSE, results='asis', fig.height=3.2, fig.width=7, message=FALSE, warning=FALSE>>=
+<<example, echo=FALSE, results='asis', fig.height=3.3, fig.width=7, message=FALSE, warning=FALSE>>=
 
 library(ggplot2)
 library(gridExtra)
@@ -1793,12 +1777,14 @@ library(ggplot2)
 
 p1 <- ggplot(data, aes(x = Method, y = Estimate, ymin = CI_Low, ymax = CI_High)) +
   geom_pointrange(aes(color = CustomLabel), size = 0.4) +
-  ylim(c(0.1,2))+
+   geom_hline(yintercept = 0, linetype="dotted", 
+                color = "gray", size=0.5)+
+  ylim(c(0,2))+
   coord_flip() +  # Flips the coordinates to make the CIs horizontal
   theme_void()+
   labs(title = " ",
        x = " ",
-       y = "\nlog RR 50% Seizure Frequency Reduction\n") +
+       y = "\n50% Seizure Frequency Reduction\n") +
   scale_color_manual(
     values = c("blue", "#00BA38", "red", "purple", "orange", "magenta"),
     labels = c(
@@ -1810,8 +1796,17 @@ p1 <- ggplot(data, aes(x = Method, y = Estimate, ymin = CI_Low, ymax = CI_High))
       "Naive"
     )
   ) +
-  scale_y_continuous(limits=c(0.1,2), breaks= seq(0.6, 1.4,  by=0.2))+
+  #scale_y_continuous(trans = "log",  # Keep the scale on the log scale
+   # labels = function(x) round(exp(x), 2),
+   # limits=c(0.3,2)) +  
+   #scale_y_continuous(limits=c(0,2), 
+    #                  breaks= seq(0.6, 1.4,  by=0.2))+
   #theme(legend.title = element_blank())
+  scale_y_continuous(
+    limits=c(0,2),
+    breaks = 0,  # Specify only one break at x=0
+    labels = "RR=1"  # Label for the break at x=0
+  ) +
   theme(legend.position = "none",
         legend.title = element_blank(), 
          axis.text.y = element_blank(),
@@ -1820,39 +1815,39 @@ p1 <- ggplot(data, aes(x = Method, y = Estimate, ymin = CI_Low, ymax = CI_High))
         axis.ticks.x = element_blank())
 
 # Add text annotations for the point estimates and CIs
-p1 <- p1 + geom_text(aes(y = 0.1, 
-                         label = paste0(" ", round(Estimate, 2), " [", round(CI_Low, 2), ", ", round(CI_High, 2), "]")), 
+p1 <- p1 + geom_text(aes(y = 1.5, 
+                         label = paste0(" ", round(exp(Estimate), 2), " [", round(exp(CI_Low), 2), ", ", round(exp(CI_High), 2), "]")), 
                      hjust = +0.05, 
                      vjust = -0.5,
                      size = 3,
                      position = position_nudge(x = -0.25))+
 
-geom_text(aes(x = "Naive", y = 1.7, label = "Naive"), parse = TRUE, 
+geom_text(aes(x = "Naive", y = 0.2, label = "Naive"), parse = TRUE, 
            hjust = +0.05, 
            vjust = -0.5,
             size = 2.2,
              position = position_nudge(x = -0.2))+
-  geom_text(aes(x = "LL", y = 1.7, label = paste0(expression(w[A]))), parse = TRUE, 
+  geom_text(aes(x = "LL", y = 0.2, label = paste0(expression(w[A]))), parse = TRUE, 
             hjust = +0.05, 
                      vjust = -0.5,
             size = 2.2,
              position = position_nudge(x = -0.2))+
-    geom_text(aes(x = "LC", y = 1.7, label = paste0(expression(w[B](gamma == 3)))), parse = TRUE, 
+    geom_text(aes(x = "LC", y = 0.2, label = paste0(expression(w[B](gamma == 3)))), parse = TRUE, 
             hjust = +0.05, 
                      vjust = -0.5,
             size = 2.2,
              position = position_nudge(x = -0.2))+
-  geom_text(aes(x = "CL", y = 1.7, label = paste0(expression(w[C](gamma == 3)))), parse = TRUE, 
+  geom_text(aes(x = "CL", y = 0.2, label = paste0(expression(w[C](gamma == 3)))), parse = TRUE, 
            hjust = +0.05, 
                      vjust = -0.5,
             size = 2.2,
              position = position_nudge(x = -0.2))+
-  geom_text(aes(x = "CC2", y = 1.7, label = paste0(expression(w[D](gamma == 7 ~ "," ~ beta == 1.5)))), parse = TRUE, 
+  geom_text(aes(x = "CC2", y = 0.2, label = paste0(expression(w[D](gamma == 7 ~ "," ~ beta == 1.5)))), parse = TRUE, 
            hjust = +0.05, 
                      vjust = -0.5,
             size = 2.2,
              position = position_nudge(x = -0.2))+
-  geom_text(aes(x = "CC1", y = 1.7, label = paste0(expression(w[D](gamma == 1.5 ~ "," ~ beta == 7.5)))), parse = TRUE, 
+  geom_text(aes(x = "CC1", y = 0.2, label = paste0(expression(w[D](gamma == 1.5 ~ "," ~ beta == 7.5)))), parse = TRUE, 
            hjust = +0.05, 
                      vjust = -0.5,
             size = 2.2,
@@ -1913,12 +1908,14 @@ library(ggplot2)
 
 p <- ggplot(dataFree, aes(x = Method, y = Estimate, ymin = CI_Low, ymax = CI_High)) +
   geom_pointrange(aes(color = CustomLabel), size=0.4) +
-   ylim(c(-2.2, 2.4))+
+  geom_hline(yintercept = 0, linetype="dotted", 
+                color = "gray", size=0.5)+
+   ylim(c(-1.2, 4))+
   coord_flip() +  # Flips the coordinates to make the CIs horizontal
   theme_void()+
   labs(title = " ",
        x = " ",
-       y = "\nlog RR Seizure Freedom\n") +
+       y = "\nSeizure Freedom\n") +
   scale_color_manual(
     values = c("blue", "#00BA38", "red", "purple", "orange", "magenta"),
     labels = c(
@@ -1933,7 +1930,16 @@ p <- ggplot(dataFree, aes(x = Method, y = Estimate, ymin = CI_Low, ymax = CI_Hig
       override.aes = list(shape = NA, linetype = 1, size = 0.7)  # Only lines, smaller size
     )
   ) +
-  scale_y_continuous(limits=c(-2.2, 2.4), breaks= seq(-0.5, 2,  by=0.5))+
+  #scale_y_continuous(limits=c(-2.2, 2.4), breaks= seq(-0.5, 2,  by=0.5))+
+  # scale_y_continuous(trans = "log",  # Keep the scale on the log scale
+  #  labels = function(x) round(exp(x), 2),
+  #  limits=c(-4,2.2)) +  
+   #limits=c(0.1,2), breaks= seq(0.6, 1.4,  by=0.2))+
+  scale_y_continuous(
+    limits=c(-1.2,4),
+    breaks = 0,  # Specify only one break at x=0
+    labels = "RR=1"  # Label for the break at x=0
+  ) +
   theme(legend.position = "none",
         legend.title = element_blank(), 
         axis.title=element_text(size=9),
@@ -1944,8 +1950,8 @@ p <- ggplot(dataFree, aes(x = Method, y = Estimate, ymin = CI_Low, ymax = CI_Hig
         axis.ticks.x = element_blank())
 
 # Add text annotations for the point estimates and CIs
-p <- p + geom_text(aes(y = -2.2, 
-                       label = paste0(" ", round(Estimate, 2), " [", round(CI_Low, 2), ", ", round(CI_High, 2), "]")), 
+p <- p + geom_text(aes(y = 2.2, 
+                       label = paste0(" ", round(exp(Estimate), 2), " [", round(exp(CI_Low), 2), ", ", round(exp(CI_High), 2), "]")), 
               hjust = -0.1, vjust = -0.8, size = 3,
               position = position_nudge(x = -0.3))
   
@@ -2019,6 +2025,20 @@ grid.arrange(p1, p, ncol = 2, widths = c(3.4, 3.2))
 \end{figure*}
 
 
+\subsubsection{Application to Motivating Example}
+
+We applied the ORB-adjustment framework to the Epilepsy data from \citet{topiramate, Copas2019}, using the selection functions proposed in this study. These selection functions utilize a one-sided $p$-value for significance with a threshold of $\alpha=0.05$, in contrast to \citet{Copas2019}, which used a two-sided $p$-value. While a one-sided threshold defines the underlying missing data mechanism, two-sided significance is used to construct profile likelihood (PL) confidence intervals (CIs) for the treatment effect estimate.
+
+Figure \ref{example} presents the point estimates and $95\%$ CI for the log RR of the treatment effect for two beneficial outcomes in the meta-analysis: a $50\%$ reduction in seizure frequency and seizure freedom. For both outcomes, the naive log RR estimate shows a significant positive treatment effect compared to the control.
+
+For the $50\%$ seizure frequency reduction, the ORB-adjusted estimates are slightly shifted towards the null value and are consistent across different selection functions. This minor shift is expected since only one study had unreported outcomes. However, for the seizure freedom outcome, with several unreported study outcomes, the ORB-adjusted estimates show a substantial shift towards the null, even negating the significance of the results. The differences between the ORB-adjusted estimates using various selection functions are more pronounced here.
+
+The strictness of different ORB-adjustments, derived from the selection functions, is intuitive and stems from their underlying assumptions about unreported study outcomes. The estimate obtained using $w_B(\gamma=3)$ is more conservative than that obtained with $w_A$. The selection function $w_A$ assumes a probability of unreporting of 1 for non-significant studies, regardless of the $p$-value magnitude, while $w_B(\gamma=3)$ assumes a higher probability of unreporting for larger $p$-values, implying greater bias and thus stricter correction. Conversely, $w_C$ is less conservative than $w_A$, as it assumes that some unreported outcomes may still be significant, indicating less bias and thus a less strict adjustment. Functions $w_D(\gamma=1.5, \beta=7)$ and $w_D(\gamma=7, \beta=1.5)$ align with $w_B(\gamma=3)$ and $w_C(\beta=3)$, respectively, suggesting that the larger parameter between $\gamma$ and $\beta$ drives the estimate.
+Since the true underlying data mechanism is unknown in this example, we further investigate the ORB-adjustment effect in a simulation study. This allows us to evaluate the ORB adjustment implementation using both correctly specified and misspecified models of the missing data mechanism.
+
+%Figure \ref{example} shows the point estimates and $95\%$ CI for the log RR of the treatment effect for the two beneficial outcomes of the meta-analysis study, i.e., $50 \%$ seizure frequency reduction, and seizure freedom. For both outcomes, the naive log RR estimate indicates a significant, positive effect of treatment compared to control. For the $50\%$ seizure frequency reduction outcome, we observe that the ORB-adjusted estimates are slightly shifted towards the null value, and are similar in their results. Of note, we recall that for this outcome, there was only one unreported study. For the outcome seizure freedom on the other hand, for which we had XXX unreported study outcomes, we observed a substantial shift towards the null for the ORB-adjusted estimates, even overturning the significance of the results. Furthermore, here we observe a more substantial difference in the ORB-adjusted estimate between the various selection functions used. Firstly, we note that $W_B$ is more strict than the $W_A$. This result is intuitive, given that, assuming the probability of reporting $W_A$ associated with the missing study outcomes, one is implicitly assuming that missing outcomes had an associated probability of unreporting is 1 if they are non-significant, independent of the strength of the significance. On the other hand, with $W_B$ one is assuming that the probability of unreporting, is 1 for very large $p$-value, thus suggesting more bias depending on the strength of association and thus stricter resulting adjustment. On the other hand, we observed that $W_C$ is less strict in its ORB adjustment. This is also intuitive in that we are assuming that unreported outcomes which are non-significant, had an associated probability of unreporting which was greater than 1. We note that function $W_D(XX)$ is similar to $W_B$ and function $W_D$ is similar to function $W_C$, in this case suggesting that the larger parameter between $\gamma$ and $\beta$ drives the resulting estimate.
+
+
 
 \section{Simulation Study} \label{simstudy}
 
@@ -2061,43 +2081,63 @@ The naive log-likelihood (i) includes the contribution only from reported study 
 
 \subsection{Results}
 
-Firstly, the results indicate a substantial bias in the estimation of the treatment effect when using naive estimation methods that do not account for ORB. This aligns with existing literature \citep{Copas2019, Bay, dutch} and prior exploratory analysis \citep{mythesis}. As the true treatment effect size increases, the bias diminishes, reflecting the reduced likelihood of unreported studies, given the higher change of statistically significant results for large treatment effect sizes. Study size variations ($K=5,15,30$) do not significantly affect the bias, though confidence intervals are larger for smaller study sizes. High heterogeneity settings, particularly with $I^2=90$, exhibit larger biases, reinforcing findings from previous exploratory work \citep{mythesis}. Incorporating heterogeneity effects into the ORB framework offers novel insights compared to past investigations \citep{Copas2019}.
+%%%%%% bias with naive estimation
+Firstly, the results indicate a substantial bias in the estimation of the treatment effect when using naive estimation methods that do not account for ORB, as observable from Figures \ref{res1} and \ref{res2}. This aligns with existing literature \citep{Copas2019, Bay, dutch} and prior exploratory analysis \citep{mythesis}. As the true treatment effect size increases, the bias diminishes, reflecting the reduced likelihood of unreported studies, given the higher change of statistically significant results for large treatment effect sizes. Study size variations ($K=5,15,30$) do not significantly affect the bias, while heterogeneity has a substantial impact. High heterogeneity settings, particularly with $I^2=90$, exhibit larger biases, reinforcing findings from previous exploratory work \citep{mythesis}. Incorporating heterogeneity effects into the ORB framework is thus important and offers novel insights compared to past investigations \citep{Copas2019}. The observed patterns of naive estimation are consistent across both ORB simulation processes, regardless of the DGM parameter $\gamma$ value, whether $\gamma=1.5$ (which results in mostly non-significant unreported studies) or $\gamma=0.5$ (where some significant unreported studies, with larger p-values, exist).
 
-The observed patterns of naive estimation are consistent across both ORB simulation processes, regardless of the DGM parameter $\gamma$ value, whether $\gamma=1.5$ (mostly non-significant unreported studies) or $\gamma=0.5$ (some significant unreported studies, with larger p-values).
+%%%% bias reduction with DGM and other selection functions
+%%%% NB for k=5 not good
+When applying the ORB-adjustment framework using selection functions, there is a difference to be noted depending on the study size. For $K=15, 30$, the bias is eliminated when the selection function matches the ORB DGM, confirming the model's effectiveness when correctly specified. Different selection functions ($w_A, w_B, w_C, w_D$) show varying degrees of bias reduction. For the DGM with $\gamma=1.5$, these ORB-adjusted estimates shift the bias towards the null but do not fully eliminate it unless the exact DGM function is used. $w_B$ performs slightly better than $w_A$, and $w_C$ performs the least well, with, however, overall minimal differences noted among the functions, particularly in low heterogeneity settings. In the $\gamma=0.5$ setting, similar patterns are observed, with $w_B$ being the least strict and $w_C$ the most strict. The ORB-adjustment here tends to reduce the treatment effect size excessively, indicating potential overcorrection due to the steep $p$-value dependence. For the small meta-analysis size of $K=5$, we observe that the ORB-adjustment is not very successful; the bias is reduced, but not eliminated, even with the correctly specified model, i.e., using the selection function $w_{DGM}$. We should thus use ORB-adjustment with caution when we have very few studies; we note that, $K=5$ is the total number of studies, both reported and unreported; hence the number of reported studies is even smaller. 
 
-When applying the ORB-adjustment framework using selection functions, the bias is eliminated when the selection function matches the ORB DGM, confirming the model's effectiveness when correctly specified. Different selection functions ($w_A, w_B, w_C, w_D$) show varying degrees of bias reduction. For the DGM with $\gamma=1.5$, the ORB-adjusted estimates shift the bias towards the null but do not fully eliminate it unless the exact DGM function is used. $w_B$ performs slightly better than $w_A$, and $w_C$ performs the least well, with minimal differences noted among the functions, particularly in low heterogeneity settings.
+%%%% other measures: naive worst, others adjustments perform similar, worst for K=5
+Beyond bias, the MSE of the naive estimate of treatment effect is substantially reduced in high heterogeneity settings, for all ORB-adjusted estimates, as can be seen from Figures \ref{MSE1} and \ref{MSE2}. Similar to the results of the bias measures, we note better performance of the ORB-adjusted methods for $K=15, 30$. Coverage, shown in Figures \ref{Cov1} and \ref{Cov2} can be substantially for naive estimation. Overall, the coverage of the naive estimates decreases as heterogeneity increases. For small treatment effect sizes, e.g., $\mu=0$, the coverage is higher for small meta-analysis size, i.e., $K=5$, and decreases as the meta-analysis size increases. This can be explained by larger CI for the $K=5$ setting, which in turn cover the true underlying value. These observations hold for both ORB generating settings of $\gamma=1.5$ and $\gamma=0.5$. The coverage of the ORB-adjusted estimates is higher than the naive estimates, reflecting similar findings observed for the bias. For the ORB DGM with $\gamma=0.5$, there are no substantial difference between the various selection functions, including the correct model specification one, and overall the coverage is very high when adjusting for ORB. For the $\gamma=1.5$ setting, the correct DGM selection function has highest coverage, while other estimates exhibit slightly lower coverage, especially when $\mu$ is small, similar to the performance observed for the bias. In Figure \ref{Cov2} we interestingly observe a dip in the coverage of the ORB-adjusted estimates around $\mu=0.4$, which can be explained by the fact that, for smaller $\mu$, with various unreported study outcomes, we expect higher widths of the CI \citep{mythesis} and thus higher coverage, while for larger $\mu$, there are fewer unreported studies, so overall less bias and thus higher coverage. It is thus of key importance to have a holistic overview of various performance measures, given the confounding which can occur when only focusing on one.
 
-In the $\gamma=0.5$ setting, similar patterns are observed, with $w_B$ being the least strict and $w_C$ the most strict. The ORB-adjustment here tends to reduce the treatment effect size excessively, indicating potential overcorrection due to the steep $p$-value dependence.
+%%%% Power and empirical SE
+Figures \ref{Pow1} and \ref{Pow2} show the power of the various estimates of the treatment effect. We observe that with naive estimation, for both ORB DGM processes $\gamma=1.5$ and $\gamma=0.5$, the power is severely inflated. This is aligned with expectations and results from other performance measures, as not accounting for ORB results in an overestimation of the beneficial effect of treatment and over-representation of significant findings. The power of the naive estimate is particularly high for high heterogeneity settings and for large meta-analysis study sizes. For the $\gamma=1.5$ setting, we observe that the correct DGM selection function results in the lowest power among the various ORB-adjusted estimates, with other ORB-adjusted estimates in-between. For $\gamma=0.5$, the opposite is observed, i.e., $w_{DGM}$ results in highest power, with other ORB-adjusted estimates being lower. This is consistent with the bias findings, as most ORB-adjusted estimates were too conservative in the adjustment, shifting the estimate towards the null, with a thus increased likelihood of obtaining ORB-adjusted results which are not significant.
 
-Beyond bias, the MSE is significantly reduced for all ORB-adjusted estimates, particularly in high heterogeneity settings. Coverage is highest under the true DGM, with ORB-adjusted estimates closely following the bias results. Naive estimation shows inflated power, while correct DGM specification aligns power appropriately. There is no substantial difference in empirical SE between naive and ORB-adjusted estimates, although the true DGM has the lowest SE.
+%%% Empirical SE
+The last performance measure for the treatment effect estimate is the empirical standard error (ESE), shown in Figures \ref{SE1} and \ref{SE2}. We first note that the ESE of the naive estimate, across the different study sizes and heterogeneity settings is overall consistent to the calculations done for the expected SE of $\hat{\mu}$ in the simulation study protocol. In this case, the naive estimate has overall slightly higher SE, given the presence of unreported study outcomes; furthermore, the naive ESE in some settings decreases slightly as $\mu$ increases, given the increasing amount of reported study outcomes. In most settings, there are no substantial differences in the ESE between the various ORB-adjusted estimates and the naive one. Some exceptions which can be notes are that for the small meta-analysis study size setting, i.e., $K=1.5$, and high heterogeneity, e.g., $I^2=90$, the various ORB-adjusted estimates all have a similar ESE, which is lower than the naive one. On the other hand, for the same heterogeneity level but $K=15, 30$, some ORB-adjusted estimates have high ESE than the naive one, in particular for the ORB DGM setting $\gamma=0.5$. This could indicate a possible thresholding behavior, wherein adding contributions from a few unreported study outcomes can increase precision of the estimate, as we are using additional information which was not known with naive estimation, but, having many unreported outcomes contributing to the likelihood results in less precision due to uncertainty in the information added. 
 
-Our parameter of interest and the focus of our investigation was treatment effect, hence in the random effects model when carrying out MLE, the primary parameter was $\mu$. However, we also had a secondary interest in the estimation of the heterogeneity variance $\tau^2$ in the presence of ORB, and the effect of the ORB-adjustments on its estimation. The heterogeneity variance $\tau^2$ is jointly estimated from the ML with the $\mu$ parameter, which constitutes an exploratory way of assessing its value. From Figure XXX, shown the bias in the estimation for the various meta-analysis sizes and for different true treatment effect values, we observe that as heterogeneity increases, the bias in its estimation for increases, i.e., in high heterogeneity settings, naive estimation underestimates the heterogeneity variance. For no heterogeneity or really low, this does not seem to be an issue. The ORB-adjusted estimate using the correct DGM mechanism appears to reduce this bias, while the other misspecified functions only partially reduce the bias, with no remarkable differences noted. We observe that this bias is more prominent for low values of the true underlying treatment effect, while for high values of $\mu$ the bias in the estimation of the heterogeneity is minimal, which can be attributed to the lack of ORB issue as there is less likelihood of unreporting.
+
+%%%% Some comments on tau^2, but only bias
+Our parameter of interest and the focus of our investigation was treatment effect, hence in the random effects model when carrying out MLE, the primary parameter was $\mu$. However, we also had a secondary interest in the estimation of the heterogeneity variance $\tau^2$ in the presence of ORB, and the effect of the ORB-adjustments on its estimation. The heterogeneity variance $\tau^2$ is jointly estimated from the ML with the $\mu$ parameter, which constitutes an exploratory way of assessing its value. From Figures \ref{biastau1} and \ref{biastau2}, we note some interesting differences between the two ORB DGM settings. For $\gamma=1.5$, heterogeneity is underestimated for nearly all estimation methods, with the exception of the ORB-adjusted one according to the correctly specified model, i.e., using the selection function $w_{DGM}$. For $\gamma=0.5$, for $K=15, 30$, the heterogeneity is nearly always overestimated, while for $K=5$ it is mostly underestimated - the correctly specified ORB-adjusted model estimates the lowest heterogeneity and is thus closes to the zero-bias line for $K=15, 30$ and furthest from it for $K=5$. 
+
+%shown the bias in the estimation for the various meta-analysis sizes and for different true treatment effect values, we observe that as heterogeneity increases, the bias in its estimation for increases, i.e., in high heterogeneity settings, naive estimation underestimates the heterogeneity variance. For no heterogeneity or really low, this does not seem to be an issue. The ORB-adjusted estimate using the correct DGM mechanism appears to reduce this bias, while the other misspecified functions only partially reduce the bias, with no remarkable differences noted. We observe that this bias is more prominent for low values of the true underlying treatment effect, while for high values of $\mu$ the bias in the estimation of the heterogeneity is minimal, which can be attributed to the lack of ORB issue as there is less likelihood of unreporting.
 
 \section{Discussion} \label{disc}
 
 This study addresses Outcome Reporting Bias (ORB), where the reporting of study outcomes is influenced by their significance, leading to overestimation of treatment effects in meta-analyses. We approached ORB adjustment through a selection model framework, a common method in publication bias (PB) literature, incorporating contributions from unreported study outcomes based on assumed missing data mechanisms. Our proposed selection functions expand on existing methods, including those from previous works like \citet{Copas2019}, by being more flexible in the missing data mechanisms and encompassing all unreported outcomes.
 
-Applying ORB-adjustment to real-world meta-analyses on epilepsy \citet{Copas2019, topiramate} showed substantial shifts towards null estimates, especially in cases with numerous unreported outcomes. Simulation studies within a random effects model framework demonstrated that naive estimation significantly overestimates treatment effects, particularly in high heterogeneity settings. The selection model framework successfully eliminates this bias under correct model specification, while different misspecified selection functions still reduce bias but vary in strictness.
-
-%\subsection{Limitations}
-
-The ORB-adjustment methodology proposed is flexible and broadly applicable, but several limitations exist. The framework operates on individual outcomes in meta-analyses, not accounting for correlations between outcomes. Future research could explore methods to incorporate such correlations. The current approach to imputing missing variances, as done in previous works \citep{Copas2014, Copas2019, Bay, mythesis}, might be extended through multiple imputation techniques. Adjustments were made for normally distributed outcomes, which might not be precise for binary data \citep{Copas2014, Copas2019}. Exploring a binomial likelihood for such cases could be a potential avenue \citep{mythesis}.
-
-Maximum likelihood estimation (MLE) was used for estimating heterogeneity variance due to its connection to ORB-adjustment, though more sophisticated methods like restricted maximum likelihood (REML) could be considered \citep{REML, tauCI, REML2, mythesis}. Our focus was on beneficial outcomes, but the methodology can be extended to harmful outcomes by adjusting the selection functions for a different missing data mechanism accordingly.
-
-The simulation study tested a limited range of DGM parameters and ORB-adjustment selection functions. Future research could involve extensive sensitivity analyses and varying sample sizes to enhance the robustness of the findings.
-
-One further possible avenue for future research can be the multiple imputation
+%%% key summary of results: NB K=5,
+Applying ORB-adjustment to real-world meta-analyses on epilepsy \citet{Copas2019, topiramate} showed substantial shifts towards null estimates, especially in cases with numerous unreported outcomes. The findings of our simulation study reveal several critical insights regarding the impact of Outcome Reporting Bias (ORB) on the estimation of treatment effects and the efficacy of ORB-adjustment techniques. Naive estimation methods that do not account for ORB show substantial bias, particularly in high heterogeneity settings, underscoring the importance of incorporating ORB adjustments. Our results demonstrate that ORB-adjustment frameworks using selection functions can significantly reduce bias, although their effectiveness varies with meta-analysis study size and the unrelying method used to simulate ORB. For larger meta-analyses ($K=15, 30$), correctly specified ORB-adjustment models effectively eliminate bias, while different misspecifications are either not strict enough or slightly too strict, though they do not vary significantly in their performance. For smaller meta-analyses ($K=5$), we must be cautious as bias reduction is limited even with correctly specified models. Other measures of performance confirm these findings, demonstrating, e.g., substantial improvements in the coverage and power of the treatment effect estimates with ORB-adjustment. These findings highlight the necessity of using ORB-adjustment methods to achieve more accurate treatment effect estimates and also suggest that heterogeneity estimation is impacted by ORB, warranting further attention to improve the robustness of meta-analyses in the presence of ORB. 
 
 
-%\subsection{Conclusion}
+%Simulation studies within a random effects model framework demonstrated that naive estimation significantly overestimates treatment effects, particularly in high heterogeneity settings. The selection model framework successfully eliminates this bias under correct model specification, while different misspecified selection functions still reduce bias but vary in strictness.
 
-This study highlights the significant impact of ORB on treatment effect estimation and demonstrates the efficacy of a flexible ORB-adjustment framework. Despite limitations, the methodology shows promise in mitigating ORB across various settings, with potential for further refinement and broader application.
+The ORB-adjustment methodology proposed is flexible and broadly applicable, but several limitations exist. The framework operates on individual outcomes in meta-analyses, not accounting for correlations between outcomes. Future research could explore methods to incorporate such correlations. The current approach to imputing missing variances, as done in previous works \citep{Copas2014, Copas2019, Bay, mythesis}, might be extended through multiple imputation techniques. Adjustments were made for normally distributed outcomes, which might not be precise for binary data \citep{Copas2014, Copas2019}. Exploring a binomial likelihood for such cases could be a potential avenue \citep{mythesis}. In \citet{mythesis} we set-up the binomial likelihood contribution of reported study, which can be extended so as to include a term from unreported studies with a specified probability of reporting.
 
-%\begin{figure*}[!hbt]
-%\centering
-%\caption{Bias in the estimation of the treatment effect for ORB simulated with $\gamma=1.5$}
-%\hline
+We established that heterogeneity variance estimation is affected by ORB, and conversely, the true underlying heterogeneity influences the treatment effect estimate bias due to ORB. Therefore, considering heterogeneity in ORB and ORB adjustments is of paramount importance. To address this, we focused on and conducted simulations using the random effects model, in contrast to \citet{Copas2019}, which concentrated on the fixed effects model. Maximum likelihood estimation (MLE) was used for estimating heterogeneity variance due to its connection to ORB-adjustment, i.e.,  the ORB adjustment itself is defined via a likelihood function contribution. More sophisticated methods in the likelihood framework, like restricted maximum likelihood (REML) could be considered \citep{REML, tauCI, REML2, mythesis}. An exploratory REML approach was proposed in previous work \citep{mythesis}, but a more robust derivation could be explored. Obtaining accurate estimates of $\tau^2$ is crucial, and while challenging to intertwine it with ORB-adjustment outside the likelihood framework of joint estimation with $\mu$, novel methods could be investigated \citep{tauCI, REML, REML2}. Another potential area for future research is the effect of ORB on prediction intervals \citep{PI_coverage} and how ORB adjustments impact them, as mentioned in previous work \citep{mythesis}.
+
+Another possible avenue for future research is the multiple imputation (MI) of missing study outcomes, which has also been used in publication bias (PB). In the context of PB, \citet{MI_PB_Carpenter2011} fit a model to the observed study data and impute missing studies using a missing at random assumption. However, they use a re-weighting scheme that follows similar selection function assumptions to those made in this work. Options to impute not at random by sampling from a different distribution that directly models the selection process could be considered. Additionally, in the PB context, \citet{MI_PB_Carpenter2011} had to impute the study sizes, which, on the other hand, are known in the ORB setting proposed here. Hence, this could be a possible avenue for future research. In this sense, MI would benefit from modeling outcomes that are correlated to borrow strength in case of missing outcomes \citep{MI_PB_Carpenter2011}, as done in previous work on ORB \citep{Bay, Kirkham2012}. This could be of particular interest in cases, such as our motivating example from \citet{Copas2019, topiramate}, where numerous outcomes are considered in the meta-analysis. The challenge in this approach lies in the assumptions made on the correlations, which need to be estimated \citep{mythesis, Bay, Kirkham2012}.
+
+Our focus was on beneficial outcomes, but the methodology can be extended to harmful outcomes by adjusting the selection functions for a different missing data mechanism accordingly. This could mean changing the assumed selection mechanism for unreported outcomes to, for example, assuming that a positive value of the treatment effect for a harmful outcome, or a significant one, results in a lower probability of reporting \citep{Copas2019, Copas2014, ORBIT_paper}. Future implementations of this ORB-adjustment framework could hence investigate which missing data assumptions are reasonable to make for harmful outcomes and, e.g., conduct a simulation study similar to the one done here for various, flexible, selection functions.
+
+For future research on ORB, we encourage the refinement and further exploration of simulation studies and strongly recommend using a pre-defined protocol for transparency and reproducibility. The simulation study conducted in this work utilized a limited range of data-generating mechanism (DGM) parameters and ORB-adjustment selection functions. Future research could involve extensive sensitivity analyses and varying sample sizes to enhance the robustness of the findings, as well as comparisons with new potential approaches, such as the MI ones above-described.
+
+Overall, this study highlights the significant impact of ORB on treatment effect estimation, as well as heterogeneity variance, and demonstrates the efficacy of a flexible ORB-adjustment framework. The methodology shows promise in mitigating ORB across various settings, with potential for further refinement and broader application.
+
+
+\bibliographystyle{mywiley} % Choose natbib-compatible bibliography style
+\bibliography{biblio} % Replace 'biblio' with your actual BibTeX file name
+
+\newpage
+
+%%%%%%%%%% Bias %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{figure*}[!hbt]
+\centering
+\caption{Bias in the estimation of the treatment effect for ORB simulated with $\gamma=1.5$}
+\hline
 <<echo=FALSE, results='asis', fig.height=12, fig.width=9, message=FALSE, warning=FALSE>>=
 
 #Plots
@@ -2105,101 +2145,11 @@ library(ggplot2)
 library(dplyr)
 library(gridExtra)
 
-#dat.new <- readRDS("/Users/alessandrasaracini/Downloads/AdjustResults1k.rds")
-
-#dattt <- readRDS("/Users/alessandrasaracini/Downloads/AdjustResults.rds")
+dat.new <- readRDS("../Simulation/AdjustResults3200k_15.rds")
 
 ##################### Bias #####################################################
 
-
-
 #################### Bias setting 1.5 ##########################################
-
-#wrap_plot_bias <- function(data) {
-  #ggplot(data) +
-   # geom_line(aes(x = mu_values, y = Unadj_bias, color = "Naive"), linewidth = 0.6) +
-   # geom_line(aes(x = mu_values, y = DGM_bias, color = "Adj DGM"), linewidth = 0.6) +
-  #  geom_line(aes(x = mu_values, y = LL_bias, color = "Adj Constant-Constant"), linewidth = 0.6) +
-   # geom_line(aes(x = mu_values, y = LC_bias, color = "Adj Constant-Continuous"), linewidth = 0.6) +
-  #  geom_line(aes(x = mu_values, y = CL_bias, color = "Adj Continuous-Constant"), linewidth = 0.6) +
-   # geom_line(aes(x = mu_values, y = CC1_bias, color = "Adj Continuous-Continuous I"), linewidth = 0.6) +
-  #  geom_line(aes(x = mu_values, y = CC2_bias, color = "Adj Continuous-Continuous II"), linewidth = 0.6) +
-  #  geom_hline(yintercept = 0, color = "black", linetype = "dashed", linewidth = 0.4) +
-  #  labs(
-   #   x = "", # expression(mu),
-    #  y = "", # expression(E(hat(mu)) - mu),
-   #   title = bquote("K" == .(data$k_values) ~ "," ~ I^2 == .(round(data$tau_squared_values / (data$tau_squared_values + 2 / 50), 2)))
-  #  ) +
-  #  ylim(-0.2, 0.6) +
-  #  theme_minimal() +
-  #  theme(
-   #   legend.position = "none",
-  #    axis.text = element_text(size = 7),
-  #    axis.title = element_text(size = 7),
-   #   plot.title = element_text(size = 7)
-  #  )
-#}
-
-# Create a separate plot for the legend
-#legend_plot_bias <- ggplot() +
- # geom_line(aes(x = 0, y = 0, color = "Naive")) +
-  #geom_line(aes(x = 0, y = 0, color = "Adj DGM")) +
-  #geom_line(aes(x = 0, y = 0, color = "Adj Constant-Constant")) +
-  #geom_line(aes(x = 0, y = 0, color = "Adj Constant-Continuous")) +
-  #geom_line(aes(x = 0, y = 0, color = "Adj Continuous-Constant")) +
-  #geom_line(aes(x = 0, y = 0, color = "Adj Continuous-Continuous I")) +
-  #geom_line(aes(x = 0, y = 0, color = "Adj Continuous-Continuous II")) +
-  #scale_color_discrete(
-    #values = c("Naive", "DGM", "0", "1 gamma==3",
-     #          "2 beta==3", "3 gamma==7 beta==1.5", "3 gamma==1.5 beta==7"),
-     #values = c("Naive" = "#F8766D", 
-              #  "Adj DGM" = "#00BA38", 
-               # "Adj Constant-Constant" = "#619CFF", 
-              #  "Adj Constant-Continuous" = "#F564E3",
-               # "Adj Continuous-Constant" = "#00C19F", 
-              #  "Adj Continuous-Continuous I" = "#FF61C3", 
-               # "Adj Continuous-Continuous II" = "#FFB000"),
-    
-    #labels = c(expression(Naive), 
-      #         expression(w[DGM]), 
-     #          expression(w[0]), 
-    #           expression(w[1] ~ gamma == 3),
-   #            expression(w[2] ~ beta == 3), 
-  #             expression(w[3] ~ gamma == 7 ~ "," ~ beta == 1.5),
- #              expression(w[3] ~ gamma == 1.5 ~ "," ~ beta == 7))
-#  ) +
- # theme_void() +
-#  theme(
-  #  legend.text = element_text(size = 6),
-    #legend.key.size = unit(2, "mm"),
-   # axis.title.x = element_blank(),
-  #  axis.title.y = element_blank()
- # ) +
-#  guides(color = guide_legend(title = NULL, label.hjust = 0.5))
-
-
-#parDATA_15 <- dat.new %>% filter(gamma == 1.5)
-
-
-# Generate plots
-#plots_bias <- parDATA_15 %>%
- # group_by(tau_squared_values, k_values) %>%
-  #do(plot = wrap_plot_bias(.)) %>%
-  #pull(plot)
-
-# Arrange the plots and legend
-#final_plot <- grid.arrange(
- # arrangeGrob(grobs = plots_bias, nrow = 5, ncol = 3),
-  #legend_plot_bias,
-#  nrow = 1,
- # widths = c(5, 0.7),
-  #left = grid::textGrob(expression(E(hat(mu)) - mu), rot=90, gp = grid::gpar(fontsize = 8)), 
-   #          bottom = grid::textGrob(expression(mu), gp = grid::gpar(fontsize = 8)))
-
-
-
-
-#invisible(final_plot)
 
 
 library(ggplot2)
@@ -2207,9 +2157,9 @@ library(dplyr)
 library(gridExtra)
 
 legend_plot_results <- ggplot() +
-  geom_line(aes(x = 0, y = 0, color = "magenta"))+
+  geom_line(aes(x = 0, y = 0, color = "pink"))+
   geom_line(aes(x = 0, y = 0, color = "gray"))+
-  geom_line(aes(x = 0, y = 0, color = "blue")) +
+  geom_line(aes(x = 0, y = 0, color = "#619CFF")) +
   geom_line(aes(x = 0, y = 0, color = "#00BA38")) +
   geom_line(aes(x = 0, y = 0, color = "red")) +
   geom_line(aes(x = 0, y = 0, color = "orange")) +
@@ -2217,9 +2167,9 @@ legend_plot_results <- ggplot() +
   
   scale_color_manual(
     values = c(
-      "magenta",
+      "pink",
       "gray",
-      "blue", 
+      "#619CFF", 
       "#00BA38", 
        "red", 
        "orange",
@@ -2239,8 +2189,8 @@ legend_plot_results <- ggplot() +
    
   theme_void() +
   theme(
-    legend.text = element_text(size = 6),
-    legend.key.size = unit(2, "mm"),
+    legend.text = element_text(size = 8),
+    legend.key.size = unit(3, "mm"),
     axis.title.x = element_blank(),
     axis.title.y = element_blank()
   ) +
@@ -2250,58 +2200,72 @@ legend_plot_results <- ggplot() +
 
 wrap_plot_bias <- function(data) {
   ggplot(data) +
-    geom_line(aes(x = mu_values, y = Unadj_bias), color = "magenta", linewidth = 0.6) + #Naive
+    geom_line(aes(x = mu_values, y = Unadj_bias), color = "pink", linewidth = 0.6) + #Naive
+    geom_point(aes(x = mu_values, y = Unadj_bias), color = "pink", linewidth = 0.6) + #Naive
+    
     geom_line(aes(x = mu_values, y = DGM_bias), color = "gray", linewidth = 0.6) + #DGM
-    geom_line(aes(x = mu_values, y = CC1_bias), color = "orange", linewidth = 0.6) + #w_{D, gamma=7, beta=1.5}
-    geom_line(aes(x = mu_values, y = CC2_bias), color = "purple", linewidth = 0.6) + #w_{D, gamma=1.5, beta=7}
-    geom_line(aes(x = mu_values, y = LL_bias), color = "blue", linewidth = 0.6) + #w_{A}
-    geom_line(aes(x = mu_values, y = LC_bias), color = "#00BA38", linewidth = 0.6) + #w_{B, gamma=3}
+    geom_point(aes(x = mu_values, y = DGM_bias), color = "gray", linewidth = 0.6) + #DGM
+    
     geom_line(aes(x = mu_values, y = CL_bias), color = "red", linewidth = 0.6) + #w_{C, beta=3}
+    geom_point(aes(x = mu_values, y = CL_bias), color = "red", linewidth = 0.6) + #w_{C, beta=3}
+    
+    geom_line(aes(x = mu_values, y = CC1_bias), color = "orange", linewidth = 0.6) + #w_{D, gamma=7, beta=1.5}
+    geom_point(aes(x = mu_values, y = CC1_bias), color = "orange", linewidth = 0.6) + #w_{D, gamma=7, beta=1.5}
+    
+    geom_line(aes(x = mu_values, y = CC2_bias), color = "purple", linewidth = 0.6) + #w_{D, gamma=1.5, beta=7}
+    geom_point(aes(x = mu_values, y = CC2_bias), color = "purple", linewidth = 0.6) + #w_{D, gamma=1.5, beta=7}
+    
+    geom_line(aes(x = mu_values, y = LL_bias), color = "#619CFF", linewidth = 0.6) + #w_{A}
+    geom_point(aes(x = mu_values, y = LL_bias), color = "#619CFF", linewidth = 0.6) + #w_{A}
+    
+    geom_line(aes(x = mu_values, y = LC_bias), color = "#00BA38", linewidth = 0.6) + #w_{B, gamma=3}
+    geom_point(aes(x = mu_values, y = LC_bias), color = "#00BA38", linewidth = 0.6) + #w_{B, gamma=3}
+    
     geom_hline(yintercept = 0, color = "black", linetype = "dashed", linewidth = 0.4) +
     labs(
       x = "", 
       y = "", 
       title = bquote("K" == .(data$k_values) ~ "," ~ I^2 == .(round(data$tau_squared_values / (data$tau_squared_values + 2 / 50), 2)))
     ) +
-    ylim(-0.2, 0.6) +
+    ylim(-0.2, 0.7) +
     theme_minimal() +
     theme(
       legend.position = "none",
       axis.text = element_text(size = 7),
       axis.title = element_text(size = 7),
-      plot.title = element_text(size = 7)
+      plot.title = element_text(size = 8)
     )
 }
 
 
 # Filter the data for gamma = 1.5
-#parDATA_15 <- dat.new %>% filter(gamma == 1.5)
+parDATA_15 <- dat.new %>% filter(gamma == 1.5)
 
 # Generate plots
-#plots_bias <- parDATA_15 %>%
- # group_by(tau_squared_values, k_values) %>%
-#  do(plot = wrap_plot_bias(.)) %>%
- # pull(plot)
+plots_bias <- parDATA_15 %>%
+  group_by(tau_squared_values, k_values) %>%
+  do(plot = wrap_plot_bias(.)) %>%
+  pull(plot)
 
 # Arrange the plots and legend
-#final_plot <- grid.arrange(
- # arrangeGrob(grobs = plots_bias, nrow = 5, ncol = 3),
-#  legend_plot_results,
- # nrow = 1,
-#  widths = c(5, 0.6),
- # left = grid::textGrob(expression(E(hat(mu)) - mu), rot = 90, gp = grid::gpar(fontsize = 8)),
-#  bottom = grid::textGrob(expression(mu), gp = grid::gpar(fontsize = 8))
-#)
+final_plot <- grid.arrange(
+  arrangeGrob(grobs = plots_bias, nrow = 5, ncol = 3),
+  legend_plot_results,
+  nrow = 1,
+  widths = c(4.8, 0.7),
+  left = grid::textGrob("Bias", rot = 90, gp = grid::gpar(fontsize = 10)),
+  bottom = grid::textGrob(expression(mu), gp = grid::gpar(fontsize = 12))
+)
 
-#invisible(final_plot)
+invisible(final_plot)
 
 
 
 
 @
-%\hline
-%\label{res1}
-%\end{figure*}
+\hline
+\label{res1}
+\end{figure*}
 
 
 \begin{figure*}[!hbt]
@@ -2320,60 +2284,6 @@ dat.new <- readRDS("../Simulation/AdjustResults3200k_05.rds")
 #dattt <- readRDS("/Users/alessandrasaracini/Downloads/AdjustResults.rds")
 
 ##################### Bias #####################################################
-
-wrap_plot_bias <- function(data) {
-  ggplot(data) +
-    geom_line(aes(x = mu_values, y = Unadj_bias, color = "Naive"), linewidth = 0.6) +
-    #geom_ribbon(aes(x = mu_values, ymin= Unadj_bias - 1.96*Unadj_bias_mcse, 
-     #               ymax= Unadj_bias + 1.96*Unadj_bias_mcse, fill = "Naive"), 
-      #               alpha=0.2)+
-    
-    geom_line(aes(x = mu_values, y = DGM_bias, color = "Adj DGM"), linewidth = 0.6) +
-    #geom_ribbon(aes(x = mu_values, ymin= DGM_bias - 1.96*DGM_bias_mcse, 
-     #               ymax= DGM_bias + 1.96*DGM_bias_mcse, fill = "Adj DGM"), 
-      #          alpha=0.2)+
-    
-    geom_line(aes(x = mu_values, y = LL_bias, color = "Adj Constant-Constant"), linewidth = 0.6) +
-    #geom_ribbon(aes(x = mu_values, ymin= LL_bias - 1.96*LL_bias_mcse, 
-     #               ymax= LL_bias + 1.96*LL_bias_mcse, fill = "Adj LL"), 
-      #          alpha=0.2)+
-    
-    geom_line(aes(x = mu_values, y = LC_bias, color = "Adj Constant-Continuous"), linewidth = 0.6) +
-    #geom_ribbon(aes(x = mu_values, ymin= LC_bias - 1.96*LC_bias_mcse, 
-     #               ymax= LC_bias + 1.96*LC_bias_mcse, fill = "Adj LC"), 
-      #          alpha=0.2)+
-    
-    geom_line(aes(x = mu_values, y = CL_bias, color = "Adj Continuous-Constant"), linewidth = 0.6) +
-    #geom_ribbon(aes(x = mu_values, ymin= CL_bias - 1.96*CL_bias_mcse, 
-     #               ymax= CL_bias + 1.96*CL_bias_mcse, fill = "Adj CL"), 
-      #          alpha=0.2)+
-    
-    geom_line(aes(x = mu_values, y = CC1_bias, color = "Adj Continuous-Continuous I"), linewidth = 0.6) +
-    #geom_ribbon(aes(x = mu_values, ymin= CC1_bias - 1.96*CC1_bias_mcse, 
-     #               ymax= CC1_bias + 1.96*CC1_bias_mcse, fill = "Adj CC1"), 
-      #          alpha=0.2)+
-    
-    geom_line(aes(x = mu_values, y = CC2_bias, color = "Adj Continuous-Continuous II"), linewidth = 0.6) +
-    #geom_ribbon(aes(x = mu_values, ymin= CC2_bias - 1.96*CC2_bias_mcse, 
-    #               ymax= CC2_bias + 1.96*CC2_bias_mcse, fill = "Adj CC2"), 
-    #          alpha=0.2)+
-    
-    geom_hline(yintercept = 0, color = "black", linetype = "dashed", linewidth = 0.4) +
-    labs(
-      x = "", #expression(mu),
-      y = "", #expression(E(hat(mu)) - mu),
-      title = bquote("K" == .(data$k_values) ~ "," ~ I^2 == .(round(data$tau_squared_values/(data$tau_squared_values + 2/50), 2))
-    )) +
-    ylim(-0.2, 0.7) +
-    #ylim(min(data$bias.adj.sigmoid, data$bias.adj.wrong) - 0.01, max(data$bias.unadj) + 0.01) +
-    theme_minimal() +
-    theme(
-      legend.position = "none",
-      axis.text = element_text(size = 7),
-      axis.title = element_text(size = 7),
-      plot.title = element_text(size = 7)
-    )
-}
 
 
 # Create a separate plot for the legend
@@ -2404,21 +2314,32 @@ library(gridExtra)
 
 wrap_plot_bias <- function(data) {
   ggplot(data) +
-    geom_line(aes(x = mu_values, y = Unadj_bias), color = "magenta", linewidth = 0.6) + #Naive
+    geom_line(aes(x = mu_values, y = Unadj_bias), color = "pink", linewidth = 0.6) + #Naive
+    geom_point(aes(x = mu_values, y = Unadj_bias), color = "pink", linewidth = 0.6) + #Naive
+    
     geom_line(aes(x = mu_values, y = DGM_bias), color = "gray", linewidth = 0.6) + #DGM
+    geom_point(aes(x = mu_values, y = DGM_bias), color = "gray", linewidth = 0.6) + #DGM
+    
+    
     geom_line(aes(x = mu_values, y = LL_bias), color = "#619CFF", linewidth = 0.6) + #w_{0}
+    geom_point(aes(x = mu_values, y = LL_bias), color = "#619CFF", linewidth = 0.6) + #w_{0}
     #geom_line(aes(x = mu_values, y = LC_bias), color = "#00BA38", linewidth = 0.6) + #w_{1, gamma=3}
     geom_line(aes(x = mu_values, y = CL_bias), color = "red", linewidth = 0.6) + #w_{2, beta=3}
+    geom_point(aes(x = mu_values, y = CL_bias), color = "red", linewidth = 0.6) + #w_{2, beta=3}
+    
     geom_line(aes(x = mu_values, y = CC1_bias), color = "orange", linewidth = 0.6) + #w_{3, gamma=7, beta=1.5}
+    geom_point(aes(x = mu_values, y = CC1_bias), color = "orange", linewidth = 0.6) +
     geom_line(aes(x = mu_values, y = CC2_bias), color = "purple", linewidth = 0.6) + #w_{3, gamma=1.5, beta=7}
+    geom_point(aes(x = mu_values, y = CC2_bias), color = "purple", linewidth = 0.6) +
     geom_line(aes(x = mu_values, y = LC_bias), color = "#00BA38", linewidth = 0.6) + #w_{1, gamma=3}
+    geom_point(aes(x = mu_values, y = LC_bias), color = "#00BA38", linewidth = 0.6) +
     geom_hline(yintercept = 0, color = "black", linetype = "dashed", linewidth = 0.2) +
     labs(
       x = "", 
       y = "", 
       title = bquote("K" == .(data$k_values) ~ "," ~ I^2 == .(round(data$tau_squared_values / (data$tau_squared_values + 2 / 50), 2)))
     ) +
-    ylim(-0.2, 0.8) +
+    ylim(-0.2, 0.7) +
     theme_minimal() +
     theme(
       legend.position = "none",
@@ -2430,7 +2351,7 @@ wrap_plot_bias <- function(data) {
 
 # Create a separate plot for the legend
 legend_plot_bias <- ggplot() +
-  geom_line(aes(x = 0, y = 0, color = "magenta")) +
+  geom_line(aes(x = 0, y = 0, color = "pink")) +
   geom_line(aes(x = 0, y = 0, color = "gray")) +
   geom_line(aes(x = 0, y = 0, color = "#619CFF")) +
   geom_line(aes(x = 0, y = 0, color = "#00BA38")) +
@@ -2440,7 +2361,7 @@ legend_plot_bias <- ggplot() +
   
   scale_color_manual(
     values = c(
-      "magenta", 
+      "pink", 
       "gray", 
        "#619CFF", 
        "#00BA38",
@@ -2484,7 +2405,7 @@ final_plot <- grid.arrange(
   legend_plot_bias,
   nrow = 1,
   widths = c(4.8, 0.7),
-  left = grid::textGrob(expression(E(hat(mu)) - mu), rot=90, gp = grid::gpar(fontsize = 10)), 
+  left = grid::textGrob("Bias", rot=90, gp = grid::gpar(fontsize = 10)), 
              bottom = grid::textGrob(expression(mu), gp = grid::gpar(fontsize = 12)))
 
 
@@ -2497,9 +2418,1426 @@ invisible(final_plot)
 \label{res2}
 \end{figure*}
 
+%%%%%%%%%%% MSE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\bibliographystyle{mywiley} % Choose natbib-compatible bibliography style
-\bibliography{biblio} % Replace 'biblio' with your actual BibTeX file name
+\begin{figure*}[!hbt]
+\centering
+\caption{MSE in the estimation of the treatment effect for ORB simulated with $\gamma=1.5$}
+\hline
+<<echo=FALSE, results='asis', fig.height=12, fig.width=9, message=FALSE, warning=FALSE>>=
+
+#Plots
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+
+dat.new <- readRDS("../Simulation/AdjustResults3200k_15.rds")
+
+##################### Bias #####################################################
+
+#################### Bias setting 1.5 ##########################################
+
+
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+
+legend_plot_results <- ggplot() +
+  geom_line(aes(x = 0, y = 0, color = "pink"))+
+  geom_line(aes(x = 0, y = 0, color = "gray"))+
+  geom_line(aes(x = 0, y = 0, color = "#619CFF")) +
+  geom_line(aes(x = 0, y = 0, color = "#00BA38")) +
+  geom_line(aes(x = 0, y = 0, color = "red")) +
+  geom_line(aes(x = 0, y = 0, color = "orange")) +
+  geom_line(aes(x = 0, y = 0, color = "purple")) +
+  
+  scale_color_manual(
+    values = c(
+      "pink",
+      "gray",
+      "#619CFF", 
+      "#00BA38", 
+       "red", 
+       "orange",
+       "purple"
+    ),
+    labels = c(
+      "Naive",
+      expression(w[DGM]),
+      expression(w[A]),
+      expression(w[B](gamma == 3)),
+      expression(w[C](beta == 3)),
+      expression(w[D](gamma == 7 ~ "," ~ beta == 1.5)),
+      expression(w[D](gamma == 1.5 ~ "," ~ beta == 7))
+    )
+  ) +
+  
+   
+  theme_void() +
+  theme(
+    legend.text = element_text(size = 8),
+    legend.key.size = unit(3, "mm"),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()
+  ) +
+  guides(color = guide_legend(title = NULL, label.hjust = 0.5))
+
+
+
+wrap_plot_mse <- function(data) {
+  ggplot(data) +
+    geom_line(aes(x = mu_values, y = Unadj_mse), color = "pink", linewidth = 0.6) + #Naive
+    geom_point(aes(x = mu_values, y = Unadj_mse), color = "pink", linewidth = 0.6) + #Naive
+    
+    geom_line(aes(x = mu_values, y = DGM_mse), color = "gray", linewidth = 0.6) + #DGM
+    geom_point(aes(x = mu_values, y = DGM_mse), color = "gray", linewidth = 0.6) + #DGM
+    
+    geom_line(aes(x = mu_values, y = CL_mse), color = "red", linewidth = 0.6) + #w_{C, beta=3}
+    geom_point(aes(x = mu_values, y = CL_mse), color = "red", linewidth = 0.6) + #w_{C, beta=3}
+    
+    geom_line(aes(x = mu_values, y = CC1_mse), color = "orange", linewidth = 0.6) + #w_{D, gamma=7, beta=1.5}
+    geom_point(aes(x = mu_values, y = CC1_mse), color = "orange", linewidth = 0.6) + #w_{D, gamma=7, beta=1.5}
+    
+    geom_line(aes(x = mu_values, y = CC2_mse), color = "purple", linewidth = 0.6) + #w_{D, gamma=1.5, beta=7}
+    geom_point(aes(x = mu_values, y = CC2_mse), color = "purple", linewidth = 0.6) + #w_{D, gamma=1.5, beta=7}
+    
+    geom_line(aes(x = mu_values, y = LL_mse), color = "#619CFF", linewidth = 0.6) + #w_{A}
+    geom_point(aes(x = mu_values, y = LL_mse), color = "#619CFF", linewidth = 0.6) + #w_{A}
+    
+    geom_line(aes(x = mu_values, y = LC_mse), color = "#00BA38", linewidth = 0.6) + #w_{B, gamma=3}
+    geom_point(aes(x = mu_values, y = LC_mse), color = "#00BA38", linewidth = 0.6) + #w_{B, gamma=3}
+    
+    geom_hline(yintercept = 0, color = "black", linetype = "dashed", linewidth = 0.4) +
+    labs(
+      x = "", 
+      y = "", 
+      title = bquote("K" == .(data$k_values) ~ "," ~ I^2 == .(round(data$tau_squared_values / (data$tau_squared_values + 2 / 50), 2)))
+    ) +
+    ylim(0, 0.51) +
+    theme_minimal() +
+    theme(
+      legend.position = "none",
+      axis.text = element_text(size = 7),
+      axis.title = element_text(size = 7),
+      plot.title = element_text(size = 8)
+    )
+}
+
+
+# Filter the data for gamma = 1.5
+parDATA_15 <- dat.new %>% filter(gamma == 1.5)
+
+# Generate plots
+plots_mse <- parDATA_15 %>%
+  group_by(tau_squared_values, k_values) %>%
+  do(plot = wrap_plot_mse(.)) %>%
+  pull(plot)
+
+# Arrange the plots and legend
+final_plot <- grid.arrange(
+  arrangeGrob(grobs = plots_mse, nrow = 5, ncol = 3),
+  legend_plot_results,
+  nrow = 1,
+  widths = c(4.8, 0.7),
+  left = grid::textGrob("MSE", rot = 90, gp = grid::gpar(fontsize = 10)),
+  bottom = grid::textGrob(expression(mu), gp = grid::gpar(fontsize = 12))
+)
+
+invisible(final_plot)
+
+
+
+
+@
+\hline
+\label{MSE1}
+\end{figure*}
+
+
+\begin{figure*}[!hbt]
+\centering
+\caption{MSE in the estimation of the treatment effect for ORB simulated with $\gamma=0.5$}
+\hline
+<<echo=FALSE, results='asis', fig.height=12, fig.width=9, message=FALSE, warning=FALSE>>=
+
+#Plots
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+
+dat.new <- readRDS("../Simulation/AdjustResults3200k_05.rds")
+
+#dattt <- readRDS("/Users/alessandrasaracini/Downloads/AdjustResults.rds")
+
+##################### mse #####################################################
+
+
+# Create a separate plot for the legend
+legend_plot_mse <- ggplot() +
+  geom_line(aes(x = 0, y = 0, color =  "Naive")) +
+  geom_line(aes(x = 0, y = 0, color =  "Adj Constant-Constant")) +
+  geom_line(aes(x = 0, y = 0, color =  "Adj Constant-Continuous")) +
+  geom_line(aes(x = 0, y = 0, color = "Adj Continuous-Constant"))+
+  geom_line(aes(x = 0, y = 0, color = "Adj Continuous-Continuous I"))+
+  geom_line(aes(x = 0, y = 0, color = "Adj Continuous-Continuous II"))+
+  geom_line(aes(x = 0, y = 0, color = "Adj DGM"))+
+  
+  theme_void()+
+  theme(
+    legend.text = element_text(size = 4),
+    legend.key.size = unit(2, "mm"), # Adjust the size of plot title
+    axis.title.x = element_blank(),             # Remove x-axis label
+    axis.title.y = element_blank()
+  )+
+  guides(color = guide_legend(title = NULL))
+
+
+#################### mse setting 0.5 ##########################################
+
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+
+wrap_plot_mse <- function(data) {
+  ggplot(data) +
+    geom_line(aes(x = mu_values, y = Unadj_mse), color = "pink", linewidth = 0.6) + #Naive
+    geom_point(aes(x = mu_values, y = Unadj_mse), color = "pink", linewidth = 0.6) + #Naive
+    
+    geom_line(aes(x = mu_values, y = DGM_mse), color = "gray", linewidth = 0.6) + #DGM
+    geom_point(aes(x = mu_values, y = DGM_mse), color = "gray", linewidth = 0.6) + #DGM
+    
+    
+    geom_line(aes(x = mu_values, y = LL_mse), color = "#619CFF", linewidth = 0.6) + #w_{0}
+    geom_point(aes(x = mu_values, y = LL_mse), color = "#619CFF", linewidth = 0.6) + #w_{0}
+    #geom_line(aes(x = mu_values, y = LC_mse), color = "#00BA38", linewidth = 0.6) + #w_{1, gamma=3}
+    geom_line(aes(x = mu_values, y = CL_mse), color = "red", linewidth = 0.6) + #w_{2, beta=3}
+    geom_point(aes(x = mu_values, y = CL_mse), color = "red", linewidth = 0.6) + #w_{2, beta=3}
+    
+    geom_line(aes(x = mu_values, y = CC1_mse), color = "orange", linewidth = 0.6) + #w_{3, gamma=7, beta=1.5}
+    geom_point(aes(x = mu_values, y = CC1_mse), color = "orange", linewidth = 0.6) +
+    geom_line(aes(x = mu_values, y = CC2_mse), color = "purple", linewidth = 0.6) + #w_{3, gamma=1.5, beta=7}
+    geom_point(aes(x = mu_values, y = CC2_mse), color = "purple", linewidth = 0.6) +
+    geom_line(aes(x = mu_values, y = LC_mse), color = "#00BA38", linewidth = 0.6) + #w_{1, gamma=3}
+    geom_point(aes(x = mu_values, y = LC_mse), color = "#00BA38", linewidth = 0.6) +
+    geom_hline(yintercept = 0, color = "black", linetype = "dashed", linewidth = 0.2) +
+    labs(
+      x = "", 
+      y = "", 
+      title = bquote("K" == .(data$k_values) ~ "," ~ I^2 == .(round(data$tau_squared_values / (data$tau_squared_values + 2 / 50), 2)))
+    ) +
+    ylim(0, 0.51) +
+    theme_minimal() +
+    theme(
+      legend.position = "none",
+      axis.text = element_text(size = 7),
+      axis.title = element_text(size = 7),
+      plot.title = element_text(size = 8)
+    )
+}
+
+# Create a separate plot for the legend
+legend_plot_mse <- ggplot() +
+  geom_line(aes(x = 0, y = 0, color = "pink")) +
+  geom_line(aes(x = 0, y = 0, color = "gray")) +
+  geom_line(aes(x = 0, y = 0, color = "#619CFF")) +
+  geom_line(aes(x = 0, y = 0, color = "#00BA38")) +
+  geom_line(aes(x = 0, y = 0, color = "red")) +
+  geom_line(aes(x = 0, y = 0, color = "orange")) +
+  geom_line(aes(x = 0, y = 0, color = "purple")) +
+  
+  scale_color_manual(
+    values = c(
+      "pink", 
+      "gray", 
+       "#619CFF", 
+       "#00BA38",
+       "red", 
+       "orange", 
+      "purple"
+    ),
+    labels = c(
+      expression(Naive),
+      expression(w[DGM]),
+      expression(w[A]),
+      expression(w[B] ~ gamma == 3),
+      expression(w[C] ~ beta == 3),
+      expression(w[D] ~ gamma == 7 ~ "," ~ beta == 1.5),
+      expression(w[D] ~ gamma == 1.5 ~ "," ~ beta == 7)
+    )
+  ) +
+  
+   
+  theme_void() +
+  theme(
+    legend.text = element_text(size = 8),
+    legend.key.size = unit(3, "mm"),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()
+  ) +
+  guides(color = guide_legend(title = NULL, label.hjust = 0.5))
+
+parDATA_05 <- dat.new %>% filter(gamma == 0.5)
+
+
+# Generate plots
+plots_mse <- parDATA_05 %>%
+  group_by(tau_squared_values, k_values) %>%
+  do(plot = wrap_plot_mse(.)) %>%
+  pull(plot)
+
+# Arrange the plots and legend
+final_plot <- grid.arrange(
+  arrangeGrob(grobs = plots_mse, nrow = 5, ncol = 3),
+  legend_plot_mse,
+  nrow = 1,
+  widths = c(4.8, 0.7),
+  left = grid::textGrob("MSE", rot=90, gp = grid::gpar(fontsize = 10)), 
+             bottom = grid::textGrob(expression(mu), gp = grid::gpar(fontsize = 12)))
+
+
+
+
+invisible(final_plot)
+
+@
+\hline
+\label{MSE2}
+\end{figure*}
+
+
+%%%%%%%%% Coverage %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{figure*}[!hbt]
+\centering
+\caption{Coverage in the estimation of the treatment effect for ORB simulated with $\gamma=1.5$}
+\hline
+<<echo=FALSE, results='asis', fig.height=12, fig.width=9, message=FALSE, warning=FALSE>>=
+
+#Plots
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+
+dat.new <- readRDS("../Simulation/AdjustResults3200k_15.rds")
+
+##################### Bias #####################################################
+
+#################### Bias setting 1.5 ##########################################
+
+
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+
+legend_plot_results <- ggplot() +
+  geom_line(aes(x = 0, y = 0, color = "pink"))+
+  geom_line(aes(x = 0, y = 0, color = "gray"))+
+  geom_line(aes(x = 0, y = 0, color = "#619CFF")) +
+  geom_line(aes(x = 0, y = 0, color = "#00BA38")) +
+  geom_line(aes(x = 0, y = 0, color = "red")) +
+  geom_line(aes(x = 0, y = 0, color = "orange")) +
+  geom_line(aes(x = 0, y = 0, color = "purple")) +
+  
+  scale_color_manual(
+    values = c(
+      "pink",
+      "gray",
+      "#619CFF", 
+      "#00BA38", 
+       "red", 
+       "orange",
+       "purple"
+    ),
+    labels = c(
+      "Naive",
+      expression(w[DGM]),
+      expression(w[A]),
+      expression(w[B](gamma == 3)),
+      expression(w[C](beta == 3)),
+      expression(w[D](gamma == 7 ~ "," ~ beta == 1.5)),
+      expression(w[D](gamma == 1.5 ~ "," ~ beta == 7))
+    )
+  ) +
+  
+   
+  theme_void() +
+  theme(
+    legend.text = element_text(size = 8),
+    legend.key.size = unit(3, "mm"),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()
+  ) +
+  guides(color = guide_legend(title = NULL, label.hjust = 0.5))
+
+
+
+wrap_plot_cov <- function(data) {
+  ggplot(data) +
+    geom_line(aes(x = mu_values, y = Unadj_cov), color = "pink", linewidth = 0.6) + #Naive
+    geom_point(aes(x = mu_values, y = Unadj_cov), color = "pink", linewidth = 0.6) + #Naive
+    
+    geom_line(aes(x = mu_values, y = DGM_cov), color = "gray", linewidth = 0.6) + #DGM
+    geom_point(aes(x = mu_values, y = DGM_cov), color = "gray", linewidth = 0.6) + #DGM
+    
+    geom_line(aes(x = mu_values, y = CL_cov), color = "red", linewidth = 0.6) + #w_{C, beta=3}
+    geom_point(aes(x = mu_values, y = CL_cov), color = "red", linewidth = 0.6) + #w_{C, beta=3}
+    
+    geom_line(aes(x = mu_values, y = CC1_cov), color = "orange", linewidth = 0.6) + #w_{D, gamma=7, beta=1.5}
+    geom_point(aes(x = mu_values, y = CC1_cov), color = "orange", linewidth = 0.6) + #w_{D, gamma=7, beta=1.5}
+    
+    geom_line(aes(x = mu_values, y = CC2_cov), color = "purple", linewidth = 0.6) + #w_{D, gamma=1.5, beta=7}
+    geom_point(aes(x = mu_values, y = CC2_cov), color = "purple", linewidth = 0.6) + #w_{D, gamma=1.5, beta=7}
+    
+    geom_line(aes(x = mu_values, y = LL_cov), color = "#619CFF", linewidth = 0.6) + #w_{A}
+    geom_point(aes(x = mu_values, y = LL_cov), color = "#619CFF", linewidth = 0.6) + #w_{A}
+    
+    geom_line(aes(x = mu_values, y = LC_cov), color = "#00BA38", linewidth = 0.6) + #w_{B, gamma=3}
+    geom_point(aes(x = mu_values, y = LC_cov), color = "#00BA38", linewidth = 0.6) + #w_{B, gamma=3}
+    
+    geom_hline(yintercept = 0, color = "black", linetype = "dashed", linewidth = 0.4) +
+    labs(
+      x = "", 
+      y = "", 
+      title = bquote("K" == .(data$k_values) ~ "," ~ I^2 == .(round(data$tau_squared_values / (data$tau_squared_values + 2 / 50), 2)))
+    ) +
+    ylim(0, 1) +
+    theme_minimal() +
+    theme(
+      legend.position = "none",
+      axis.text = element_text(size = 7),
+      axis.title = element_text(size = 7),
+      plot.title = element_text(size = 8)
+    )
+}
+
+
+# Filter the data for gamma = 1.5
+parDATA_15 <- dat.new %>% filter(gamma == 1.5)
+
+# Generate plots
+plots_cov <- parDATA_15 %>%
+  group_by(tau_squared_values, k_values) %>%
+  do(plot = wrap_plot_cov(.)) %>%
+  pull(plot)
+
+# Arrange the plots and legend
+final_plot <- grid.arrange(
+  arrangeGrob(grobs = plots_cov, nrow = 5, ncol = 3),
+  legend_plot_results,
+  nrow = 1,
+  widths = c(4.8, 0.7),
+  left = grid::textGrob("Coverage", rot = 90, gp = grid::gpar(fontsize = 10)),
+  bottom = grid::textGrob(expression(mu), gp = grid::gpar(fontsize = 12))
+)
+
+invisible(final_plot)
+
+
+
+
+@
+\hline
+\label{Cov1}
+\end{figure*}
+
+
+\begin{figure*}[!hbt]
+\centering
+\caption{Coverage in the estimation of the treatment effect for ORB simulated with $\gamma=0.5$}
+\hline
+<<echo=FALSE, results='asis', fig.height=12, fig.width=9, message=FALSE, warning=FALSE>>=
+
+#Plots
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+
+dat.new <- readRDS("../Simulation/AdjustResults3200k_05.rds")
+
+#dattt <- readRDS("/Users/alessandrasaracini/Downloads/AdjustResults.rds")
+
+##################### cov #####################################################
+
+
+# Create a separate plot for the legend
+legend_plot_cov <- ggplot() +
+  geom_line(aes(x = 0, y = 0, color =  "Naive")) +
+  geom_line(aes(x = 0, y = 0, color =  "Adj Constant-Constant")) +
+  geom_line(aes(x = 0, y = 0, color =  "Adj Constant-Continuous")) +
+  geom_line(aes(x = 0, y = 0, color = "Adj Continuous-Constant"))+
+  geom_line(aes(x = 0, y = 0, color = "Adj Continuous-Continuous I"))+
+  geom_line(aes(x = 0, y = 0, color = "Adj Continuous-Continuous II"))+
+  geom_line(aes(x = 0, y = 0, color = "Adj DGM"))+
+  
+  theme_void()+
+  theme(
+    legend.text = element_text(size = 4),
+    legend.key.size = unit(2, "mm"), # Adjust the size of plot title
+    axis.title.x = element_blank(),             # Remove x-axis label
+    axis.title.y = element_blank()
+  )+
+  guides(color = guide_legend(title = NULL))
+
+
+#################### cov setting 0.5 ##########################################
+
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+
+wrap_plot_cov <- function(data) {
+  ggplot(data) +
+    geom_line(aes(x = mu_values, y = Unadj_cov), color = "pink", linewidth = 0.6) + #Naive
+    geom_point(aes(x = mu_values, y = Unadj_cov), color = "pink", linewidth = 0.6) + #Naive
+    
+    geom_line(aes(x = mu_values, y = DGM_cov), color = "gray", linewidth = 0.6) + #DGM
+    geom_point(aes(x = mu_values, y = DGM_cov), color = "gray", linewidth = 0.6) + #DGM
+    
+    
+    geom_line(aes(x = mu_values, y = LL_cov), color = "#619CFF", linewidth = 0.6) + #w_{0}
+    geom_point(aes(x = mu_values, y = LL_cov), color = "#619CFF", linewidth = 0.6) + #w_{0}
+    #geom_line(aes(x = mu_values, y = LC_cov), color = "#00BA38", linewidth = 0.6) + #w_{1, gamma=3}
+    geom_line(aes(x = mu_values, y = CL_cov), color = "red", linewidth = 0.6) + #w_{2, beta=3}
+    geom_point(aes(x = mu_values, y = CL_cov), color = "red", linewidth = 0.6) + #w_{2, beta=3}
+    
+    geom_line(aes(x = mu_values, y = CC1_cov), color = "orange", linewidth = 0.6) + #w_{3, gamma=7, beta=1.5}
+    geom_point(aes(x = mu_values, y = CC1_cov), color = "orange", linewidth = 0.6) +
+    geom_line(aes(x = mu_values, y = CC2_cov), color = "purple", linewidth = 0.6) + #w_{3, gamma=1.5, beta=7}
+    geom_point(aes(x = mu_values, y = CC2_cov), color = "purple", linewidth = 0.6) +
+    geom_line(aes(x = mu_values, y = LC_cov), color = "#00BA38", linewidth = 0.6) + #w_{1, gamma=3}
+    geom_point(aes(x = mu_values, y = LC_cov), color = "#00BA38", linewidth = 0.6) +
+    geom_hline(yintercept = 0, color = "black", linetype = "dashed", linewidth = 0.2) +
+    labs(
+      x = "", 
+      y = "", 
+      title = bquote("K" == .(data$k_values) ~ "," ~ I^2 == .(round(data$tau_squared_values / (data$tau_squared_values + 2 / 50), 2)))
+    ) +
+    ylim(0, 1) +
+    theme_minimal() +
+    theme(
+      legend.position = "none",
+      axis.text = element_text(size = 7),
+      axis.title = element_text(size = 7),
+      plot.title = element_text(size = 8)
+    )
+}
+
+# Create a separate plot for the legend
+legend_plot_cov <- ggplot() +
+  geom_line(aes(x = 0, y = 0, color = "pink")) +
+  geom_line(aes(x = 0, y = 0, color = "gray")) +
+  geom_line(aes(x = 0, y = 0, color = "#619CFF")) +
+  geom_line(aes(x = 0, y = 0, color = "#00BA38")) +
+  geom_line(aes(x = 0, y = 0, color = "red")) +
+  geom_line(aes(x = 0, y = 0, color = "orange")) +
+  geom_line(aes(x = 0, y = 0, color = "purple")) +
+  
+  scale_color_manual(
+    values = c(
+      "pink", 
+      "gray", 
+       "#619CFF", 
+       "#00BA38",
+       "red", 
+       "orange", 
+      "purple"
+    ),
+    labels = c(
+      expression(Naive),
+      expression(w[DGM]),
+      expression(w[A]),
+      expression(w[B] ~ gamma == 3),
+      expression(w[C] ~ beta == 3),
+      expression(w[D] ~ gamma == 7 ~ "," ~ beta == 1.5),
+      expression(w[D] ~ gamma == 1.5 ~ "," ~ beta == 7)
+    )
+  ) +
+  
+   
+  theme_void() +
+  theme(
+    legend.text = element_text(size = 8),
+    legend.key.size = unit(3, "mm"),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()
+  ) +
+  guides(color = guide_legend(title = NULL, label.hjust = 0.5))
+
+parDATA_05 <- dat.new %>% filter(gamma == 0.5)
+
+
+# Generate plots
+plots_cov <- parDATA_05 %>%
+  group_by(tau_squared_values, k_values) %>%
+  do(plot = wrap_plot_cov(.)) %>%
+  pull(plot)
+
+# Arrange the plots and legend
+final_plot <- grid.arrange(
+  arrangeGrob(grobs = plots_cov, nrow = 5, ncol = 3),
+  legend_plot_cov,
+  nrow = 1,
+  widths = c(4.8, 0.7),
+  left = grid::textGrob("Coverage", rot=90, gp = grid::gpar(fontsize = 10)), 
+             bottom = grid::textGrob(expression(mu), gp = grid::gpar(fontsize = 12)))
+
+
+
+
+invisible(final_plot)
+
+@
+\hline
+\label{Cov2}
+\end{figure*}
+
+%%%%%%% Power %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{figure*}[!hbt]
+\centering
+\caption{Power in the estimation of the treatment effect for ORB simulated with $\gamma=1.5$}
+\hline
+<<echo=FALSE, results='asis', fig.height=12, fig.width=9, message=FALSE, warning=FALSE>>=
+
+#Plots
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+
+dat.new <- readRDS("../Simulation/AdjustResults3200k_15.rds")
+
+##################### Bias #####################################################
+
+#################### Bias setting 1.5 ##########################################
+
+
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+
+legend_plot_results <- ggplot() +
+  geom_line(aes(x = 0, y = 0, color = "pink"))+
+  geom_line(aes(x = 0, y = 0, color = "gray"))+
+  geom_line(aes(x = 0, y = 0, color = "#619CFF")) +
+  geom_line(aes(x = 0, y = 0, color = "#00BA38")) +
+  geom_line(aes(x = 0, y = 0, color = "red")) +
+  geom_line(aes(x = 0, y = 0, color = "orange")) +
+  geom_line(aes(x = 0, y = 0, color = "purple")) +
+  
+  scale_color_manual(
+    values = c(
+      "pink",
+      "gray",
+      "#619CFF", 
+      "#00BA38", 
+       "red", 
+       "orange",
+       "purple"
+    ),
+    labels = c(
+      "Naive",
+      expression(w[DGM]),
+      expression(w[A]),
+      expression(w[B](gamma == 3)),
+      expression(w[C](beta == 3)),
+      expression(w[D](gamma == 7 ~ "," ~ beta == 1.5)),
+      expression(w[D](gamma == 1.5 ~ "," ~ beta == 7))
+    )
+  ) +
+  
+   
+  theme_void() +
+  theme(
+    legend.text = element_text(size = 8),
+    legend.key.size = unit(3, "mm"),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()
+  ) +
+  guides(color = guide_legend(title = NULL, label.hjust = 0.5))
+
+
+
+wrap_plot_power <- function(data) {
+  ggplot(data) +
+    geom_line(aes(x = mu_values, y = 1-Unadj_power), color = "pink", linewidth = 0.6) + #Naive
+    geom_point(aes(x = mu_values, y = 1-Unadj_power), color = "pink", linewidth = 0.6) + #Naive
+    
+    geom_line(aes(x = mu_values, y = 1-DGM_power), color = "gray", linewidth = 0.6) + #DGM
+    geom_point(aes(x = mu_values, y = 1-DGM_power), color = "gray", linewidth = 0.6) + #DGM
+    
+    geom_line(aes(x = mu_values, y = 1-CL_power), color = "red", linewidth = 0.6) + #w_{C, beta=3}
+    geom_point(aes(x = mu_values, y = 1-CL_power), color = "red", linewidth = 0.6) + #w_{C, beta=3}
+    
+    geom_line(aes(x = mu_values, y = 1-CC1_power), color = "orange", linewidth = 0.6) + #w_{D, gamma=7, beta=1.5}
+    geom_point(aes(x = mu_values, y = 1-CC1_power), color = "orange", linewidth = 0.6) + #w_{D, gamma=7, beta=1.5}
+    
+    geom_line(aes(x = mu_values, y = 1-CC2_power), color = "purple", linewidth = 0.6) + #w_{D, gamma=1.5, beta=7}
+    geom_point(aes(x = mu_values, y = 1-CC2_power), color = "purple", linewidth = 0.6) + #w_{D, gamma=1.5, beta=7}
+    
+    geom_line(aes(x = mu_values, y = 1-LL_power), color = "#619CFF", linewidth = 0.6) + #w_{A}
+    geom_point(aes(x = mu_values, y = 1-LL_power), color = "#619CFF", linewidth = 0.6) + #w_{A}
+    
+    geom_line(aes(x = mu_values, y = 1-LC_power), color = "#00BA38", linewidth = 0.6) + #w_{B, gamma=3}
+    geom_point(aes(x = mu_values, y = 1-LC_power), color = "#00BA38", linewidth = 0.6) + #w_{B, gamma=3}
+    
+    geom_hline(yintercept = 0, color = "black", linetype = "dashed", linewidth = 0.4) +
+    labs(
+      x = "", 
+      y = "", 
+      title = bquote("K" == .(data$k_values) ~ "," ~ I^2 == .(round(data$tau_squared_values / (data$tau_squared_values + 2 / 50), 2)))
+    ) +
+    ylim(0, 1) +
+    theme_minimal() +
+    theme(
+      legend.position = "none",
+      axis.text = element_text(size = 7),
+      axis.title = element_text(size = 7),
+      plot.title = element_text(size = 8)
+    )
+}
+
+
+# Filter the data for gamma = 1.5
+parDATA_15 <- dat.new %>% filter(gamma == 1.5)
+
+# Generate plots
+plots_power <- parDATA_15 %>%
+  group_by(tau_squared_values, k_values) %>%
+  do(plot = wrap_plot_power(.)) %>%
+  pull(plot)
+
+# Arrange the plots and legend
+final_plot <- grid.arrange(
+  arrangeGrob(grobs = plots_power, nrow = 5, ncol = 3),
+  legend_plot_results,
+  nrow = 1,
+  widths = c(4.8, 0.7),
+  left = grid::textGrob("Power", rot = 90, gp = grid::gpar(fontsize = 10)),
+  bottom = grid::textGrob(expression(mu), gp = grid::gpar(fontsize = 12))
+)
+
+invisible(final_plot)
+
+
+
+
+@
+\hline
+\label{Pow1}
+\end{figure*}
+
+
+\begin{figure*}[!hbt]
+\centering
+\caption{Power in the estimation of the treatment effect for ORB simulated with $\gamma=0.5$}
+\hline
+<<echo=FALSE, results='asis', fig.height=12, fig.width=9, message=FALSE, warning=FALSE>>=
+
+#Plots
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+
+dat.new <- readRDS("../Simulation/AdjustResults3200k_05.rds")
+
+#dattt <- readRDS("/Users/alessandrasaracini/Downloads/AdjustResults.rds")
+
+##################### pow #####################################################
+
+
+# Create a separate plot for the legend
+legend_plot_power <- ggplot() +
+  geom_line(aes(x = 0, y = 0, color =  "Naive")) +
+  geom_line(aes(x = 0, y = 0, color =  "Adj Constant-Constant")) +
+  geom_line(aes(x = 0, y = 0, color =  "Adj Constant-Continuous")) +
+  geom_line(aes(x = 0, y = 0, color = "Adj Continuous-Constant"))+
+  geom_line(aes(x = 0, y = 0, color = "Adj Continuous-Continuous I"))+
+  geom_line(aes(x = 0, y = 0, color = "Adj Continuous-Continuous II"))+
+  geom_line(aes(x = 0, y = 0, color = "Adj DGM"))+
+  
+  theme_void()+
+  theme(
+    legend.text = element_text(size = 4),
+    legend.key.size = unit(2, "mm"), # Adjust the size of plot title
+    axis.title.x = element_blank(),             # Remove x-axis label
+    axis.title.y = element_blank()
+  )+
+  guides(color = guide_legend(title = NULL))
+
+
+#################### pow setting 0.5 ##########################################
+
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+
+wrap_plot_power <- function(data) {
+  ggplot(data) +
+    geom_line(aes(x = mu_values, y = 1-Unadj_power), color = "pink", linewidth = 0.6) + #Naive
+    geom_point(aes(x = mu_values, y = 1-Unadj_power), color = "pink", linewidth = 0.6) + #Naive
+    
+    geom_line(aes(x = mu_values, y = 1-DGM_power), color = "gray", linewidth = 0.6) + #DGM
+    geom_point(aes(x = mu_values, y = 1-DGM_power), color = "gray", linewidth = 0.6) + #DGM
+    
+    
+    geom_line(aes(x = mu_values, y = 1-LL_power), color = "#619CFF", linewidth = 0.6) + #w_{0}
+    geom_point(aes(x = mu_values, y = 1-LL_power), color = "#619CFF", linewidth = 0.6) + #w_{0}
+    #geom_line(aes(x = mu_values, y = 1-LC_power), color = "#00BA38", linewidth = 0.6) + #w_{1, gamma=3}
+    geom_line(aes(x = mu_values, y = 1-CL_power), color = "red", linewidth = 0.6) + #w_{2, beta=3}
+    geom_point(aes(x = mu_values, y = 1-CL_power), color = "red", linewidth = 0.6) + #w_{2, beta=3}
+    
+    geom_line(aes(x = mu_values, y = 1-CC1_power), color = "orange", linewidth = 0.6) + #w_{3, gamma=7, beta=1.5}
+    geom_point(aes(x = mu_values, y = 1-CC1_power), color = "orange", linewidth = 0.6) +
+    geom_line(aes(x = mu_values, y = 1-CC2_power), color = "purple", linewidth = 0.6) + #w_{3, gamma=1.5, beta=7}
+    geom_point(aes(x = mu_values, y = 1-CC2_power), color = "purple", linewidth = 0.6) +
+    geom_line(aes(x = mu_values, y = 1-LC_power), color = "#00BA38", linewidth = 0.6) + #w_{1, gamma=3}
+    geom_point(aes(x = mu_values, y = 1-LC_power), color = "#00BA38", linewidth = 0.6) +
+    geom_hline(yintercept = 0, color = "black", linetype = "dashed", linewidth = 0.2) +
+    labs(
+      x = "", 
+      y = "", 
+      title = bquote("K" == .(data$k_values) ~ "," ~ I^2 == .(round(data$tau_squared_values / (data$tau_squared_values + 2 / 50), 2)))
+    ) +
+    ylim(0, 1) +
+    theme_minimal() +
+    theme(
+      legend.position = "none",
+      axis.text = element_text(size = 7),
+      axis.title = element_text(size = 7),
+      plot.title = element_text(size = 8)
+    )
+}
+
+# Create a separate plot for the legend
+legend_plot_power <- ggplot() +
+  geom_line(aes(x = 0, y = 0, color = "pink")) +
+  geom_line(aes(x = 0, y = 0, color = "gray")) +
+  geom_line(aes(x = 0, y = 0, color = "#619CFF")) +
+  geom_line(aes(x = 0, y = 0, color = "#00BA38")) +
+  geom_line(aes(x = 0, y = 0, color = "red")) +
+  geom_line(aes(x = 0, y = 0, color = "orange")) +
+  geom_line(aes(x = 0, y = 0, color = "purple")) +
+  
+  scale_color_manual(
+    values = c(
+      "pink", 
+      "gray", 
+       "#619CFF", 
+       "#00BA38",
+       "red", 
+       "orange", 
+      "purple"
+    ),
+    labels = c(
+      expression(Naive),
+      expression(w[DGM]),
+      expression(w[A]),
+      expression(w[B] ~ gamma == 3),
+      expression(w[C] ~ beta == 3),
+      expression(w[D] ~ gamma == 7 ~ "," ~ beta == 1.5),
+      expression(w[D] ~ gamma == 1.5 ~ "," ~ beta == 7)
+    )
+  ) +
+  
+   
+  theme_void() +
+  theme(
+    legend.text = element_text(size = 8),
+    legend.key.size = unit(3, "mm"),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()
+  ) +
+  guides(color = guide_legend(title = NULL, label.hjust = 0.5))
+
+parDATA_05 <- dat.new %>% filter(gamma == 0.5)
+
+
+# Generate plots
+plots_power <- parDATA_05 %>%
+  group_by(tau_squared_values, k_values) %>%
+  do(plot = wrap_plot_power(.)) %>%
+  pull(plot)
+
+# Arrange the plots and legend
+final_plot <- grid.arrange(
+  arrangeGrob(grobs = plots_power, nrow = 5, ncol = 3),
+  legend_plot_power,
+  nrow = 1,
+  widths = c(4.8, 0.7),
+  left = grid::textGrob("Power", rot=90, gp = grid::gpar(fontsize = 10)), 
+             bottom = grid::textGrob(expression(mu), gp = grid::gpar(fontsize = 12)))
+
+
+
+
+invisible(final_plot)
+
+@
+\hline
+\label{Pow2}
+\end{figure*}
+
+
+%%%%%%%%% Empirical SE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{figure*}[!hbt]
+\centering
+\caption{Empircal SE in the estimation of the treatment effect for ORB simulated with $\gamma=1.5$}
+\hline
+<<echo=FALSE, results='asis', fig.height=12, fig.width=9, message=FALSE, warning=FALSE>>=
+
+#Plots
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+
+dat.new <- readRDS("../Simulation/AdjustResults3200k_15.rds")
+
+##################### Bias #####################################################
+
+#################### Bias setting 1.5 ##########################################
+
+
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+
+legend_plot_results <- ggplot() +
+  geom_line(aes(x = 0, y = 0, color = "pink"))+
+  geom_line(aes(x = 0, y = 0, color = "gray"))+
+  geom_line(aes(x = 0, y = 0, color = "#619CFF")) +
+  geom_line(aes(x = 0, y = 0, color = "#00BA38")) +
+  geom_line(aes(x = 0, y = 0, color = "red")) +
+  geom_line(aes(x = 0, y = 0, color = "orange")) +
+  geom_line(aes(x = 0, y = 0, color = "purple")) +
+  
+  scale_color_manual(
+    values = c(
+      "pink",
+      "gray",
+      "#619CFF", 
+      "#00BA38", 
+       "red", 
+       "orange",
+       "purple"
+    ),
+    labels = c(
+      "Naive",
+      expression(w[DGM]),
+      expression(w[A]),
+      expression(w[B](gamma == 3)),
+      expression(w[C](beta == 3)),
+      expression(w[D](gamma == 7 ~ "," ~ beta == 1.5)),
+      expression(w[D](gamma == 1.5 ~ "," ~ beta == 7))
+    )
+  ) +
+  
+   
+  theme_void() +
+  theme(
+    legend.text = element_text(size = 8),
+    legend.key.size = unit(3, "mm"),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()
+  ) +
+  guides(color = guide_legend(title = NULL, label.hjust = 0.5))
+
+
+
+wrap_plot_emp_se <- function(data) {
+  ggplot(data) +
+    geom_line(aes(x = mu_values, y = Unadj_emp_se), color = "pink", linewidth = 0.6) + #Naive
+    geom_point(aes(x = mu_values, y = Unadj_emp_se), color = "pink", linewidth = 0.6) + #Naive
+    
+    geom_line(aes(x = mu_values, y = DGM_emp_se), color = "gray", linewidth = 0.6) + #DGM
+    geom_point(aes(x = mu_values, y = DGM_emp_se), color = "gray", linewidth = 0.6) + #DGM
+    
+    geom_line(aes(x = mu_values, y = CL_emp_se), color = "red", linewidth = 0.6) + #w_{C, beta=3}
+    geom_point(aes(x = mu_values, y = CL_emp_se), color = "red", linewidth = 0.6) + #w_{C, beta=3}
+    
+    geom_line(aes(x = mu_values, y = CC1_emp_se), color = "orange", linewidth = 0.6) + #w_{D, gamma=7, beta=1.5}
+    geom_point(aes(x = mu_values, y = CC1_emp_se), color = "orange", linewidth = 0.6) + #w_{D, gamma=7, beta=1.5}
+    
+    geom_line(aes(x = mu_values, y = CC2_emp_se), color = "purple", linewidth = 0.6) + #w_{D, gamma=1.5, beta=7}
+    geom_point(aes(x = mu_values, y = CC2_emp_se), color = "purple", linewidth = 0.6) + #w_{D, gamma=1.5, beta=7}
+    
+    geom_line(aes(x = mu_values, y = LL_emp_se), color = "#619CFF", linewidth = 0.6) + #w_{A}
+    geom_point(aes(x = mu_values, y = LL_emp_se), color = "#619CFF", linewidth = 0.6) + #w_{A}
+    
+    geom_line(aes(x = mu_values, y = LC_emp_se), color = "#00BA38", linewidth = 0.6) + #w_{B, gamma=3}
+    geom_point(aes(x = mu_values, y = LC_emp_se), color = "#00BA38", linewidth = 0.6) + #w_{B, gamma=3}
+    
+    geom_hline(yintercept = 0, color = "black", linetype = "dashed", linewidth = 0.4) +
+    labs(
+      x = "", 
+      y = "", 
+      title = bquote("K" == .(data$k_values) ~ "," ~ I^2 == .(round(data$tau_squared_values / (data$tau_squared_values + 2 / 50), 2)))
+    ) +
+    ylim(0, 0.3) +
+    theme_minimal() +
+    theme(
+      legend.position = "none",
+      axis.text = element_text(size = 7),
+      axis.title = element_text(size = 7),
+      plot.title = element_text(size = 8)
+    )
+}
+
+
+# Filter the data for gamma = 1.5
+parDATA_15 <- dat.new %>% filter(gamma == 1.5)
+
+# Generate plots
+plots_emp_se <- parDATA_15 %>%
+  group_by(tau_squared_values, k_values) %>%
+  do(plot = wrap_plot_emp_se(.)) %>%
+  pull(plot)
+
+# Arrange the plots and legend
+final_plot <- grid.arrange(
+  arrangeGrob(grobs = plots_emp_se, nrow = 5, ncol = 3),
+  legend_plot_results,
+  nrow = 1,
+  widths = c(4.8, 0.7),
+  left = grid::textGrob("Empirical SE", rot = 90, gp = grid::gpar(fontsize = 10)),
+  bottom = grid::textGrob(expression(mu), gp = grid::gpar(fontsize = 12))
+)
+
+invisible(final_plot)
+
+
+
+
+@
+\hline
+\label{SE1}
+\end{figure*}
+
+
+\begin{figure*}[!hbt]
+\centering
+\caption{Empirical SE in the estimation of the treatment effect for ORB simulated with $\gamma=0.5$}
+\hline
+<<echo=FALSE, results='asis', fig.height=12, fig.width=9, message=FALSE, warning=FALSE>>=
+
+#Plots
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+
+dat.new <- readRDS("../Simulation/AdjustResults3200k_05.rds")
+
+#dattt <- readRDS("/Users/alessandrasaracini/Downloads/AdjustResults.rds")
+
+##################### emp_se #####################################################
+
+
+# Create a separate plot for the legend
+legend_plot_emp_se <- ggplot() +
+  geom_line(aes(x = 0, y = 0, color =  "Naive")) +
+  geom_line(aes(x = 0, y = 0, color =  "Adj Constant-Constant")) +
+  geom_line(aes(x = 0, y = 0, color =  "Adj Constant-Continuous")) +
+  geom_line(aes(x = 0, y = 0, color = "Adj Continuous-Constant"))+
+  geom_line(aes(x = 0, y = 0, color = "Adj Continuous-Continuous I"))+
+  geom_line(aes(x = 0, y = 0, color = "Adj Continuous-Continuous II"))+
+  geom_line(aes(x = 0, y = 0, color = "Adj DGM"))+
+  
+  theme_void()+
+  theme(
+    legend.text = element_text(size = 4),
+    legend.key.size = unit(2, "mm"), # Adjust the size of plot title
+    axis.title.x = element_blank(),             # Remove x-axis label
+    axis.title.y = element_blank()
+  )+
+  guides(color = guide_legend(title = NULL))
+
+
+#################### emp_se setting 0.5 ##########################################
+
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+
+wrap_plot_emp_se <- function(data) {
+  ggplot(data) +
+    geom_line(aes(x = mu_values, y = Unadj_emp_se), color = "pink", linewidth = 0.6) + #Naive
+    geom_point(aes(x = mu_values, y = Unadj_emp_se), color = "pink", linewidth = 0.6) + #Naive
+    
+    geom_line(aes(x = mu_values, y = DGM_emp_se), color = "gray", linewidth = 0.6) + #DGM
+    geom_point(aes(x = mu_values, y = DGM_emp_se), color = "gray", linewidth = 0.6) + #DGM
+    
+    
+    geom_line(aes(x = mu_values, y = LL_emp_se), color = "#619CFF", linewidth = 0.6) + #w_{0}
+    geom_point(aes(x = mu_values, y = LL_emp_se), color = "#619CFF", linewidth = 0.6) + #w_{0}
+    #geom_line(aes(x = mu_values, y = LC_emp_se), color = "#00BA38", linewidth = 0.6) + #w_{1, gamma=3}
+    geom_line(aes(x = mu_values, y = CL_emp_se), color = "red", linewidth = 0.6) + #w_{2, beta=3}
+    geom_point(aes(x = mu_values, y = CL_emp_se), color = "red", linewidth = 0.6) + #w_{2, beta=3}
+    
+    geom_line(aes(x = mu_values, y = CC1_emp_se), color = "orange", linewidth = 0.6) + #w_{3, gamma=7, beta=1.5}
+    geom_point(aes(x = mu_values, y = CC1_emp_se), color = "orange", linewidth = 0.6) +
+    geom_line(aes(x = mu_values, y = CC2_emp_se), color = "purple", linewidth = 0.6) + #w_{3, gamma=1.5, beta=7}
+    geom_point(aes(x = mu_values, y = CC2_emp_se), color = "purple", linewidth = 0.6) +
+    geom_line(aes(x = mu_values, y = LC_emp_se), color = "#00BA38", linewidth = 0.6) + #w_{1, gamma=3}
+    geom_point(aes(x = mu_values, y = LC_emp_se), color = "#00BA38", linewidth = 0.6) +
+    geom_hline(yintercept = 0, color = "black", linetype = "dashed", linewidth = 0.2) +
+    labs(
+      x = "", 
+      y = "", 
+      title = bquote("K" == .(data$k_values) ~ "," ~ I^2 == .(round(data$tau_squared_values / (data$tau_squared_values + 2 / 50), 2)))
+    ) +
+    ylim(0, 0.3) +
+    theme_minimal() +
+    theme(
+      legend.position = "none",
+      axis.text = element_text(size = 7),
+      axis.title = element_text(size = 7),
+      plot.title = element_text(size = 8)
+    )
+}
+
+# Create a separate plot for the legend
+legend_plot_emp_se <- ggplot() +
+  geom_line(aes(x = 0, y = 0, color = "pink")) +
+  geom_line(aes(x = 0, y = 0, color = "gray")) +
+  geom_line(aes(x = 0, y = 0, color = "#619CFF")) +
+  geom_line(aes(x = 0, y = 0, color = "#00BA38")) +
+  geom_line(aes(x = 0, y = 0, color = "red")) +
+  geom_line(aes(x = 0, y = 0, color = "orange")) +
+  geom_line(aes(x = 0, y = 0, color = "purple")) +
+  
+  scale_color_manual(
+    values = c(
+      "pink", 
+      "gray", 
+       "#619CFF", 
+       "#00BA38",
+       "red", 
+       "orange", 
+      "purple"
+    ),
+    labels = c(
+      expression(Naive),
+      expression(w[DGM]),
+      expression(w[A]),
+      expression(w[B] ~ gamma == 3),
+      expression(w[C] ~ beta == 3),
+      expression(w[D] ~ gamma == 7 ~ "," ~ beta == 1.5),
+      expression(w[D] ~ gamma == 1.5 ~ "," ~ beta == 7)
+    )
+  ) +
+  
+   
+  theme_void() +
+  theme(
+    legend.text = element_text(size = 8),
+    legend.key.size = unit(3, "mm"),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()
+  ) +
+  guides(color = guide_legend(title = NULL, label.hjust = 0.5))
+
+parDATA_05 <- dat.new %>% filter(gamma == 0.5)
+
+
+# Generate plots
+plots_emp_se <- parDATA_05 %>%
+  group_by(tau_squared_values, k_values) %>%
+  do(plot = wrap_plot_emp_se(.)) %>%
+  pull(plot)
+
+# Arrange the plots and legend
+final_plot <- grid.arrange(
+  arrangeGrob(grobs = plots_emp_se, nrow = 5, ncol = 3),
+  legend_plot_emp_se,
+  nrow = 1,
+  widths = c(4.8, 0.7),
+  left = grid::textGrob("Empirical SE", rot=90, gp = grid::gpar(fontsize = 10)), 
+             bottom = grid::textGrob(expression(mu), gp = grid::gpar(fontsize = 12)))
+
+
+
+
+invisible(final_plot)
+
+@
+\hline
+\label{SE2}
+\end{figure*}
+
+%%%%%%%%%%%% Bias tau squared %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{figure*}[!hbt]
+\centering
+\caption{Bias in the estimation of the heterogeneity variance for ORB simulated with $\gamma=1.5$}
+\hline
+<<echo=FALSE, results='asis', fig.height=12, fig.width=9, message=FALSE, warning=FALSE>>=
+
+#Plots
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+
+dat.new <- readRDS("../Simulation/AdjustResults3200k_15.rds")
+
+##################### Bias #####################################################
+
+#################### Bias setting 1.5 ##########################################
+
+
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+
+legend_plot_results <- ggplot() +
+  geom_line(aes(x = 0, y = 0, color = "pink"))+
+  geom_line(aes(x = 0, y = 0, color = "gray"))+
+  geom_line(aes(x = 0, y = 0, color = "#619CFF")) +
+  geom_line(aes(x = 0, y = 0, color = "#00BA38")) +
+  geom_line(aes(x = 0, y = 0, color = "red")) +
+  geom_line(aes(x = 0, y = 0, color = "orange")) +
+  geom_line(aes(x = 0, y = 0, color = "purple")) +
+  
+  scale_color_manual(
+    values = c(
+      "pink",
+      "gray",
+      "#619CFF", 
+      "#00BA38", 
+       "red", 
+       "orange",
+       "purple"
+    ),
+    labels = c(
+      "Naive",
+      expression(w[DGM]),
+      expression(w[A]),
+      expression(w[B](gamma == 3)),
+      expression(w[C](beta == 3)),
+      expression(w[D](gamma == 7 ~ "," ~ beta == 1.5)),
+      expression(w[D](gamma == 1.5 ~ "," ~ beta == 7))
+    )
+  ) +
+  
+   
+  theme_void() +
+  theme(
+    legend.text = element_text(size = 8),
+    legend.key.size = unit(3, "mm"),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()
+  ) +
+  guides(color = guide_legend(title = NULL, label.hjust = 0.5))
+
+
+
+wrap_plot_bias_tau <- function(data) {
+  ggplot(data) +
+    geom_line(aes(x = tau_squared_values, y = tau2_Unadj_bias), color = "pink", linewidth = 0.6) + #Naive
+    geom_point(aes(x = tau_squared_values, y = tau2_Unadj_bias), color = "pink", linewidth = 0.6) + #Naive
+    
+    geom_line(aes(x = tau_squared_values, y = tau2_DGM_bias), color = "gray", linewidth = 0.6) + #DGM
+    geom_point(aes(x = tau_squared_values, y = tau2_DGM_bias), color = "gray", linewidth = 0.6) + #DGM
+    
+    geom_line(aes(x = tau_squared_values, y = tau2_CL_bias), color = "red", linewidth = 0.6) + #w_{C, beta=3}
+    geom_point(aes(x = tau_squared_values, y = tau2_CL_bias), color = "red", linewidth = 0.6) + #w_{C, beta=3}
+    
+    geom_line(aes(x = tau_squared_values, y = tau2_CC1_bias), color = "orange", linewidth = 0.6) + #w_{D, gamma=7, beta=1.5}
+    geom_point(aes(x = tau_squared_values, y = tau2_CC1_bias), color = "orange", linewidth = 0.6) + #w_{D, gamma=7, beta=1.5}
+    
+    geom_line(aes(x = tau_squared_values, y = tau2_CC2_bias), color = "purple", linewidth = 0.6) + #w_{D, gamma=1.5, beta=7}
+    geom_point(aes(x = tau_squared_values, y = tau2_CC2_bias), color = "purple", linewidth = 0.6) + #w_{D, gamma=1.5, beta=7}
+    
+    geom_line(aes(x = tau_squared_values, y = tau2_LL_bias), color = "#619CFF", linewidth = 0.6) + #w_{A}
+    geom_point(aes(x = tau_squared_values, y = tau2_LL_bias), color = "#619CFF", linewidth = 0.6) + #w_{A}
+    
+    geom_line(aes(x = tau_squared_values, y = tau2_LC_bias), color = "#00BA38", linewidth = 0.6) + #w_{B, gamma=3}
+    geom_point(aes(x = tau_squared_values, y = tau2_LC_bias), color = "#00BA38", linewidth = 0.6) + #w_{B, gamma=3}
+    
+    geom_hline(yintercept = 0, color = "black", linetype = "dashed", linewidth = 0.4) +
+    labs(
+      x = "", 
+      y = "", 
+      title = bquote("K" == .(data$k_values) ~ "," ~ I^2 == .(round(data$tau_squared_values / (data$tau_squared_values + 2 / 50), 2)))
+    ) +
+    ylim(-0.3, 0.1) +
+    theme_minimal() +
+    theme(
+      legend.position = "none",
+      axis.text = element_text(size = 7),
+      axis.title = element_text(size = 7),
+      plot.title = element_text(size = 8)
+    )
+}
+
+
+# Filter the data for gamma = 1.5
+parDATA_15 <- dat.new %>% filter(gamma == 1.5)
+
+# Generate plots
+plots_bias_tau <- parDATA_15 %>%
+  group_by(mu_values, k_values) %>%
+  do(plot = wrap_plot_bias_tau(.)) %>%
+  pull(plot)
+
+# Arrange the plots and legend
+final_plot <- grid.arrange(
+  arrangeGrob(grobs = plots_bias_tau, nrow = 5, ncol = 3),
+  legend_plot_results,
+  nrow = 1,
+  widths = c(4.8, 0.7),
+  left = grid::textGrob("Bias", rot = 90, gp = grid::gpar(fontsize = 10)),
+  bottom = grid::textGrob(expression(mu), gp = grid::gpar(fontsize = 12))
+)
+
+invisible(final_plot)
+
+
+
+
+@
+\hline
+\label{biastau1}
+\end{figure*}
+
+
+\begin{figure*}[!hbt]
+\centering
+\caption{Bias in the estimation of the heterogeneity variance for ORB simulated with $\gamma=0.5$}
+\hline
+<<echo=FALSE, results='asis', fig.height=12, fig.width=9, message=FALSE, warning=FALSE>>=
+
+
+#Plots
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+
+dat.new <- readRDS("../Simulation/AdjustResults3200k_05.rds")
+
+##################### Bias #####################################################
+
+#################### Bias setting 1.5 ##########################################
+
+
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+
+legend_plot_results <- ggplot() +
+  geom_line(aes(x = 0, y = 0, color = "pink"))+
+  geom_line(aes(x = 0, y = 0, color = "gray"))+
+  geom_line(aes(x = 0, y = 0, color = "#619CFF")) +
+  geom_line(aes(x = 0, y = 0, color = "#00BA38")) +
+  geom_line(aes(x = 0, y = 0, color = "red")) +
+  geom_line(aes(x = 0, y = 0, color = "orange")) +
+  geom_line(aes(x = 0, y = 0, color = "purple")) +
+  
+  scale_color_manual(
+    values = c(
+      "pink",
+      "gray",
+      "#619CFF", 
+      "#00BA38", 
+       "red", 
+       "orange",
+       "purple"
+    ),
+    labels = c(
+      "Naive",
+      expression(w[DGM]),
+      expression(w[A]),
+      expression(w[B](gamma == 3)),
+      expression(w[C](beta == 3)),
+      expression(w[D](gamma == 7 ~ "," ~ beta == 1.5)),
+      expression(w[D](gamma == 1.5 ~ "," ~ beta == 7))
+    )
+  ) +
+  
+   
+  theme_void() +
+  theme(
+    legend.text = element_text(size = 8),
+    legend.key.size = unit(3, "mm"),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()
+  ) +
+  guides(color = guide_legend(title = NULL, label.hjust = 0.5))
+
+
+
+wrap_plot_bias_tau <- function(data) {
+  ggplot(data) +
+    geom_line(aes(x = tau_squared_values, y = tau2_Unadj_bias), color = "pink", linewidth = 0.6) + #Naive
+    geom_point(aes(x = tau_squared_values, y = tau2_Unadj_bias), color = "pink", linewidth = 0.6) + #Naive
+    
+    geom_line(aes(x = tau_squared_values, y = tau2_DGM_bias), color = "gray", linewidth = 0.6) + #DGM
+    geom_point(aes(x = tau_squared_values, y = tau2_DGM_bias), color = "gray", linewidth = 0.6) + #DGM
+    
+    geom_line(aes(x = tau_squared_values, y = tau2_CL_bias), color = "red", linewidth = 0.6) + #w_{C, beta=3}
+    geom_point(aes(x = tau_squared_values, y = tau2_CL_bias), color = "red", linewidth = 0.6) + #w_{C, beta=3}
+    
+    geom_line(aes(x = tau_squared_values, y = tau2_CC1_bias), color = "orange", linewidth = 0.6) + #w_{D, gamma=7, beta=1.5}
+    geom_point(aes(x = tau_squared_values, y = tau2_CC1_bias), color = "orange", linewidth = 0.6) + #w_{D, gamma=7, beta=1.5}
+    
+    geom_line(aes(x = tau_squared_values, y = tau2_CC2_bias), color = "purple", linewidth = 0.6) + #w_{D, gamma=1.5, beta=7}
+    geom_point(aes(x = tau_squared_values, y = tau2_CC2_bias), color = "purple", linewidth = 0.6) + #w_{D, gamma=1.5, beta=7}
+    
+    geom_line(aes(x = tau_squared_values, y = tau2_LL_bias), color = "#619CFF", linewidth = 0.6) + #w_{A}
+    geom_point(aes(x = tau_squared_values, y = tau2_LL_bias), color = "#619CFF", linewidth = 0.6) + #w_{A}
+    
+    geom_line(aes(x = tau_squared_values, y = tau2_LC_bias), color = "#00BA38", linewidth = 0.6) + #w_{B, gamma=3}
+    geom_point(aes(x = tau_squared_values, y = tau2_LC_bias), color = "#00BA38", linewidth = 0.6) + #w_{B, gamma=3}
+    
+    geom_hline(yintercept = 0, color = "black", linetype = "dashed", linewidth = 0.4) +
+    labs(
+      x = "", 
+      y = "", 
+      title = bquote("K" == .(data$k_values) ~ "," ~ I^2 == .(round(data$tau_squared_values / (data$tau_squared_values + 2 / 50), 2)))
+    ) +
+    ylim(-0.3, 0.1) +
+    theme_minimal() +
+    theme(
+      legend.position = "none",
+      axis.text = element_text(size = 7),
+      axis.title = element_text(size = 7),
+      plot.title = element_text(size = 8)
+    )
+}
+
+
+# Filter the data for gamma = 1.5
+parDATA_05 <- dat.new %>% filter(gamma == 0.5)
+
+# Generate plots
+plots_bias_tau <- parDATA_05 %>%
+  group_by(mu_values, k_values) %>%
+  do(plot = wrap_plot_bias_tau(.)) %>%
+  pull(plot)
+
+# Arrange the plots and legend
+final_plot <- grid.arrange(
+  arrangeGrob(grobs = plots_bias_tau, nrow = 5, ncol = 3),
+  legend_plot_results,
+  nrow = 1,
+  widths = c(4.8, 0.7),
+  left = grid::textGrob("Bias", rot = 90, gp = grid::gpar(fontsize = 10)),
+  bottom = grid::textGrob(expression(mu), gp = grid::gpar(fontsize = 12))
+)
+
+invisible(final_plot)
+
+
+
+@
+\hline
+\label{biastau2}
+\end{figure*}
+
+
+%\bibliographystyle{mywiley} % Choose natbib-compatible bibliography style
+%\bibliography{biblio} % Replace 'biblio' with your actual BibTeX file name
 
 
 
