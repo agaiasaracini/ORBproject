@@ -1,14 +1,14 @@
 
-#Plots
+#Plots for treatment effect estimate
 
-############################# mu ###############################################
+
 library(ggplot2)
 library(dplyr)
 library(gridExtra)
 
 setwd("~/Documents/ORB_Paper/ORBproject/Simulation") #change as needed
-dat.new15 <- readRDS("AdjustResults3200k_15.rds")
-dat.new05 <- readRDS("AdjustResults3200k_05.rds")
+dat.new15 <- readRDS("AdjustResults3200k_15.rds") #ORB DGM with gamma = 1.5
+dat.new05 <- readRDS("AdjustResults3200k_05.rds") #ORB DGM with gamma = 0.5
 dat.new <- rbind(dat.new05, dat.new15)
 
 ##################### Bias #####################################################
@@ -146,8 +146,6 @@ library(ggplot2)
 library(dplyr)
 library(gridExtra)
 
-#dat.new <- readRDS("/Users/alessandrasaracini/Downloads/AdjustResults1k.rds")
-
 wrap_plot_mse <- function(data) {
   ggplot(data) +
     geom_line(aes(x = mu_values, y = Unadj_mse), color = "#F8766D", linewidth = 0.6) + #Naive
@@ -173,7 +171,7 @@ wrap_plot_mse <- function(data) {
     )
 }
 
-############################### mse 1.5 ########################################
+############################### mse setting 1.5 ########################################
 
 # Filter the data for gamma = 1.5
 parDATA_15 <- dat.new %>% filter(gamma == 1.5)
@@ -196,7 +194,7 @@ final_plot_mse <- grid.arrange(
 
 invisible(final_plot_mse)
 
-############################### mse 0.5 ########################################
+############################### mse setting 0.5 ########################################
 
 # Filter the data for gamma = 0.5
 parDATA_05 <- dat.new %>% filter(gamma == 0.5)
@@ -247,7 +245,7 @@ wrap_plot_cov <- function(data) {
     )
 }
 
-################### Coverage 1.5 ###############################################
+################### Coverage setting 1.5 ###############################################
 
 
 # Filter the data for gamma = 1.5
@@ -271,7 +269,7 @@ final_plot_cov <- grid.arrange(
 
 invisible(final_plot_cov)
 
-########################## Coverage 0.5 ########################################
+########################## Coverage setting 0.5 ########################################
 
 # Filter the data for gamma = 0.5
 parDATA_05 <- dat.new %>% filter(gamma == 0.5)
@@ -322,7 +320,7 @@ wrap_plot_pow <- function(data) {
 }
 
 
-########################### Power 1.5 ##########################################
+########################### Power setting 1.5 ##########################################
 
 
 # Filter the data for gamma = 1.5
@@ -347,7 +345,7 @@ final_plot_pow <- grid.arrange(
 invisible(final_plot_pow)
 
 
-####################### Power 0.5 ##############################################
+####################### Power setting 0.5 ##############################################
 
 # Filter the data for gamma = 0.5
 parDATA_05 <- dat.new %>% filter(gamma == 0.5)
@@ -397,7 +395,7 @@ wrap_plot_empSE <- function(data) {
     )
 }
 
-######################### gamma = 1.5 ##########################################
+######################### Empirical SE setting 1.5 ##########################################
 
 
 # Filter the data for gamma = 1.5
@@ -421,7 +419,7 @@ final_plot_SE <- grid.arrange(
 
 invisible(final_plot_SE)
 
-##################### gamma = 0.5 ##############################################
+##################### Empirical SE setting 0.5 ##############################################
 
 
 # Filter the data for gamma = 1.5
