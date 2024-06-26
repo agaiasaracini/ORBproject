@@ -1,4 +1,38 @@
 
+#The function reORBadj adjusts for ORB according to the selection model framework developed in this project
+#It can be seen as an extension of the Copas et al. (2019) methodology, for the random effects model, and without
+#the need for an ORBIT classification of unreported study outcomes.
+
+#Inputs
+#a - vector for observed counts in the treatment arm for each study in the meta-analysis, unreported study outcomes have entry "unrep"
+#c - vector for observed counts in the control arm for each study in the meta-analysis, unreported study outcomes have entry "unrep"
+#mu1 - vector for observed means in the treatment arm for each study in the meta-analysis, unreported study outcomes have entry "unrep"
+#mu2 - vector for observed means in the control arm for each study in the meta-analysis, unreported study outcomes have entry "unrep"
+#sd1 - vector for observed standard errors in the treatment arm for each study in the meta-analysis, unreported study outcomes have entry "unrep"
+#sd2 - vector for observed standard errors in the control arm for each study in the meta-analysis, unreported study outcomes have entry "unrep"
+#y - vector for observed treatment effects (normally distributed, eg log RR) for each study in the meta-analysis, unreported study outcomes have entry "unrep"
+#s - vector for observed standard errors of the the treatment effect for each study in the meta-analysis, unreported study outcomes have entry "unrep"
+#n1 - vector for sample sizes in treatment arm, must be reported for all studies
+#n2 - vector for sample sizes in control arm, must be reported for all studies
+#outcome - string character "beneficial"
+#init_param - vector of length two, containing the values to be used for initialization of the joint optimization of the treatment effect and heterogeneity variance
+#alpha_ben - value for desired confidence level, e.g., 0.05
+#alpha_ben_one.sided - if TRUE, one sided significance is used, FALSE for two-sided
+#true.SE - if the true standard errors are known, valid only for the case in which we have y and s as inputs; in this case the SE are not imputed
+#LR.CI - if TRUE, calculates the profile likelihood confidence intervals using the likelihood ratio statistic
+#Wald.CI - if TRUE, calculates Wald CI 
+#selection.benefit - string factor specifying the selection function to be used for the ORB adjustment 
+#                  "Constant-constant" W_A in manuscript
+#                  "Constant-continous" W_B in manuscript
+#                  "Continous-constant" W_C in manuscript
+#                 "Continous-continous" W_D in manuscript
+#                  "DGM" W_DGM in manuscript
+#rho1 - parameter for continuous part of selection function W_B in manuscript, "Constant-continous"
+#rho2 - parameter for continuous part of selection function W_C in manuscript, "Continous-constant"
+#opt_method - string character for the desired optimizatin method, e.g., "L-BFGS-B"
+#lower - vector of length 2 for the lower bound of the optimization if "L-BFGS-B" is used
+#upper - vector of length 2 for the upper bound of the optimization if "L-BFGS-B" is used
+#gam - parameter used in DGM and consequently to be used in DGM selection function for correct model specification
 
 reORBadj <- function(a=NULL, 
                      c=NULL,
@@ -42,7 +76,7 @@ reORBadj <- function(a=NULL,
   #If alpha_ben_one.sided=TRUE, we use the one-sided threshold 
   sel.ben <- selection.benefit
   
-  #Parameters for contnous parts of selection functions
+  #Parameters for continuous parts of selection functions
   rho1 <- rho1
   rho2 <- rho2
   
