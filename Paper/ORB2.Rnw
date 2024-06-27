@@ -121,7 +121,7 @@ the PB-adjusted log-likelihood $\ell_{\text{Adj}}^{\text{PB}} \left( \theta  \ri
 \label{lik.PB}
 \ell_{\text{Adj}}^{\text{PB}}\left(\theta \right) &= \sum_{i} \log f \left(y_i \text{;} \theta \mid i \in \, \{\text{Pub}\} \right)\\
 & = \sum_{i \in \{\operatorname{Pub}\}} \log f(y_i \text{;} \theta) \\
-& - \sum_{i \in \{\operatorname{Pub}\}} \log \left[ \int_{-\infty}^{\infty} f(y \text{;} \theta) \cdot w(y)  d y \right].
+& - \sum_{i \in \{\operatorname{Pub}\}} \log \left[ \int_{-\infty}^{\infty} f(y \text{;} \theta) \cdot w(y)  d y \right] \text{.}
 \end{align}
 %\end{equation}
 
@@ -171,7 +171,7 @@ In the PB selection model setting one takes into account only the non-missing st
 %L\left(\theta \right)&=\prod_{i=1}^n L_i\left(\theta \right) \quad \text { where } n=n_{\text {Rep }}+n_{\text {High }} \\
 \ell_{\text{Adj}}^{\text{ORB}} & =\sum_{i=1}^K \ell \left(\theta \right)\\
 & =\sum_{i \in \{ \operatorname{Rep}\} } \ell\left(\theta \right)+\sum_{i \in \{\operatorname{Unrep} \} } \ell\left(\theta \right) \\
-& =\sum_{i \in \{\operatorname{Rep} \} } \log f \left(y_i \text{;} \theta \right)+\sum_{i \in \{\operatorname{Unrep} \} } \log f \left(y_i \text{;} \theta \right).
+& =\sum_{i \in \{\operatorname{Rep} \} } \log f \left(y_i \text{;} \theta \right)+\sum_{i \in \{\operatorname{Unrep} \} } \log f \left(y_i \text{;} \theta \right) \text{.}
 \end{aligned}
 \end{equation}
 
@@ -184,7 +184,7 @@ We can then adapt the formulation of equation \eqref{PB.selection11} for ORB, by
 \begin{equation}
 \label{ith.rep}
 \begin{aligned}
-f\left(y_i \mid  \, i \in \{\text{Rep}\} \right) = \frac{f\left(y_i \text{;} \theta \right) \cdot w(y_i)}{\int_{-\infty}^{\infty} f\left(y \text{;} \theta \right) \cdot w(y) d y}.
+f\left(y_i \mid  \, i \in \{\text{Rep}\} \right) = \frac{f\left(y_i \text{;} \theta \right) \cdot w(y_i)}{\int_{-\infty}^{\infty} f\left(y \text{;} \theta \right) \cdot w(y) d y} \text{.}
 \end{aligned}
 \end{equation}
 
@@ -197,7 +197,7 @@ Similarly, for the unreported studies $i \in \{\text{Unrep} \}$, we can use the 
 \begin{equation}
 \label{ith.high}
 \begin{aligned}
-f\left(y_i \mid \, i \in \{\text{Unrep} \} \right) = \frac{f \left(y_i \text{;} \theta \right) \cdot \left(1-w(y_i) \right)}{\int_{-\infty}^{\infty} f \left(y\right \text{;} \theta) \cdot \left(1-w(y) \right) d y}.
+f\left(y_i \mid \, i \in \{\text{Unrep} \} \right) = \frac{f \left(y_i \text{;} \theta \right) \cdot \left(1-w(y_i) \right)}{\int_{-\infty}^{\infty} f \left(y\right \text{;} \theta) \cdot \left(1-w(y) \right) d y} \text{.}
 \end{aligned}
 \end{equation}
 
@@ -213,7 +213,7 @@ Using \eqref{ith.rep} and \eqref{ith.high}, and solving for $f(y_i \text{;} \the
 \begin{aligned}
 \ell_{\text{Adj}}^{\text{ORB}} \left(\theta \right) & = \sum_{i \in \{\operatorname{Rep} \} } \log  f(y_i \text{;} \theta)\\
 & - \sum_{i \in \{\operatorname{Rep} \} } \log \left[ \int_{-\infty}^{\infty} f\left(y \text{;} \theta \right) \cdot w(y) dy \right]\\
-& + \sum_{i \in \{ \operatorname{Unrep} \}} \log \left[ \int_{-\infty}^{\infty} f(y \text{;} \theta) \cdot \left( 1 - w(y) \right) d y \right].
+& + \sum_{i \in \{ \operatorname{Unrep} \}} \log \left[ \int_{-\infty}^{\infty} f(y \text{;} \theta) \cdot \left( 1 - w(y) \right) d y \right] \text{.}
 \end{aligned}
 \end{equation}
 
@@ -227,7 +227,7 @@ The likelihood \eqref{lik.rewritten} is the generic setting using a weight funct
 \label{lik.rewritten.special.copas.case}
 \begin{aligned}
 \ell_{\text{Adj}}^{\text{ORB}} \left(\theta \right) & = \sum_{i \in \{\operatorname{Rep} \} } \log f(y_i \text{;} \theta)\\
-&+ \sum_{i \in \{ \operatorname{Unrep} \}} \log \left[ \int_{-\infty}^{\infty} f(y \text{;} \theta) \cdot \left( 1 - w(y) \right) d y \right].
+&+ \sum_{i \in \{ \operatorname{Unrep} \}} \log \left[ \int_{-\infty}^{\infty} f(y \text{;} \theta) \cdot \left( 1 - w(y) \right) d y \right] \text{.}
 \end{aligned}
 \end{equation}
 
@@ -245,7 +245,7 @@ We present a series of selection functions, defined as functions of the one-side
 \begin{aligned}
 \label{sel0}
 w_A(y_i)= \begin{cases} 1 & \text{if } p_i \leq \alpha  \\
-0 & \text{if } p_i > \alpha, \end{cases}
+0 & \text{if } p_i > \alpha \text{,} \end{cases}
 \end{aligned}
 \end{equation}
 
@@ -297,7 +297,7 @@ Using the log-likelihood \eqref{lik.rewritten.special.copas.case} and the select
 %& = \sum_{i \in \text{Rep}} \log f_i(y_i; \theta) + \sum_{i \in \text{HR}} \log \left[F_i(z_{\alpha} \sigma_i; \theta)-F_i(-z_{\alpha} \sigma_i; \theta)\right] \\
 %& = \sum_{i \in \text{Rep}} \log f_i(y_i; \mu, \tau^2) + \sum_{i \in \text{HR}} \log \left[\Phi\left(\frac{z_{\alpha} \sigma_i - \mu}{\sqrt{\sigma_{i}^2 + \tau^2}}\right)-\Phi\left(\frac{-z_{\alpha} \sigma_i-\mu}{\sqrt{\sigma_{i}^2 + \tau^2}}\right)\right]\\
 & = -\frac{1}{2}\sum_{i \in \{\text{Rep} \}  }\left[\log(\sigma_{i}^2 + \tau^{2}) + \frac{(y_{i}-\mu)^2}{\sigma_{i}^2+\tau^2}\right]\\
-& + \sum_{i \in \{\text{HR}\}} \log \left[\Phi\left(\frac{z_{\alpha} \sigma_i - \mu}{\sqrt{\sigma_{i}^2 + \tau^2}}\right)-\Phi\left(\frac{-z_{\alpha} \sigma_i-\mu}{\sqrt{\sigma_{i}^2 + \tau^2}}\right)\right].
+& + \sum_{i \in \{\text{HR}\}} \log \left[\Phi\left(\frac{z_{\alpha} \sigma_i - \mu}{\sqrt{\sigma_{i}^2 + \tau^2}}\right)-\Phi\left(\frac{-z_{\alpha} \sigma_i-\mu}{\sqrt{\sigma_{i}^2 + \tau^2}}\right)\right] \text{.}
 \end{aligned}
 \end{equation}
 
@@ -354,7 +354,7 @@ When utilizing any of the selection functions presented in the ORB-adjusted log-
 
 \begin{equation}
 \label{k1}
-\sigma_{i}^2 \approx \frac{1}{\hat{k} n_i},
+\sigma_{i}^2 \approx \frac{1}{\hat{k} n_i} \text{,}
 \end{equation}
 
 %\bigskip
@@ -363,7 +363,7 @@ where $n_i$ is the sample size of each study $i$ and $\hat{k}$ is:
 
 \begin{equation}
 \label{k2}
-\hat{k} = \frac{\sum_{i \in \{\text{Rep} \} } \sigma_{i}^{-2}}{\sum_{i \in \{\text{Rep} \}} n_i}.
+\hat{k} = \frac{\sum_{i \in \{\text{Rep} \} } \sigma_{i}^{-2}}{\sum_{i \in \{\text{Rep} \}} n_i} \text{.}
 \end{equation}
 
 \bigskip
@@ -2051,26 +2051,26 @@ It is of interest to assess the extent to which ORB negatively impacts meta-anal
 The first step of the simulation process consists in simulating random-effects meta-analysis datasets in the presence of ORB. We first simulate a random effects meta-analysis study comprising $K$ studies, each with treatment and control arms of equal sizes $n_i = n = 50$, and reported treatment effects $y_i$ with standard errors $\sigma_i$. We first obtain the study-specific true treatment effects $\theta$ from
 
 \begin{equation}\label{eq:random.eff2}
-\theta_i \sim \mathcal{N}(\mu, \tau^2),
+\theta_i \sim \mathcal{N}(\mu, \tau^2) \text{,}
 \end{equation}
 
 where $\mu$ is the overall treatment effect and $\tau^2$ is the between-study heterogeneity variance. The observed treatment effects $y_i$ are given by 
 
 \begin{equation}\label{eq:random.eff1}
-y_i \sim \mathcal{N}(\theta_i, \sigma^2),
+y_i \sim \mathcal{N}(\theta_i, \sigma^2) \text{,}
 \end{equation}
 
 where $\sigma^2= 2/n$, while the standard errors are generated from a scaled $\Chi^2$ distribution
 
 \begin{equation}
 \label{sigma.sq.sim}
-\sigma_i^2 \sim \frac{\chi^2_{2n_i - 2}}{(n_i -1)n_i}.
+\sigma_i^2 \sim \frac{\chi^2_{2n_i - 2}}{(n_i -1)n_i} \text{.}
 \end{equation}
 
 These values are generated independently for each study, assuming no correlation between studies. We then simulate ORB by selectively excluding certain studies from the meta-analysis based on the direction and significance of treatment effects. The ORB simulation process involves removing study outcomes with a probability of reporting determined by a decreasing function of the one-sided $p$-value, i.e., $p_i = \Phi(- y_i / \sigma_i)$. The function \eqref{simORB} used to simulate ORB is taken from simulation studies on PB, for consistency with our selection model approach, typical of PB settings. We simulate under two ORB settings, i.e., $\gamma=1.5$ \citep{selection2, Begg, BeggUse1, selectionCont} and $\gamma=0.5$. 
 
 \begin{equation}
-P( i \in \{\text{Rep}\})= e^{-4 \cdot p_i^{\gamma}}.
+P( i \in \{\text{Rep}\})= e^{-4 \cdot p_i^{\gamma}} \text{.}
 \label{simORB}
 \end{equation}
 
