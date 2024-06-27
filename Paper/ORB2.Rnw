@@ -119,7 +119,7 @@ the PB-adjusted log-likelihood $\ell_{\text{Adj}}^{\text{PB}} \left( \theta  \ri
 %\begin{equation}
 \begin{align}
 \label{lik.PB}
-\ell_{\text{Adj}}^{\text{PB}}\left(\theta \right) &= \sum_{i} \log f \left(y_i; \theta \;|\; i \in \, \{\text{Pub}\} \right)\\
+\ell_{\text{Adj}}^{\text{PB}}\left(\theta \right) &= \sum_{i} \log f \left(y_i; \theta \mid i \in \, \{\text{Pub}\} \right)\\
 & = \sum_{i \in \{\operatorname{Pub}\}} \log f(y_i; \theta) \\
 & - \sum_{i \in \{\operatorname{Pub}\}} \log \left[ \int_{-\infty}^{\infty} f(y; \theta) \cdot w(y)  d y \right].
 \end{align}
@@ -2070,7 +2070,7 @@ where $\sigma^2= 2/n$, while the standard errors are generated from a scaled $\C
 These values are generated independently for each study, assuming no correlation between studies. We then simulate ORB by selectively excluding certain studies from the meta-analysis based on the direction and significance of treatment effects. The ORB simulation process involves removing study outcomes with a probability of reporting determined by a decreasing function of the one-sided $p$-value, i.e., $p_i = \Phi(- y_i / \sigma_i)$. The function \eqref{simORB} used to simulate ORB is taken from simulation studies on PB, for consistency with our selection model approach, typical of PB settings. We simulate under two ORB settings, i.e., $\gamma=1.5$ \citep{selection2, Begg, BeggUse1, selectionCont} and $\gamma=0.5$. 
 
 \begin{equation}
-P( i \in \; \{\text{Rep}\})= e^{-4 \cdot p_i^{\gamma}}.
+P( i \in \{\text{Rep}\})= e^{-4 \cdot p_i^{\gamma}}.
 \label{simORB}
 \end{equation}
 
