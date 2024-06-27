@@ -1,5 +1,7 @@
 
 \documentclass[twocolumn]{article}
+\usepackage{booktabs}
+\usepackage{array}
 %\usepackage[T1]{fontenc}
 \usepackage[margin=1in]{geometry}
 \usepackage[english]{babel}
