@@ -2060,7 +2060,7 @@ where $\mu$ is the overall treatment effect and $\tau^2$ is the between-study he
 y_i \sim \mathcal{N}(\theta_i, \sigma^2) \text{,}
 \end{equation}
 
-where $\sigma^2= 2/n$, while the standard errors are generated from a scaled $\Chi^2$ distribution
+where $\sigma^2= 2/n$, while the standard errors are generated from a scaled $\chi^2$ distribution
 
 \begin{equation}
 \label{sigma.sq.sim}
