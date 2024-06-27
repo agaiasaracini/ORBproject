@@ -74,13 +74,13 @@ Elterman 1999 & 41 & 45 & 16 & 9 & 4 & 2 \\
 Faught 1996 & 136 & 45 & 54 & 8 & Unrep & Unrep \\
 Guberman 2002 & 171 & 92 & 77 & 22 & 10 & 2 \\
 Korean 1999 & 91 & 86 & 45 & 11 & 7 & 1 \\
-\addlinespace
+%\addlinespace
 Privitera 1996 & 143 & 47 & 58 & 4 & Unrep & Unrep \\
 Rosenfeld 1996 & 167 & 42 & 86 & 8 & Unrep & Unrep \\
 Sharief 1996 & 23 & 24 & 8 & 2 & 2 & 0 \\
 Tassinari 1996 & 30 & 30 & 14 & 3 & 0 & 0 \\
 Yen 2000 & 23 & 23 & 11 & 3 & Unrep & Unrep \\
-\addlinespace
+%\addlinespace
 Zhang 2011 & 46 & 40 & 22 & 3 & 0 & 0 \\
 Coles 1999 & 52 & 51 & Unrep & Unrep & Unrep & Unrep \\
 \bottomrule
@@ -116,14 +116,14 @@ the PB-adjusted log-likelihood $\ell_{\text{Adj}}^{\text{PB}} \left( \theta  \ri
 
 %\bigskip
 
-\begin{equation}
-\label{lik.PB}
+%\begin{equation}
 \begin{align}
+\label{lik.PB}
 \ell_{\text{Adj}}^{\text{PB}}\left(\theta \right) &= \sum_{i} \log f \left(y_i; \theta \;|\; i \in \, \{\text{Pub}\} \right)\\
 & = \sum_{i \in \{\operatorname{Pub}\}} \log f(y_i; \theta) \\
 & - \sum_{i \in \{\operatorname{Pub}\}} \log \left[ \int_{-\infty}^{\infty} f(y; \theta) \cdot w(y)  d y \right].
 \end{align}
-\end{equation}
+%\end{equation}
 
 
 %\bigskip
