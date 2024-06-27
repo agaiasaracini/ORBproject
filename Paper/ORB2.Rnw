@@ -2139,7 +2139,7 @@ Overall, this study highlights the significant impact of ORB on treatment effect
 \begin{figure*}[!hbt]
 \centering
 \caption{Bias in the estimation of the treatment effect for ORB simulated with $\gamma=1.5$}
-\hline
+%\hline
 <<echo=FALSE, results='asis', fig.height=12, fig.width=9, message=FALSE, warning=FALSE>>=
 
 #Plots
@@ -2265,7 +2265,7 @@ invisible(final_plot)
 
 
 @
-\hline
+%\hline
 \label{res1}
 \end{figure*}
 
@@ -2273,7 +2273,7 @@ invisible(final_plot)
 \begin{figure*}[!hbt]
 \centering
 \caption{Bias in the estimation of the treatment effect for ORB simulated with $\gamma=0.5$}
-\hline
+%\hline
 <<echo=FALSE, results='asis', fig.height=12, fig.width=9, message=FALSE, warning=FALSE>>=
 
 #Plots
@@ -2416,7 +2416,7 @@ final_plot <- grid.arrange(
 invisible(final_plot)
 
 @
-\hline
+%\hline
 \label{res2}
 \end{figure*}
 
@@ -2425,7 +2425,7 @@ invisible(final_plot)
 \begin{figure*}[!hbt]
 \centering
 \caption{MSE in the estimation of the treatment effect for ORB simulated with $\gamma=1.5$}
-\hline
+%\hline
 <<echo=FALSE, results='asis', fig.height=12, fig.width=9, message=FALSE, warning=FALSE>>=
 
 #Plots
@@ -2551,7 +2551,7 @@ invisible(final_plot)
 
 
 @
-\hline
+%\hline
 \label{MSE1}
 \end{figure*}
 
@@ -2559,7 +2559,7 @@ invisible(final_plot)
 \begin{figure*}[!hbt]
 \centering
 \caption{MSE in the estimation of the treatment effect for ORB simulated with $\gamma=0.5$}
-\hline
+%\hline
 <<echo=FALSE, results='asis', fig.height=12, fig.width=9, message=FALSE, warning=FALSE>>=
 
 #Plots
@@ -2702,7 +2702,7 @@ final_plot <- grid.arrange(
 invisible(final_plot)
 
 @
-\hline
+%\hline
 \label{MSE2}
 \end{figure*}
 
@@ -2712,7 +2712,7 @@ invisible(final_plot)
 \begin{figure*}[!hbt]
 \centering
 \caption{Coverage in the estimation of the treatment effect for ORB simulated with $\gamma=1.5$}
-\hline
+%\hline
 <<echo=FALSE, results='asis', fig.height=12, fig.width=9, message=FALSE, warning=FALSE>>=
 
 #Plots
@@ -2838,7 +2838,7 @@ invisible(final_plot)
 
 
 @
-\hline
+%\hline
 \label{Cov1}
 \end{figure*}
 
@@ -2846,7 +2846,7 @@ invisible(final_plot)
 \begin{figure*}[!hbt]
 \centering
 \caption{Coverage in the estimation of the treatment effect for ORB simulated with $\gamma=0.5$}
-\hline
+%\hline
 <<echo=FALSE, results='asis', fig.height=12, fig.width=9, message=FALSE, warning=FALSE>>=
 
 #Plots
@@ -2989,7 +2989,7 @@ final_plot <- grid.arrange(
 invisible(final_plot)
 
 @
-\hline
+%\hline
 \label{Cov2}
 \end{figure*}
 
@@ -2998,7 +2998,7 @@ invisible(final_plot)
 \begin{figure*}[!hbt]
 \centering
 \caption{Power in the estimation of the treatment effect for ORB simulated with $\gamma=1.5$}
-\hline
+%\hline
 <<echo=FALSE, results='asis', fig.height=12, fig.width=9, message=FALSE, warning=FALSE>>=
 
 #Plots
@@ -3124,7 +3124,7 @@ invisible(final_plot)
 
 
 @
-\hline
+%\hline
 \label{Pow1}
 \end{figure*}
 
@@ -3132,7 +3132,7 @@ invisible(final_plot)
 \begin{figure*}[!hbt]
 \centering
 \caption{Power in the estimation of the treatment effect for ORB simulated with $\gamma=0.5$}
-\hline
+%\hline
 <<echo=FALSE, results='asis', fig.height=12, fig.width=9, message=FALSE, warning=FALSE>>=
 
 #Plots
@@ -3275,7 +3275,7 @@ final_plot <- grid.arrange(
 invisible(final_plot)
 
 @
-\hline
+%\hline
 \label{Pow2}
 \end{figure*}
 
@@ -3286,7 +3286,7 @@ invisible(final_plot)
 \begin{figure*}[!hbt]
 \centering
 \caption{Empircal SE in the estimation of the treatment effect for ORB simulated with $\gamma=1.5$}
-\hline
+%\hline
 <<echo=FALSE, results='asis', fig.height=12, fig.width=9, message=FALSE, warning=FALSE>>=
 
 #Plots
@@ -3412,7 +3412,7 @@ invisible(final_plot)
 
 
 @
-\hline
+%\hline
 \label{SE1}
 \end{figure*}
 
@@ -3420,7 +3420,7 @@ invisible(final_plot)
 \begin{figure*}[!hbt]
 \centering
 \caption{Empirical SE in the estimation of the treatment effect for ORB simulated with $\gamma=0.5$}
-\hline
+%\hline
 <<echo=FALSE, results='asis', fig.height=12, fig.width=9, message=FALSE, warning=FALSE>>=
 
 #Plots
@@ -3563,7 +3563,7 @@ final_plot <- grid.arrange(
 invisible(final_plot)
 
 @
-\hline
+%\hline
 \label{SE2}
 \end{figure*}
 
@@ -3573,7 +3573,7 @@ invisible(final_plot)
 \begin{figure*}[!hbt]
 \centering
 \caption{Bias in the estimation of the heterogeneity variance for ORB simulated with $\gamma=1.5$}
-\hline
+%\hline
 <<echo=FALSE, results='asis', fig.height=12, fig.width=9, message=FALSE, warning=FALSE>>=
 
 #Plots
@@ -3699,7 +3699,7 @@ invisible(final_plot)
 
 
 @
-\hline
+%\hline
 \label{biastau1}
 \end{figure*}
 
@@ -3707,7 +3707,7 @@ invisible(final_plot)
 \begin{figure*}[!hbt]
 \centering
 \caption{Bias in the estimation of the heterogeneity variance for ORB simulated with $\gamma=0.5$}
-\hline
+%\hline
 <<echo=FALSE, results='asis', fig.height=12, fig.width=9, message=FALSE, warning=FALSE>>=
 
 
@@ -3833,7 +3833,7 @@ invisible(final_plot)
 
 
 @
-\hline
+%\hline
 \label{biastau2}
 \end{figure*}
 
