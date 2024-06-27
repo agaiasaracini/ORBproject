@@ -197,7 +197,7 @@ Similarly, for the unreported studies $i \in \{\text{Unrep} \}$, we can use the 
 \begin{equation}
 \label{ith.high}
 \begin{aligned}
-f\left(y_i \mid \, i \in \{\text{Unrep} \} \right) = \frac{f \left(y_i \text{;} \theta \right) \cdot \left(1-w(y_i) \right)}{\int_{-\infty}^{\infty} f \left(y\right \text{;} \theta \right) \cdot \left(1-w(y) \right) d y} \text{.}
+f\left(y_i \mid \, i \in \{\text{Unrep} \} \right) = \frac{f \left(y_i \text{;} \theta \right) \cdot \left(1-w(y_i) \right)}{\int_{-\infty}^{\infty} f \left(y \text{;} \theta \right) \cdot \left(1-w(y) \right) d y} \text{.}
 \end{aligned}
 \end{equation}
 
