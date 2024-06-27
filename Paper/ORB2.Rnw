@@ -205,7 +205,7 @@ f\left(y_i \mid \, i \in \{\text{Unrep} \} \right) = \frac{f \left(y_i \text{;} 
 
 Using \eqref{ith.rep} and \eqref{ith.high}, and solving for $f(y_i \text{;} \theta)$, we can re-write the ORB-adjusted log-likelihood \eqref{lik.full} as
 
-\bigksip
+\bigskip
 
 
 \begin{equation}
