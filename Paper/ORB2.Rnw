@@ -94,7 +94,7 @@ Coles 1999 & 52 & 51 & Unrep & Unrep & Unrep & Unrep \\
 This paper is organized as follows: Section \ref{selmod} introduces the selection model framework typically used for PB and illustrates how this framework can be adapted to address ORB, considering various possible missing data mechanisms inspired by PB literature. Section \ref{simstudy} presents a simulation study investigating the impact of ORB and the effectiveness of the proposed ORB-adjustment method, with a focus on its application within a random effects meta-analysis model. Finally, Section \ref{disc} summarizes the proposed methodology and findings in a discussion, including limitations and conclusions.
 
 \section{Selection Models} \label{selmod}
-Selection models have gained popularity in the PB adjustment literature \citep{DerSimonian, selection1, selection2, reviewselection, handbook}, as they aim at correcting for the bias in treatment effect estimation by directly modelling the assumed missing data mechanism. Let $y_i$ be the observed treatment effect estimate for study $i$ in the meta-analysis, with distribution $f(y_i ; \theta)$, assumed to be normal, where we denote $\theta$ as the unknown parameter of interest - in the context of the random effects meta-analysis of \eqref{eq:random.eff11}, $\theta$ is $\mu$ and $\tau^2$.
+Selection models have gained popularity in the PB adjustment literature \citep{DerSimonian, selection1, selection2, reviewselection, handbook}, as they aim at correcting for the bias in treatment effect estimation by directly modelling the assumed missing data mechanism. Let $y_i$ be the observed treatment effect estimate for study $i$ in the meta-analysis, with distribution $f(y_i \mathpunct{;} \theta)$, assumed to be normal, where we denote $\theta$ as the unknown parameter of interest - in the context of the random effects meta-analysis of \eqref{eq:random.eff11}, $\theta$ is $\mu$ and $\tau^2$.
 
 The general form of a selection model in the PB literature involves the use of a weighted likelihood function which takes into account the observations $y_i$ from published studies $i \in \{\text{Pub} \}$ by weighing them with a selection function $w(y_i)$ which describes the probability that study $i$ is published/selected based on its significance \citep{selection1, selection2, reviewselection}. By using the following relation:
 
@@ -103,8 +103,8 @@ The general form of a selection model in the PB literature involves the use of a
 \begin{equation}
 \label{PB.selection11}
 \begin{aligned}
-f \left( y_i \;|\; i \in \, \{\text{Pub}\} \right) %\\[0.5em] 
-= \frac{f(y_i; \theta) \cdot w(y_i)}{\int^{+\infty}_{-\infty} f(y; \theta) \cdot w(y) dy,}
+f \left( y_i \mid i \in \, \{\text{Pub}\} \right) %\\[0.5em] 
+= \frac{f(y_i \mathpunct{;} \theta) \cdot w(y_i)}{\int^{+\infty}_{-\infty} f(y \mathpunct{;} \theta) \cdot w(y) dy,}
 \end{aligned}
 \end{equation}
 
@@ -119,9 +119,9 @@ the PB-adjusted log-likelihood $\ell_{\text{Adj}}^{\text{PB}} \left( \theta  \ri
 %\begin{equation}
 \begin{align}
 \label{lik.PB}
-\ell_{\text{Adj}}^{\text{PB}}\left(\theta \right) &= \sum_{i} \log f \left(y_i; \theta \mid i \in \, \{\text{Pub}\} \right)\\
-& = \sum_{i \in \{\operatorname{Pub}\}} \log f(y_i; \theta) \\
-& - \sum_{i \in \{\operatorname{Pub}\}} \log \left[ \int_{-\infty}^{\infty} f(y; \theta) \cdot w(y)  d y \right].
+\ell_{\text{Adj}}^{\text{PB}}\left(\theta \right) &= \sum_{i} \log f \left(y_i \mathpunct{;} \theta \mid i \in \, \{\text{Pub}\} \right)\\
+& = \sum_{i \in \{\operatorname{Pub}\}} \log f(y_i \mathpunct{;} \theta) \\
+& - \sum_{i \in \{\operatorname{Pub}\}} \log \left[ \int_{-\infty}^{\infty} f(y \mathpunct{;} \theta) \cdot w(y)  d y \right].
 \end{align}
 %\end{equation}
 
@@ -171,7 +171,7 @@ In the PB selection model setting one takes into account only the non-missing st
 %L\left(\theta \right)&=\prod_{i=1}^n L_i\left(\theta \right) \quad \text { where } n=n_{\text {Rep }}+n_{\text {High }} \\
 \ell_{\text{Adj}}^{\text{ORB}} & =\sum_{i=1}^K \ell \left(\theta \right)\\
 & =\sum_{i \in \{ \operatorname{Rep}\} } \ell\left(\theta \right)+\sum_{i \in \{\operatorname{Unrep} \} } \ell\left(\theta \right) \\
-& =\sum_{i \in \{\operatorname{Rep} \} } \log f \left(y_i; \theta \right)+\sum_{i \in \{\operatorname{Unrep} \} } \log f \left(y_i; \theta \right).
+& =\sum_{i \in \{\operatorname{Rep} \} } \log f \left(y_i \mathpunct{;} \theta \right)+\sum_{i \in \{\operatorname{Unrep} \} } \log f \left(y_i \mathpunct{;} \theta \right).
 \end{aligned}
 \end{equation}
 
@@ -184,7 +184,7 @@ We can then adapt the formulation of equation \eqref{PB.selection11} for ORB, by
 \begin{equation}
 \label{ith.rep}
 \begin{aligned}
-f\left(y_i \mid  \, i \in \{\text{Rep}\} \right) = \frac{f\left(y_i; \theta \right) \cdot w(y_i)}{\int_{-\infty}^{\infty} f\left(y; \theta \right) \cdot w(y) d y}.
+f\left(y_i \mid  \, i \in \{\text{Rep}\} \right) = \frac{f\left(y_i \mathpunct{;} \theta \right) \cdot w(y_i)}{\int_{-\infty}^{\infty} f\left(y \mathpunct{;} \theta \right) \cdot w(y) d y}.
 \end{aligned}
 \end{equation}
 
@@ -197,13 +197,13 @@ Similarly, for the unreported studies $i \in \{\text{Unrep} \}$, we can use the 
 \begin{equation}
 \label{ith.high}
 \begin{aligned}
-f\left(y_i \mid \, i \in \{\text{Unrep} \} \right) = \frac{f \left(y_i; \theta \right) \cdot \left(1-w(y_i) \right)}{\int_{-\infty}^{\infty} f \left(y\right ; \theta) \cdot \left(1-w(y) \right) d y}.
+f\left(y_i \mid \, i \in \{\text{Unrep} \} \right) = \frac{f \left(y_i \mathpunct{;} \theta \right) \cdot \left(1-w(y_i) \right)}{\int_{-\infty}^{\infty} f \left(y\right \mathpunct{;} \theta) \cdot \left(1-w(y) \right) d y}.
 \end{aligned}
 \end{equation}
 
 \bigskip
 
-Using \eqref{ith.rep} and \eqref{ith.high}, and solving for $f(y_i; \theta)$, we can re-write the ORB-adjusted log-likelihood \eqref{lik.full} as
+Using \eqref{ith.rep} and \eqref{ith.high}, and solving for $f(y_i \mathpunct{;} \theta)$, we can re-write the ORB-adjusted log-likelihood \eqref{lik.full} as
 
 \bigksip
 
@@ -211,9 +211,9 @@ Using \eqref{ith.rep} and \eqref{ith.high}, and solving for $f(y_i; \theta)$, we
 \begin{equation}
 \label{lik.rewritten}
 \begin{aligned}
-\ell_{\text{Adj}}^{\text{ORB}} \left(\theta \right) & = \sum_{i \in \{\operatorname{Rep} \} } \log  f(y_i; \theta)\\
-& - \sum_{i \in \{\operatorname{Rep} \} } \log \left[ \int_{-\infty}^{\infty} f\left(y; \theta \right) \cdot w(y) dy \right]\\
-& + \sum_{i \in \{ \operatorname{Unrep} \}} \log \left[ \int_{-\infty}^{\infty} f(y; \theta) \cdot \left( 1 - w(y) \right) d y \right].
+\ell_{\text{Adj}}^{\text{ORB}} \left(\theta \right) & = \sum_{i \in \{\operatorname{Rep} \} } \log  f(y_i \mathpunct{;} \theta)\\
+& - \sum_{i \in \{\operatorname{Rep} \} } \log \left[ \int_{-\infty}^{\infty} f\left(y \mathpunct{;} \theta \right) \cdot w(y) dy \right]\\
+& + \sum_{i \in \{ \operatorname{Unrep} \}} \log \left[ \int_{-\infty}^{\infty} f(y \mathpunct{;} \theta) \cdot \left( 1 - w(y) \right) d y \right].
 \end{aligned}
 \end{equation}
 
@@ -226,8 +226,8 @@ The likelihood \eqref{lik.rewritten} is the generic setting using a weight funct
 \begin{equation}
 \label{lik.rewritten.special.copas.case}
 \begin{aligned}
-\ell_{\text{Adj}}^{\text{ORB}} \left(\theta \right) & = \sum_{i \in \{\operatorname{Rep} \} } \log f(y_i; \theta)\\
-&+ \sum_{i \in \{ \operatorname{Unrep} \}} \log \left[ \int_{-\infty}^{\infty} f(y; \theta) \cdot \left( 1 - w(y) \right) d y \right].
+\ell_{\text{Adj}}^{\text{ORB}} \left(\theta \right) & = \sum_{i \in \{\operatorname{Rep} \} } \log f(y_i \mathpunct{;} \theta)\\
+&+ \sum_{i \in \{ \operatorname{Unrep} \}} \log \left[ \int_{-\infty}^{\infty} f(y \mathpunct{;} \theta) \cdot \left( 1 - w(y) \right) d y \right].
 \end{aligned}
 \end{equation}
 
@@ -291,8 +291,8 @@ Using the log-likelihood \eqref{lik.rewritten.special.copas.case} and the select
 \begin{equation}
 \label{w.copas.der}
 \begin{aligned}
-& \ell_{\text{Adj}}^{\text{ORB}}(\theta) = \sum_{i \in \{\text{Rep} \} } \log f(y_i; \theta)\\
-& + \sum_{i \in \{ \text{HR} \}} \log \left[\int_{-\infty}^{+\infty} f(y ; \theta) (1-w(y)) dy\right] \\
+& \ell_{\text{Adj}}^{\text{ORB}}(\theta) = \sum_{i \in \{\text{Rep} \} } \log f(y_i \mathpunct{;} \theta)\\
+& + \sum_{i \in \{ \text{HR} \}} \log \left[\int_{-\infty}^{+\infty} f(y \mathpunct{;} \theta) (1-w(y)) dy\right] \\
 %& = \sum_{i \in \text{Rep}} \log f_i(y_i; \theta) + \sum_{i \in \text{HR}} \log \left[\int_{-z_{\alpha} \sigma_i}^{+z_{\alpha} \sigma_i} f_i(y ; \theta) \cdot 1 \cdot dy\right] \\
 %& = \sum_{i \in \text{Rep}} \log f_i(y_i; \theta) + \sum_{i \in \text{HR}} \log \left[F_i(z_{\alpha} \sigma_i; \theta)-F_i(-z_{\alpha} \sigma_i; \theta)\right] \\
 %& = \sum_{i \in \text{Rep}} \log f_i(y_i; \mu, \tau^2) + \sum_{i \in \text{HR}} \log \left[\Phi\left(\frac{z_{\alpha} \sigma_i - \mu}{\sqrt{\sigma_{i}^2 + \tau^2}}\right)-\Phi\left(\frac{-z_{\alpha} \sigma_i-\mu}{\sqrt{\sigma_{i}^2 + \tau^2}}\right)\right]\\
@@ -303,10 +303,10 @@ Using the log-likelihood \eqref{lik.rewritten.special.copas.case} and the select
 
 \bigskip
 
-The selection function \eqref{sel0} results in a simple shape of the ORB-adjusted log-likelihood; however, the underlying assumption regarding the missing data mechanism is somewhat strict, and extensions which relax its assumption are commonly found in the PB literature \citep{selection1, reviewselection}. One example is the function $w_B(y; \beta)$ with tuning parameter $\beta >0$:
+The selection function \eqref{sel0} results in a simple shape of the ORB-adjusted log-likelihood; however, the underlying assumption regarding the missing data mechanism is somewhat strict, and extensions which relax its assumption are commonly found in the PB literature \citep{selection1, reviewselection}. One example is the function $w_B(y \mathpunct{;} \beta)$ with tuning parameter $\beta >0$:
 
 \begin{equation}
-w_B(y; \beta) = 
+w_B(y \mathpunct{;} \beta) = 
 \begin{cases}
 1 & \text{if } p \leq \alpha \\
 \frac{p^{-\beta}}{\alpha^{-\beta}} & \text{if } p > \alpha
@@ -316,12 +316,12 @@ w_B(y; \beta) =
 
 The idea of this selection function in the context of PB is that the associated probability of publishing which weights observations is greater than 0 for non-significant outcomes. Here, for the non-significant study outcomes, the associated probability of reporting is a decreasing function of the $p$-value, while significant study outcomes have an associated probability of reporting of 1.
 
-In the context of ORB we further propose a different selection function, $w_C(y; \gamma)$ with tuning parameter $\gamma > 0$ in \eqref{special2}, for which the rationale is inverted compared to $w_B(y; \beta)$ in \eqref{special1}, as we assume that non-significant study outcomes have an associated probability of reporting 0, while significant study outcomes have an associated probability of reporting which is a decreasing function of the $p$-value. This can be motivated by scenarios where ORB results from prioritizing more impactful or clinically relevant findings in a published study \citep{moreORBreasons, ORBreasons}, leading to only highly significant outcomes being reported. This could be interpreted as a lower threshold for not reporting compared to PB, and thus a higher level of bias. At the same time, given that the selection function allows for significant unreported outcomes, it can also account for settings in which outcomes are missing because they were deemed less relevant, resulting in a more random pattern of missing data and less bias \citep{mythesis}. Understanding the exact cause of unreporting can be challenging, and information on the strength of evidence for other outcomes in the meta-analysis could help clarify the likely cause of unreporting.
+In the context of ORB we further propose a different selection function, $w_C(y \mathpunct{;} \gamma)$ with tuning parameter $\gamma > 0$ in \eqref{special2}, for which the rationale is inverted compared to $w_B(y \mathpunct{;} \beta)$ in \eqref{special1}, as we assume that non-significant study outcomes have an associated probability of reporting 0, while significant study outcomes have an associated probability of reporting which is a decreasing function of the $p$-value. This can be motivated by scenarios where ORB results from prioritizing more impactful or clinically relevant findings in a published study \citep{moreORBreasons, ORBreasons}, leading to only highly significant outcomes being reported. This could be interpreted as a lower threshold for not reporting compared to PB, and thus a higher level of bias. At the same time, given that the selection function allows for significant unreported outcomes, it can also account for settings in which outcomes are missing because they were deemed less relevant, resulting in a more random pattern of missing data and less bias \citep{mythesis}. Understanding the exact cause of unreporting can be challenging, and information on the strength of evidence for other outcomes in the meta-analysis could help clarify the likely cause of unreporting.
 
 \bigskip
 
 \begin{equation}
-w_C(y; \gamma) = 
+w_C(y \mathpunct{;} \gamma) = 
 \begin{cases}
 1 - \frac{p^{\gamma}}{\alpha^{\gamma}} & \text{if } p \leq \alpha \\
 0 & \text{if } p > \alpha
@@ -331,12 +331,12 @@ w_C(y; \gamma) =
 
 \bigskip
 
-Based on the selection functions $w_B(y; \beta)$ in \eqref{special1} and $w_C(y; \gamma)$ in \eqref{special2} one could envisage a combination of these by using e.g., selection function $w_D(y; \beta, \gamma)$ in \eqref{special3}. In this case, one can flexibly specify both $\gamma$ and $\beta$ parameters, as well as the probability of reporting assumed for a study outcome at the significance threshold $\alpha$, which we note $\omega_{\alpha}$. In the case of \eqref{special1}, $\omega_{\alpha}$ was implicitly 1 and in case of \eqref{special2} this was set to 0. Here, we set $\omega_{\alpha}=0.5$, as a middle value between \eqref{special1} and \eqref{special2}. The selection function $w_D(y; \beta, \gamma)$ has the potential of being used to conduct extensive sensitivity analyses when adjusting for ORB.
+Based on the selection functions $w_B(y \mathpunct{;} \beta)$ in \eqref{special1} and $w_C(y \mathpunct{;} \gamma)$ in \eqref{special2} one could envisage a combination of these by using e.g., selection function $w_D(y \mathpunct{;} \beta, \gamma)$ in \eqref{special3}. In this case, one can flexibly specify both $\gamma$ and $\beta$ parameters, as well as the probability of reporting assumed for a study outcome at the significance threshold $\alpha$, which we note $\omega_{\alpha}$. In the case of \eqref{special1}, $\omega_{\alpha}$ was implicitly 1 and in case of \eqref{special2} this was set to 0. Here, we set $\omega_{\alpha}=0.5$, as a middle value between \eqref{special1} and \eqref{special2}. The selection function $w_D(y \mathpunct{;} \beta, \gamma)$ has the potential of being used to conduct extensive sensitivity analyses when adjusting for ORB.
 
 \bigskip
 
 \begin{equation}
-w_D(y; \beta, \gamma) = 
+w_D(y \mathpunct{;} \beta, \gamma) = 
 \begin{cases}
 1 - (1-w_{\alpha})\left(\frac{p^{\gamma}}{\alpha^{\gamma}}\right) & \text{if } p \leq \alpha \\
 w_{\alpha}\left(\frac{p^{-\beta}}{\alpha^{-\beta}}\right) & \text{if } p > \alpha
@@ -346,7 +346,7 @@ w_{\alpha}\left(\frac{p^{-\beta}}{\alpha^{-\beta}}\right) & \text{if } p > \alph
 
 \bigskip
 
-The selection functions proposed above, namely $w_A(y)$ in \eqref{sel0}, $w_B(y; \beta, \gamma)$ in \eqref{special1}, $w_C(y; \gamma)$ in \eqref{special2} and $w_D(y; \beta, \gamma)$ in \eqref{special3} are plotted in Figure \ref{new.weight.fig} for some example values of the $\gamma > 0$ and $\beta > 0$ parameters. Further rationale for the parameter choices are discussed in the simulation study protocol, available in the \href{https://osf.io/ancdu/}{OSF project repository}.
+The selection functions proposed above, namely $w_A(y)$ in \eqref{sel0}, $w_B(y \mathpunct{;} \beta, \gamma)$ in \eqref{special1}, $w_C(y \mathpunct{;} \gamma)$ in \eqref{special2} and $w_D(y \mathpunct{;} \beta, \gamma)$ in \eqref{special3} are plotted in Figure \ref{new.weight.fig} for some example values of the $\gamma > 0$ and $\beta > 0$ parameters. Further rationale for the parameter choices are discussed in the simulation study protocol, available in the \href{https://osf.io/ancdu/}{OSF project repository}.
 
 \subsubsection{Imputation of Missing Variances}
 
@@ -375,7 +375,7 @@ With the selection model framework for ORB adjustment presented in this work, on
 %\begin{@twocolumnfalse}
 \begin{figure*}[!hbt]
 \centering
-\caption{Possible Selection Functions for ORB-adjustment. Function $w_A(y)$ from equation \eqref{sel0} in (a), function $w_B(y; \beta = 3)$ from equation \eqref{special1} in (b), function $w_C(y; \gamma = 3)$ from equation \eqref{special2} in (c), and functions $w_D(y; \beta = 1.5, \gamma = 7)$ and $w_D(y; \beta = 7, \gamma = 1.5)$  from equation\eqref{special3} shown in (d).\\[0.5em]}
+\caption{Possible Selection Functions for ORB-adjustment. Function $w_A(y)$ from equation \eqref{sel0} in (a), function $w_B(y \mathpunct{;} \beta = 3)$ from equation \eqref{special1} in (b), function $w_C(y \mathpunct{;} \gamma = 3)$ from equation \eqref{special2} in (c), and functions $w_D(y \mathpunct{;} \beta = 1.5, \gamma = 7)$ and $w_D(y \mathpunct{;} \beta = 7, \gamma = 1.5)$  from equation\eqref{special3} shown in (d).\\[0.5em]}
 %\hline
 <<echo=FALSE, results='asis', fig.height=4.2, fig.width=7, message=FALSE, warning=FALSE>>=
 
@@ -2078,7 +2078,7 @@ Each meta-analysis dataset hence results in $K$ or fewer of the original study o
 
 After having simulated ORB, hence resulting in some treatment effects and standard errors unreported, we use maximum likelihood (ML) estimation to obtain point estimates of the treatment effect $\mu$ and the heterogeneity variance $\tau^2$, along with profile likelihood (PL) confidence intervals (CI) \citep{tauCI, Copas2019, likelihood}. The ML estimate and PL CI for $\mu$ and $\tau^2$ are obtained using different log-likelihoods, depending on the information and/or missing data mechanism assumed, leading to i) naive, ii) complete data, and iii) ORB-adjusted estimation methods. We further differentiate various ORB-adjusted estimates based on the selection function assumed for the probability of reporting.
 
-The naive log-likelihood (i) includes the contribution only from reported study outcomes and disregards the unreported ones. The naive estimate serves as a baseline for comparison of the ORB-adjustment methodologies and quantifies the negative impact of ORB when the latter is not accounted for \citep{reviewselection, Copas2019}. The complete data log-likelihood (ii) uses all studies in the meta-analysis before ORB is simulated, and is a proxy for the true treatment effect if there were no ORB. The various ORB-adjusted estimates (iii) are obtained by maximizing the ORB-adjusted log-likelihood \eqref{lik.rewritten.special.copas.case} using the different selection functions:  $w_A(y)$ from \eqref{sel0}, $w_B(y; \beta=3)$ from \eqref{special1}, $w_C(y; \gamma=3)$ from \eqref{special2}, and $w_D(y; \beta=1.5, \gamma=7)$, $w_D(y; \beta=7, \gamma=1.5)$ from \eqref{special3}, as well as the selection function \eqref{simORB} used to simulate ORB, so as to include the correct model specification in the adjustment. Since the latter can be indeed seen a selection function, we note as $w_{DGM}(y)$. The parameters of the selection functions, i.e., $\beta$ or $\gamma$ used in the adjustment correspond to those illustrated in Figure \ref{new.weight.fig}.\\
+The naive log-likelihood (i) includes the contribution only from reported study outcomes and disregards the unreported ones. The naive estimate serves as a baseline for comparison of the ORB-adjustment methodologies and quantifies the negative impact of ORB when the latter is not accounted for \citep{reviewselection, Copas2019}. The complete data log-likelihood (ii) uses all studies in the meta-analysis before ORB is simulated, and is a proxy for the true treatment effect if there were no ORB. The various ORB-adjusted estimates (iii) are obtained by maximizing the ORB-adjusted log-likelihood \eqref{lik.rewritten.special.copas.case} using the different selection functions:  $w_A(y)$ from \eqref{sel0}, $w_B(y \mathpunct{;} \beta=3)$ from \eqref{special1}, $w_C(y \mathpunct{;} \gamma=3)$ from \eqref{special2}, and $w_D(y \mathpunct{;} \beta=1.5, \gamma=7)$, $w_D(y \mathpunct{;} \beta=7, \gamma=1.5)$ from \eqref{special3}, as well as the selection function \eqref{simORB} used to simulate ORB, so as to include the correct model specification in the adjustment. Since the latter can be indeed seen a selection function, we note as $w_{DGM}(y)$. The parameters of the selection functions, i.e., $\beta$ or $\gamma$ used in the adjustment correspond to those illustrated in Figure \ref{new.weight.fig}.\\
 \textcolor{white}{T} For each parameter setting, the simulation process is repeated $\text{N}_{\text{sim}} = 3200$ times; the simulation size $\text{N}_{\text{sim}}$ is calculated based on the expected variance of the unknown parameter estimate \citep{IntHout2014, sim} and a desired Monte Carlo Standard Error (MCSE) of 0.005 from \citet{IntHout2014, sim}. The performance measures recorded for the unknown parameter are bias, empirical standard error (SE), mean squared error (MSE), coverage and power, along with the MCSEs of each, as per \citet{IntHout2014, sim}.
 
 \subsection{Results}
