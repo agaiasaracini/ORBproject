@@ -1072,8 +1072,8 @@ invisible(final_plot)
 
 %\newpage
 
-%\bibliographystyle{mywiley} % Choose natbib-compatible bibliography style
-%\bibliography{biblio} % Replace 'biblio' with your actual BibTeX file name
+\bibliographystyle{mywiley} % Choose natbib-compatible bibliography style
+\bibliography{biblio} % Replace 'biblio' with your actual BibTeX file name
 
 %\newpage
 
