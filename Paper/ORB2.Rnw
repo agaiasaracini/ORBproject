@@ -3661,8 +3661,8 @@ wrap_plot_bias_tau <- function(data) {
     labs(
       x = "", 
       y = "", 
-      title = bquote("K" == .(data$k_values) ~ "," ~ I^2 == .(round(data$tau_squared_values / (data$tau_squared_values + 2 / 50), 2)))
-    ) +
+      title = bquote("K" == .(data$k_values) ~ "," ~ mu == .(round(data$mu_values, 2))
+    )) +
     ylim(-0.3, 0.1) +
     theme_minimal() +
     theme(
@@ -3796,8 +3796,8 @@ wrap_plot_bias_tau <- function(data) {
     labs(
       x = "", 
       y = "", 
-      title = bquote("K" == .(data$k_values) ~ "," ~ I^2 == .(round(data$tau_squared_values / (data$tau_squared_values + 2 / 50), 2)))
-    ) +
+      title = bquote("K" == .(data$k_values) ~ "," ~ mu == .(round(data$mu_values, 2))
+    ))+
     ylim(-0.3, 0.1) +
     theme_minimal() +
     theme(
