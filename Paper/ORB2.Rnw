@@ -121,49 +121,19 @@ the PB-adjusted log-likelihood $\ell_{\text{Adj}}^{\text{PB}} \left( \theta  \ri
 
 %\bigskip
 
-%\begin{equation}
-\begin{align}
+\begin{equation*}
+\begin{aligned}
 \label{lik.PB}
 \ell_{\text{Adj}}^{\text{PB}}\left(\theta \right) &= \sum_{i} \log f \left(y_i \text{;} \theta \mid i \in \, \{\text{Pub}\} \right)\\
 & = \sum_{i \in \{\operatorname{Pub}\}} \log f(y_i \text{;} \theta) \\
 & - \sum_{i \in \{\operatorname{Pub}\}} \log \left[ \int_{-\infty}^{\infty} f(y \text{;} \theta) \cdot w(y)  d y \right] \text{.}
-\end{align}
-%\end{equation}
+\end{aligned}
+\end{equation*}
 
 
 %\bigskip
 There are numerous forms which the selection function can take in the context of PB, with the general intuition being that in a meta-analysis of a beneficial outcome, for larger $p$-values, the probability of publication/selection decreases. Of note, in the case of a meta-analysis of a harmful outcome, we would expect the inverse, i.e., small, significant $p-$values to be likely not reported, as they would indicate harm \citep{ORBIT_paper, Copas2019}. In the following sections we defined the selection functions assuming a beneficial outcomes and thus positive direction of treatment. 
 The selection function $w(y_i)$ is thus often defined as a function of the $p$-value $p_i$, which constitutes an intuitive way of understanding the relationship between significance and probability of selection, \citep{selection1, selection2, reviewselection}. Given that the $p$-value is simply a transformation of the observed treatment effect $y_i$ and standard error $\sigma_i$, we use $w(y_i)$ for ease of notation.
-
-%The selection function can also be defined directly in terms of the observed effects estimate $y_i$ , the observed standard error $\sigma_i$ and the threshold for significance $z_{\alpha}$ \citep{selection1, selection2, reviewselection}, which we denote $w_i(y_i, z_{\alpha}\sigma_i)$. This second definition of the probability of selection is generally preferred over the first, as it takes into account the observed standard error which can be directly affected by, e.g., varying sample sizes which may not be captured by the p-value alone and could be related to the likelihood of selection.\\
-
-%The general form of the selection model for PB in a random effects meta-analysis, where we are interested in estimating the unknown treatment effect and heterogeneity parameters ${\theta} = (\mu, \tau^2)$, includes the following elements: i) the true underlying probability density function $f_i(y_i; \theta)$, irrespective of whether the study was published or not; ii) the probability density given that the study was published, i.e., $f_i(y_i \given i^{th} \, \text{study published})$, and iii) the selection function $w_i = P( i^{th} \, \text{study published})$ \citep{selection1, selection2, reviewselection}. These are related as follows:
-
-%\begin{equation}
-%\label{PB.selection11}
-%\begin{aligned}
-%f_i \left( y_i \given i^{th} \, \text{study published} \right) = \frac{f_i(y_i; \theta) \cdot w_i(y_i)}{A_i(\theta, w)}
-%\end{aligned}
-%\end{equation}
-
-%where $A_i(\theta, w)$ is
-
-%\begin{equation}
-%\label{PB.selection2}
-%\begin{aligned}
-%A_i(\theta, w) = \int^{+\infty}_{-\infty} f_i(y; \theta) \cdot w_i(y) dy.
-%\end{aligned}
-%\end{equation}
-
-%From \eqref{PB.selection11}, in the context of PB, one would maximize the following weighted likelihood with respect to the parameters of interest $\theta$:
-
-%\begin{equation}
-%\label{PB.selection1}
-%\begin{align}
-%L \left(\theta \right) &= \prod_{i=1}^{n} f_i(y_i \mid i^{th} \, \text{study published})\\
-%&= \prod_{i=1}^{n} \frac{f_i(y_i; \theta) \cdot w_i(y_i)}{A_i(\theta, w)}.
-%\end{align}
-%\end{equation}
 
 \subsection{Selection Models for ORB} \label{selmodORB}
 
@@ -238,7 +208,7 @@ The likelihood \eqref{lik.rewritten} is the generic setting using a weight funct
 
 %\subsubsection{Copas et al. Selection Function}
 
-The log-likelihood \eqref{lik.rewritten.special.copas.case} is thus the generic form for ORB adjustment, which has different shapes depending on the selection function $w(y_i)$ used, representative of the missing data mechanism assumed for unreported study outcomes. Given the alignment of our ORB adjustment with the PB framework of selection models, one can use similar selection functions which are typically found in the PB literature. 
+This is thus the generic form for ORB adjustment, which has different shapes depending on the selection function $w(y_i)$ used, representative of the missing data mechanism assumed for unreported study outcomes. Given the alignment of our ORB adjustment with the PB framework of selection models, one can use similar selection functions which are typically found in the PB literature. 
 
 \subsubsection{Selection Functions}
 
@@ -257,7 +227,7 @@ w_A(y_i)= \begin{cases} 1 & \text{if } p_i \leq \alpha  \\
 %\bigskip
 
 
-While this selection function can be found in the PB literature \citep{selection0, selection1, reviewselection}, we note that it is also the one implicitly used in the \citet{Copas2019} adjustment, although the authors do not explicitly frame the ORB adjustment via a selection model framework. Of note, in \citet{Copas2019}, ORB-adjustment is applied by including only the unreported study outcomes classified at HR of bias by the ORBIT classification system. They thus omit the unreported study outcomes classified e.g., at LR of bias, and regard them as missing at random. Furthermore, the authors use the two-sided $p-$value $p_i = 2 \cdot \Phi(y_i / \sigma_i)$ instead of the one-sided one proposed in this work. We deem a one-sided $p$-value to be more appropriate to model the underlying missing data mechanism for a beneficial effect of treatment, as it would be unlikely for significant outcomes, but in the wrong direction, to be reported \citep{HedgesVev, reviewselection, selectionCont}. 
+While this selection function can be found in the PB literature \citep{selection0, selection1, reviewselection}, we note that it is also the one implicitly used in the \citet{Copas2019} adjustment, although the authors do not explicitly frame the ORB adjustment via a selection model framework. Of note, in \citet{Copas2019}, ORB-adjustment is applied by including only the unreported study outcomes classified at HR of bias by the ORBIT classification system. They thus omit the unreported study outcomes classified e.g., at LR of bias, and regard them as missing at random. Furthermore, the authors use the two-sided $p-$value $p_i = 2 \cdot (1 - \Phi(\mid \frac{y_i}{\sigma_i} \mid))$ instead of the one-sided one proposed in this work. We deem a one-sided $p$-value to be more appropriate to model the underlying missing data mechanism for a beneficial effect of treatment, as it would be unlikely for significant outcomes, but in the wrong direction, to be reported \citep{HedgesVev, reviewselection, selectionCont}. 
 
 %However, for the unreported outcomes, \citet{Copas2019} make use of the ORBIT classification in NR/LR/HR of bias. For a beneficial outcome, they assume that an unreported study is missing if it was not measured (in which case it can be regarded as missing at random), or if it was non-significant. They assume that the latter case is correctly classified by the ORBIT methodology as HR. In the methodology, the authors omit the unreported studies that are classified at LR from the likelihood contribution, and regard them as missing at random. Of note, in \citet{Copas2019}, significance is established using a two-sided significance threshold, unlike here where we consider the one-sided p-value as we assume that significance in the harmful direction is unlikely to be reported for a beneficial outcome. This thus transaltes to the following selection function:
 
@@ -293,7 +263,7 @@ Using the log-likelihood \eqref{lik.rewritten.special.copas.case} and the select
 
 \bigskip
 
-\begin{equation}
+\begin{equation*}
 \label{w.copas.der}
 \begin{aligned}
 & \ell_{\text{Adj}}^{\text{ORB}}(\theta) = \sum_{i \in \{\text{Rep} \} } \log f(y_i \text{;} \theta)\\
@@ -304,7 +274,7 @@ Using the log-likelihood \eqref{lik.rewritten.special.copas.case} and the select
 & = -\frac{1}{2}\sum_{i \in \{\text{Rep} \}  }\left[\log(\sigma_{i}^2 + \tau^{2}) + \frac{(y_{i}-\mu)^2}{\sigma_{i}^2+\tau^2}\right]\\
 & + \sum_{i \in \{\text{HR}\}} \log \left[\Phi\left(\frac{z_{\alpha} \sigma_i - \mu}{\sqrt{\sigma_{i}^2 + \tau^2}}\right)-\Phi\left(\frac{-z_{\alpha} \sigma_i-\mu}{\sqrt{\sigma_{i}^2 + \tau^2}}\right)\right] \text{.}
 \end{aligned}
-\end{equation}
+\end{equation*}
 
 \bigskip
 
@@ -357,19 +327,19 @@ The selection functions proposed above, namely $w_A(y)$ in \eqref{sel0}, $w_B(y 
 
 When utilizing any of the selection functions presented in the ORB-adjusted log-likelihood \eqref{lik.rewritten.special.copas.case}, we require knowledge of the standard error of the unreported study outcome, which is generally missing. This value hence needs to be imputed; we do so following the methodology of \citet{Copas2019}, used also in the ORB-adjustment approach of \citet{Bay}
 
-\begin{equation}
+\begin{equation*}
 \label{k1}
 \sigma_{i}^2 \approx \frac{1}{\hat{k} n_i} \text{,}
-\end{equation}
+\end{equation*}
 
 %\bigskip
 
 where $n_i$ is the sample size of each study $i$ and $\hat{k}$ is:
 
-\begin{equation}
+\begin{equation*}
 \label{k2}
 \hat{k} = \frac{\sum_{i \in \{\text{Rep} \} } \sigma_{i}^{-2}}{\sum_{i \in \{\text{Rep} \}} n_i} \text{.}
-\end{equation}
+\end{equation*}
 
 \bigskip
 
@@ -2052,22 +2022,22 @@ It is of interest to assess the extent to which ORB negatively impacts meta-anal
 
 The first step of the simulation process consists in simulating random-effects meta-analysis datasets in the presence of ORB. We first simulate a random effects meta-analysis study comprising $K$ studies, each with treatment and control arms of equal sizes $n_i = n = 50$, and reported treatment effects $y_i$ with standard errors $\sigma_i$. We first obtain the study-specific true treatment effects $\theta$ from
 
-\begin{equation}\label{eq:random.eff2}
+\begin{equation*}\label{eq:random.eff2}
 \theta_i \sim \mathcal{N}(\mu, \tau^2) \text{,}
-\end{equation}
+\end{equation*}
 
 where $\mu$ is the overall treatment effect and $\tau^2$ is the between-study heterogeneity variance. The observed treatment effects $y_i$ are given by 
 
-\begin{equation}\label{eq:random.eff1}
+\begin{equation*}\label{eq:random.eff1}
 y_i \sim \mathcal{N}(\theta_i, \sigma^2) \text{,}
-\end{equation}
+\end{equation*}
 
 where $\sigma^2= 2/n$, while the standard errors are generated from a scaled $\chi^2$ distribution
 
-\begin{equation}
+\begin{equation*}
 \label{sigma.sq.sim}
 \sigma_i^2 \sim \frac{\chi^2_{2n_i - 2}}{(n_i -1)n_i} \text{.}
-\end{equation}
+\end{equation*}
 
 These values are generated independently for each study, assuming no correlation between studies. We then simulate ORB by selectively excluding certain studies from the meta-analysis based on the direction and significance of treatment effects. The ORB simulation process involves removing study outcomes with a probability of reporting determined by a decreasing function of the one-sided $p$-value, i.e., $p_i = \Phi(- y_i / \sigma_i)$. The function \eqref{simORB} used to simulate ORB is taken from simulation studies on PB, for consistency with our selection model approach, typical of PB settings. We simulate under two ORB settings, i.e., $\gamma=1.5$ \citep{selection2, Begg, BeggUse1, selectionCont} and $\gamma=0.5$. 
 
