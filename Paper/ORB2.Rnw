@@ -25,7 +25,8 @@ Sys.setenv(TEXINPUTS=getwd(),
 @
 
 \title{ \huge{\textbf{Addressing Outcome Reporting Bias in Meta-analysis: A Selection Model Perspective}}}
-\author{\textbf{Alessandra Gaia Saracini and Leonhard Held}}
+%\author{\textbf{Alessandra Gaia Saracini and Leonhard Held}}
+\author{\textbf{Alessandra Gaia Saracini\textsuperscript{1} and Leonhard Held\textsuperscript{2}}}
 
 
 \twocolumn[
@@ -36,6 +37,10 @@ Sys.setenv(TEXINPUTS=getwd(),
   \end{abstract}
 \end{@twocolumnfalse}
 ]
+
+\footnotetext[1]{Corresponding author: Alessandra Gaia Saracini, ETH Zurich, Department of Mathematics, alessandragaia.saracini@gmail.com}
+\footnotetext[2]{Leonhard Held, Professor, University of Zurich, Epidemiology, Biostatistics and Prevention Institute, leonhard.held@uzh.ch}
+
 
 \section{Introduction}
 Meta-analysis is a powerful statistical tool used to combine evidence from multiple studies investigating the same research question \citep{DerSimonian, handbook}. It plays a crucial role in clinical research by providing a more comprehensive and robust analysis of treatment effects, especially when individual studies have limited statistical power. However, like any statistical method, meta-analysis is prone to biases that can affect its validity and reliability \citep{handbook, Schmid2022, Egger2022}. While publication bias (PB) is a well-known issue, with various statistical methods developed to address it, outcome reporting bias (ORB) is less explored but equally problematic \citep{handbook, Schmid2022, Egger2022, protocolORB}. PB occurs when entire studies are not present in the literature due to the lack of significance or direction of results. On the other hand, ORB occurs when reporting decisions within published studies are influenced by results' significance or direction, leading to selective reporting of outcomes \citep{ORBimpact, Copas2014, Copas2019, Schmid2022, Kirkham2012, Egger2022, dutch}. Therefore, unlike PB, studies affected by ORB may still be published, but certain outcomes, especially those unfavorable, may be omitted or reporting may be impartial, leading to inability to include the study outcome in a meta-analysis. 
@@ -2037,10 +2042,6 @@ For the $50\%$ seizure frequency reduction, the ORB-adjusted estimates are sligh
 
 The strictness of different ORB-adjustments, derived from the selection functions, is intuitive and stems from their underlying assumptions about unreported study outcomes. The estimate obtained using $w_B(\gamma=3)$ is more conservative than that obtained with $w_A$. The selection function $w_A$ assumes a probability of unreporting of 1 for non-significant studies, regardless of the $p$-value magnitude, while $w_B(\gamma=3)$ assumes a higher probability of unreporting for larger $p$-values, implying greater bias and thus stricter correction. Conversely, $w_C$ is less conservative than $w_A$, as it assumes that some unreported outcomes may still be significant, indicating less bias and thus a less strict adjustment. Functions $w_D(\gamma=1.5, \beta=7)$ and $w_D(\gamma=7, \beta=1.5)$ align with $w_B(\gamma=3)$ and $w_C(\beta=3)$, respectively, suggesting that the larger parameter between $\gamma$ and $\beta$ drives the estimate.
 Since the true underlying data mechanism is unknown in this example, we further investigate the ORB-adjustment effect in a simulation study. This allows us to evaluate the ORB adjustment implementation using both correctly specified and misspecified models of the missing data mechanism.
-
-%Figure \ref{example} shows the point estimates and $95\%$ CI for the log RR of the treatment effect for the two beneficial outcomes of the meta-analysis study, i.e., $50 \%$ seizure frequency reduction, and seizure freedom. For both outcomes, the naive log RR estimate indicates a significant, positive effect of treatment compared to control. For the $50\%$ seizure frequency reduction outcome, we observe that the ORB-adjusted estimates are slightly shifted towards the null value, and are similar in their results. Of note, we recall that for this outcome, there was only one unreported study. For the outcome seizure freedom on the other hand, for which we had XXX unreported study outcomes, we observed a substantial shift towards the null for the ORB-adjusted estimates, even overturning the significance of the results. Furthermore, here we observe a more substantial difference in the ORB-adjusted estimate between the various selection functions used. Firstly, we note that $W_B$ is more strict than the $W_A$. This result is intuitive, given that, assuming the probability of reporting $W_A$ associated with the missing study outcomes, one is implicitly assuming that missing outcomes had an associated probability of unreporting is 1 if they are non-significant, independent of the strength of the significance. On the other hand, with $W_B$ one is assuming that the probability of unreporting, is 1 for very large $p$-value, thus suggesting more bias depending on the strength of association and thus stricter resulting adjustment. On the other hand, we observed that $W_C$ is less strict in its ORB adjustment. This is also intuitive in that we are assuming that unreported outcomes which are non-significant, had an associated probability of unreporting which was greater than 1. We note that function $W_D(XX)$ is similar to $W_B$ and function $W_D$ is similar to function $W_C$, in this case suggesting that the larger parameter between $\gamma$ and $\beta$ drives the resulting estimate.
-
-
 
 \section{Simulation Study} \label{simstudy}
 
