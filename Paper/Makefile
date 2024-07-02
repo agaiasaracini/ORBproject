@@ -28,10 +28,10 @@ $(SUPPLEMENT_TEX_FILE): $(SUPPLEMENT_RNW_FILE)
 	Rscript -e "library(knitr); knitr::knit('$(SUPPLEMENT_RNW_FILE)')"
 
 # Rule to compile the Supplement.tex to Supplement.pdf
-$(SUPPLEMENT_PDF_FILE): $(SUPPLEMENT_TEX_FILE) $(BIB_FILE)
+$(SUPPLEMENT_PDF_FILE): $(SUPPLEMENT_TEX_FILE)
 	pdflatex $(SUPPLEMENT_TEX_FILE)
-	bibtex $(basename $(SUPPLEMENT_TEX_FILE))
-	pdflatex $(SUPPLEMENT_TEX_FILE)
+	#bibtex $(basename $(SUPPLEMENT_TEX_FILE))
+	#pdflatex $(SUPPLEMENT_TEX_FILE)
 	pdflatex $(SUPPLEMENT_TEX_FILE)
 
 # Clean up intermediate files
