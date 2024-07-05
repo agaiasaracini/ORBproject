@@ -25,11 +25,17 @@ Sys.setenv(TEXINPUTS=getwd(),
 
 @
 
-\title{ \huge{\textbf{Addressing Outcome Reporting Bias in Meta-analysis: A Selection Model Perspective}}}
-\author{\textbf{Supplementary Figures and Results}}
+\title{ \huge{\textbf{Addressing Outcome Reporting Bias in Meta-analysis: A Selection Model Perspective}}\\
+\large{\textbf{Supplementary Figures and Results}}
+}
+
+\author{\textbf{Alessandra Gaia Saracini\textsuperscript{1} and Leonhard Held\textsuperscript{2}}}
 
 
 \maketitle
+
+\footnotetext[1]{Corresponding author: Alessandra Gaia Saracini, ETH Zurich, Department of Mathematics, alessandragaia.saracini@gmail.com}
+\footnotetext[2]{Leonhard Held, Professor, University of Zurich, Epidemiology, Biostatistics and Prevention Institute, leonhard.held@uzh.ch}
 
 In the Results section of the manuscript, we primarily focus on bias in the estimation of the treatment effect $\mu$. The following document contains the results of the additional performance measures considered in the simulation study: mean squared error (MSE), coverage, power, and empirical standard error (ESE).
 
