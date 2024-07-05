@@ -2073,7 +2073,7 @@ Other performance measures confirm the findings observed for naive and ORB-adjus
 \subsubsection{Bias in Heterogeneity Variance}
 
 %%%% Some comments on tau^2, but only bias
-Although the primary parameter of interest was the treatment effect $\mu$, we also investigated the bias in the estimation of the heterogeneity variance $\tau^2$ in the presence of ORB, as shown in Figures \ref{biastau1} and \ref{biastau2}. For $\gamma=1.5$, heterogeneity is generally underestimated across most estimation methods, except for the ORB-adjusted method using the correctly specified model ($w_{DGM}$). For $\gamma=0.5$, heterogeneity is nearly always overestimated for $K=15$ and $K=30$, while for $K=5$, it is mostly underestimated. The correctly specified ORB-adjusted model estimates the lowest heterogeneity and is closest to the zero-bias line for $K=15$ and $K=30$, but furthest from it for $K=5$. This confirms the somewhat different behavior which can be observed for small meta-analysis of $K=5$, thus encouraging caution in this setting.
+Although the primary parameter of interest was the treatment effect $\mu$, we also investigated the bias in the estimation of the heterogeneity variance $\tau^2$ in the presence of ORB, as shown in Figure \ref{biastau1}, showcasing the results for the ORB DGM with $\gamma=1.5$. Heterogeneity is generally underestimated across most estimation methods, except for the ORB-adjusted method using the correctly specified model ($w_{DGM}$) for $K=15,30$. For the small meta-analysis setting $K=5$, the correctly specified model reduces the bias but does not fully eliminate, similarly to results observed for the main parameter of interest $\mu$. Of note, the estimation of $\tau^2$ is done with maximum likelihood (ML) estimation, which, overall, tends to underestimate the parameter \citep{REML2, REML}; a more comprehensive methodological approach to heterogeneity estimation in the presence of ORB should thus be conducted to solidify and confirm these findings. The plots of the heterogeneity variance for ORB setting $\gamma=0.5$ cane be found in the supplementary material.
 
 %shown the bias in the estimation for the various meta-analysis sizes and for different true treatment effect values, we observe that as heterogeneity increases, the bias in its estimation for increases, i.e., in high heterogeneity settings, naive estimation underestimates the heterogeneity variance. For no heterogeneity or really low, this does not seem to be an issue. The ORB-adjusted estimate using the correct DGM mechanism appears to reduce this bias, while the other misspecified functions only partially reduce the bias, with no remarkable differences noted. We observe that this bias is more prominent for low values of the true underlying treatment effect, while for high values of $\mu$ the bias in the estimation of the heterogeneity is minimal, which can be attributed to the lack of ORB issue as there is less likelihood of unreporting.
 
@@ -2675,139 +2675,6 @@ invisible(final_plot)
 \label{biastau1}
 \end{figure*}
 
-
-\begin{figure*}[!hbt]
-\centering
-\caption{Bias in the estimation of the heterogeneity variance for ORB simulated with $\gamma=0.5$}
-%\hline
-<<echo=FALSE, results='asis', fig.height=12, fig.width=9, message=FALSE, warning=FALSE>>=
-
-
-#Plots
-library(ggplot2)
-library(dplyr)
-library(gridExtra)
-
-dat.new <- readRDS("../Simulation/AdjustResults3200k_05.rds")
-
-##################### Bias #####################################################
-
-#################### Bias setting 1.5 ##########################################
-
-
-library(ggplot2)
-library(dplyr)
-library(gridExtra)
-
-legend_plot_results <- ggplot() +
-  geom_line(aes(x = 0, y = 0, color = "pink"))+
-  geom_line(aes(x = 0, y = 0, color = "gray"))+
-  geom_line(aes(x = 0, y = 0, color = "#619CFF")) +
-  geom_line(aes(x = 0, y = 0, color = "#00BA38")) +
-  geom_line(aes(x = 0, y = 0, color = "red")) +
-  geom_line(aes(x = 0, y = 0, color = "orange")) +
-  geom_line(aes(x = 0, y = 0, color = "purple")) +
-  
-  scale_color_manual(
-    values = c(
-      "pink",
-      "gray",
-      "#619CFF", 
-      "#00BA38", 
-       "red", 
-       "orange",
-       "purple"
-    ),
-    labels = c(
-      "Naive",
-      expression(w[DGM]),
-      expression(w[A]),
-      expression(w[B](gamma == 3)),
-      expression(w[C](beta == 3)),
-      expression(w[D](gamma == 7 ~ "," ~ beta == 1.5)),
-      expression(w[D](gamma == 1.5 ~ "," ~ beta == 7))
-    )
-  ) +
-  
-   
-  theme_void() +
-  theme(
-    legend.text = element_text(size = 8),
-    legend.key.size = unit(3, "mm"),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()
-  ) +
-  guides(color = guide_legend(title = NULL, label.hjust = 0.5))
-
-
-
-wrap_plot_bias_tau <- function(data) {
-  ggplot(data) +
-    geom_line(aes(x = tau_squared_values, y = tau2_Unadj_bias), color = "pink", linewidth = 0.6) + #Naive
-    geom_point(aes(x = tau_squared_values, y = tau2_Unadj_bias), color = "pink", linewidth = 0.6) + #Naive
-    
-    geom_line(aes(x = tau_squared_values, y = tau2_DGM_bias), color = "gray", linewidth = 0.6) + #DGM
-    geom_point(aes(x = tau_squared_values, y = tau2_DGM_bias), color = "gray", linewidth = 0.6) + #DGM
-    
-    geom_line(aes(x = tau_squared_values, y = tau2_CL_bias), color = "red", linewidth = 0.6) + #w_{C, beta=3}
-    geom_point(aes(x = tau_squared_values, y = tau2_CL_bias), color = "red", linewidth = 0.6) + #w_{C, beta=3}
-    
-    geom_line(aes(x = tau_squared_values, y = tau2_CC1_bias), color = "orange", linewidth = 0.6) + #w_{D, gamma=7, beta=1.5}
-    geom_point(aes(x = tau_squared_values, y = tau2_CC1_bias), color = "orange", linewidth = 0.6) + #w_{D, gamma=7, beta=1.5}
-    
-    geom_line(aes(x = tau_squared_values, y = tau2_CC2_bias), color = "purple", linewidth = 0.6) + #w_{D, gamma=1.5, beta=7}
-    geom_point(aes(x = tau_squared_values, y = tau2_CC2_bias), color = "purple", linewidth = 0.6) + #w_{D, gamma=1.5, beta=7}
-    
-    geom_line(aes(x = tau_squared_values, y = tau2_LL_bias), color = "#619CFF", linewidth = 0.6) + #w_{A}
-    geom_point(aes(x = tau_squared_values, y = tau2_LL_bias), color = "#619CFF", linewidth = 0.6) + #w_{A}
-    
-    geom_line(aes(x = tau_squared_values, y = tau2_LC_bias), color = "#00BA38", linewidth = 0.6) + #w_{B, gamma=3}
-    geom_point(aes(x = tau_squared_values, y = tau2_LC_bias), color = "#00BA38", linewidth = 0.6) + #w_{B, gamma=3}
-    
-    geom_hline(yintercept = 0, color = "black", linetype = "dashed", linewidth = 0.4) +
-    labs(
-      x = "", 
-      y = "", 
-      title = bquote("K" == .(data$k_values) ~ "," ~ mu == .(round(data$mu_values, 2))
-    ))+
-    ylim(-0.3, 0.1) +
-    theme_minimal() +
-    theme(
-      legend.position = "none",
-      axis.text = element_text(size = 7),
-      axis.title = element_text(size = 7),
-      plot.title = element_text(size = 8)
-    )
-}
-
-
-# Filter the data for gamma = 1.5
-parDATA_05 <- dat.new %>% filter(gamma == 0.5)
-
-# Generate plots
-plots_bias_tau <- parDATA_05 %>%
-  group_by(mu_values, k_values) %>%
-  do(plot = wrap_plot_bias_tau(.)) %>%
-  pull(plot)
-
-# Arrange the plots and legend
-final_plot <- grid.arrange(
-  arrangeGrob(grobs = plots_bias_tau, nrow = 5, ncol = 3),
-  legend_plot_results,
-  nrow = 1,
-  widths = c(4.8, 0.7),
-  left = grid::textGrob("Bias", rot = 90, gp = grid::gpar(fontsize = 10)),
-  bottom = grid::textGrob(expression(mu), gp = grid::gpar(fontsize = 12))
-)
-
-invisible(final_plot)
-
-
-
-@
-%\hline
-\label{biastau2}
-\end{figure*}
 
 
 %\bibliographystyle{mywiley} % Choose natbib-compatible bibliography style
