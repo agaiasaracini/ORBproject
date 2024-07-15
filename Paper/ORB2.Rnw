@@ -1698,7 +1698,7 @@ resultCC2_SeizureFree <- reORBadj(a = meta_data_miss$a_SeizureFree,
 
 \begin{figure*}[!hbt]
 \centering
-\caption{Application of ORB-adjustment to example data \citep{Copas2019, topiramate}, using the different selection functions showcased in Figure \ref{new.weight.fig}. In addition, the naive estimate, without ORB-adjustment, is shown for comparison. The plot shows the risk ratio (RR) estimates and $95\%$ profile likelihood (PL) confidence intervals (CI).}
+\caption{Application of ORB-adjustment to example Epilepsy data \citep{Copas2019, topiramate}, using the different selection functions showcased in Figure \ref{new.weight.fig}. In addition, the naive estimate, without ORB-adjustment, is shown for comparison. The plot shows the risk ratio (RR) estimates and $95\%$ profile likelihood (PL) confidence intervals (CI).}
 %\hline
 <<example, echo=FALSE, results='asis', fig.height=3.3, fig.width=7, message=FALSE, warning=FALSE>>=
 
@@ -2060,12 +2060,12 @@ The naive log-likelihood (i) includes the contribution only from reported study 
 
 %%%%%% bias with naive estimation
 \subsubsection{Bias in Naive Estimation}
-The results demonstrate a significant bias in the estimation of the treatment effect when using naive methods that do not account for ORB, as shown in Figures \ref{res1} and \ref{res2}. This bias decreases as the true treatment effect size increases, which aligns with existing literature \citep{Copas2019, Bay, dutch} and prior exploratory analysis \citep{mythesis}. Study size variations ($K=5, 15, 30$) do not significantly affect the bias, while heterogeneity has a substantial impact. High heterogeneity settings, particularly with $I^2=90$, exhibit larger biases, reinforcing findings from previous work \citep{mythesis}. These patterns are consistent across both ORB simulation processes, regardless of the DGM parameter $\gamma$ value, whether $\gamma=1.5$ or $\gamma=0.5$.
+The results demonstrate a significant bias in the estimation of the treatment effect when using naive methods that do not account for ORB, as shown in Figures \ref{res1} and \ref{res2}. The bias decreases as the true treatment effect size $\mu$ increases, which aligns with existing literature \citep{Copas2019, Bay, dutch} and prior exploratory analysis \citep{mythesis}; as treatment effect increases, results are more likely to be significant and are thus less prone to ORB. Study size variations ($K=5, 15, 30$) do not significantly affect the bias, while heterogeneity has a substantial impact. High heterogeneity settings, particularly with $I^2=90$, exhibit larger biases, reinforcing findings from previous work \citep{mythesis}. The effect of heterogeneity on ORB is interesting and novel compared to, e.g., \citet{Copas2019}, who focused primarily on a fixed effect meta-analysis framework. The patterns observed for naive estimation are consistent across both ORB simulation processes, regardless of the DGM parameter $\gamma$ value from equation \eqref{simORB}, whether $\gamma=1.5$ or $\gamma=0.5$.
 
 %%%% bias reduction with DGM and other selection functions
 %%%% NB for k=5 not good
 \subsubsection{Bias Reduction with ORB-adjustment}
-When applying the ORB-adjustment framework using selection functions, the effectiveness varies by study size. For $K=15$ and $K=30$, the bias is eliminated when the selection function matches the ORB DGM. Different selection functions ($w_A, w_B, w_C, w_D$) show varying degrees of bias reduction. For the DGM with $\gamma=1.5$, ORB-adjusted estimates shift the bias towards the null but do not fully eliminate it unless the exact DGM function is used. The ORB-adjusted estimate using selection function $w_B$ performs slightly better than $w_A$, and $w_C$ performs the least well, with, however, overall minimal differences noted among the functions, particularly in low heterogeneity settings. Similar patterns are observed in the $\gamma=0.5$ setting, with $w_B$ being the least strict and $w_C$ the most strict. The ORB-adjustment here tends to reduce the treatment effect size excessively, indicating potential overcorrection due to the steep $p$-value dependence. For $K=5$, the ORB-adjustment reduces the bias but does not eliminate it, even with the correctly specified model. We should thus use ORB-adjustment with caution when we have very few studies in a meta-analysis.
+When applying the ORB-adjustment framework using selection functions, we first note that the effectiveness in bias reduction varies by study size. For $K=15$ and $K=30$, the bias obtained with naive estimation is eliminated when the selection function matches the ORB DGM, i.e., $w_{DGM}$ in Figures \ref{res1} and \ref{res2}. Different selection functions ($w_A, w_B, w_C, w_D$) show varying degrees of bias reduction. For the DGM with $\gamma=1.5$, the ORB-adjusted estimates shift the bias towards the null but do not fully eliminate it unless the exact DGM function is used. The ORB-adjusted estimate using selection function $w_B$ performs slightly better than $w_A$, and $w_C$ performs the least well, with, however, overall minimal differences noted among the functions, particularly in low heterogeneity settings. Similar patterns are observed in the $\gamma=0.5$ setting, with $w_B$ being the least strict and $w_C$ the most strict bias reduction. The ORB-adjustment here tends to reduce the treatment effect size excessively, indicating potential overcorrection due to the steep $p$-value dependence in the ORB DGM, resulting in some unreported studies with significant $p$-values.. For the small meta-analysis size, $K=5$, the ORB-adjustment reduces the bias but does not eliminate it, even with the correctly specified model. Based on this observation, we thus recommend to use ORB-adjustment with caution when we have very few studies in a meta-analysis.
 
 \subsubsection{Other Performance Measures}
 
@@ -2117,7 +2117,7 @@ The $\texttt{R}$ code for the simulation study presented in this research can be
 
 \begin{figure*}[!hbt]
 \centering
-\caption{Bias in the estimation of the treatment effect for ORB simulated with $\gamma=1.5$}
+\caption{Bias in the estimation of the treatment effect $\mu$ for ORB simulated according to DGM function \eqref{simORB} with $\gamma=1.5$, using different estimation methods, i.e., naive or ORB-adjusted according to the various selection functions indicated in the legend. The bias is shown for varying meta-analysis study sizes, heterogeneity levels, and increasing true treatment effect on the x-axis of each plot shown.}
 %\hline
 <<echo=FALSE, results='asis', fig.height=12, fig.width=9, message=FALSE, warning=FALSE>>=
 
@@ -2251,7 +2251,7 @@ invisible(final_plot)
 
 \begin{figure*}[!hbt]
 \centering
-\caption{Bias in the estimation of the treatment effect for ORB simulated with $\gamma=0.5$}
+\caption{Bias in the estimation of the treatment effect $\mu$ for ORB simulated according to DGM function \eqref{simORB} with $\gamma=0.5$, using different estimation methods, i.e., naive or ORB-adjusted according to the various selection functions indicated in the legend. The bias is shown for varying meta-analysis study sizes, heterogeneity levels, and increasing true treatment effect on the x-axis of each plot shown.}
 %\hline
 <<echo=FALSE, results='asis', fig.height=12, fig.width=9, message=FALSE, warning=FALSE>>=
 
@@ -2406,7 +2406,7 @@ invisible(final_plot)
 
 \begin{figure*}[!hbt]
 \centering
-\caption{Coverage in the estimation of the treatment effect for ORB simulated with $\gamma=1.5$}
+\caption{Coverage in the estimation of the treatment effect $\mu$ for ORB simulated according to DGM function \eqref{simORB} with $\gamma=1.5$, using different estimation methods, i.e., naive or ORB-adjusted according to the various selection functions indicated in the legend. The coverage is shown for varying meta-analysis study sizes, heterogeneity levels, and increasing true treatment effect on the x-axis of each plot shown.}
 %\hline
 <<echo=FALSE, results='asis', fig.height=12, fig.width=9, message=FALSE, warning=FALSE>>=
 
@@ -2547,7 +2547,7 @@ invisible(final_plot)
 
 \begin{figure*}[!hbt]
 \centering
-\caption{Bias in the estimation of the heterogeneity variance for ORB simulated with $\gamma=1.5$}
+\caption{Bias in the estimation of the heterogeneity variance $\tau^2$ for ORB simulated according to DGM function \eqref{simORB} with $\gamma=1.5$, using different estimation methods, i.e., naive or ORB-adjusted according to the various selection functions indicated in the legend. The bias is shown for varying meta-analysis study sizes, true treatment effect values, and increasing heterogeneity on the x-axis of each plot shown.}
 %\hline
 <<echo=FALSE, results='asis', fig.height=12, fig.width=9, message=FALSE, warning=FALSE>>=
 
