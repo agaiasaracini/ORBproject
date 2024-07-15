@@ -134,7 +134,7 @@ the PB-adjusted log-likelihood $\ell_{\text{Adj}}^{\text{PB}} \left( \theta  \ri
 %\bigskip
 The selection function in PB can take various forms, generally guided by the intuition that in a meta-analysis of a beneficial outcome, the probability of publication or selection decreases as $p$-values increase \citep{selection0, HedgesVev, selection1, selection2, selectionWeird, selectionCont, reviewselection}. Conversely, in the context of a meta-analysis of a harmful outcome, we expect the opposite: small, significant $p$-values are less likely to be reported because they indicate harm \citep{ORBIT_paper, Copas2019}. In the following sections, we define the selection functions assuming beneficial outcomes and thus a positive treatment direction.
 
-The selection function $w(y_i)$ in \eqref{lik.PB} is therefore often defined as a function of the $p$-value $p_i$, providing an intuitive understanding of the relationship between significance and the probability of selection \citep{selection1, selection2, reviewselection}. Since the $p$-value is a transformation of the observed treatment effect $y_i$ and the standard error $\sigma_i$, we use $w(y_i)$ for ease of notation and consistency with the log-likelihood function \eqref{lik.PB}.
+The selection function $w(y_i)$ in \eqref{PB.selection11} is therefore often defined as a function of the $p$-value $p_i$, providing an intuitive understanding of the relationship between significance and the probability of selection \citep{selection1, selection2, reviewselection}. Since the $p$-value is a transformation of the observed treatment effect $y_i$ and the standard error $\sigma_i$, we use $w(y_i)$ for ease of notation and consistency with the relationship presented in \eqref{PB.selection11}.
 
 \subsection{Selection Models for ORB} \label{selmodORB}
 
@@ -196,7 +196,7 @@ Using \eqref{ith.rep} and \eqref{ith.high}, and solving for $f(y_i \text{;} \the
 \bigskip
 
 
-The likelihood \eqref{lik.rewritten} is the generic setting using a weight function for the probability of reporting, i.e., for $i \in \{\text{Rep} \}$, and a weight function for the probability of not reporting, i.e, for $i \in \{\text{Unrep} \}$. In the \citet{Copas2019} model formulation, specific assumptions were made regarding the missing data mechanism, which result in a simplification of \eqref{lik.rewritten}. For the reported outcomes, \citet{Copas2019} implicitly do not assume any selection process, i.e., $w(y_i)=1$ when $i \in \{\text{Rep} \}$. This means that no weight function representing the reporting probability based on the $p$-value is associated with the reported observations. In light of this assumption, \eqref{lik.rewritten} can be further simplified to
+The log-likelihood \eqref{lik.rewritten} is the generic setting using a weight function for the probability of reporting, i.e., for $i \in \{\text{Rep} \}$, and a weight function for the probability of not reporting, i.e, for $i \in \{\text{Unrep} \}$. In the \citet{Copas2019} model formulation, specific assumptions were made regarding the missing data mechanism, which result in a simplification of \eqref{lik.rewritten}. For the reported outcomes, \citet{Copas2019} implicitly do not assume any selection process, i.e., $w(y_i)=1$ when $i \in \{\text{Rep} \}$. This means that no weight function representing the reporting probability based on the $p$-value is associated with the reported observations. In light of this assumption, \eqref{lik.rewritten} can be further simplified to
 
 
 \begin{equation}
@@ -213,22 +213,22 @@ This is thus the generic form for ORB adjustment, which has different shapes dep
 
 \subsubsection{Selection Functions}
 
-We present a series of selection functions, defined as functions of the one-sided $p$-value, $p_i = \Phi(- y_i / \sigma_i)$, where $\alpha$ is the threshold for significance, e.g., $\alpha=0.05$. We use a one-sided $p$-value to model the probability of selection, in alignment with selection models of beneficial outcomes in PB \citep{HedgesVev, reviewselection, selectionCont}. One of the simplest selection functions used for PB is:
+We present a series of selection functions, defined as functions of the one-sided $p$-value, $p = \Phi(- y / \sigma)$, where $\alpha$ is the threshold for significance, e.g., $\alpha=0.05$, and the study index $i$ is omitted for ease of notation. We use a one-sided $p$-value to model the probability of selection, in alignment with selection models of beneficial outcomes in PB \citep{HedgesVev, reviewselection, selectionCont}. One of the simplest selection functions used for PB is:
 
 %\bigskip
 
 \begin{equation}
 \begin{aligned}
 \label{sel0}
-w_A(y_i)= \begin{cases} 1 & \text{if } p_i \leq \alpha  \\
-0 & \text{if } p_i > \alpha \text{,} \end{cases}
+w_A(y)= \begin{cases} 1 & \text{if } p \leq \alpha  \\
+0 & \text{if } p > \alpha \text{,} \end{cases}
 \end{aligned}
 \end{equation}
 
 %\bigskip
 
 
-While this selection function can be found in the PB literature \citep{selection0, selection1, reviewselection}, we note that it is also the one implicitly used in the \citet{Copas2019} adjustment, although the authors do not explicitly frame the ORB adjustment via a selection model framework. Of note, in \citet{Copas2019}, ORB-adjustment is applied by including only the unreported study outcomes classified at HR of bias by the ORBIT classification system. They thus omit the unreported study outcomes classified e.g., at LR of bias, and regard them as missing at random. Furthermore, the authors use the two-sided $p-$value $p_i = 2 \cdot (1 - \Phi(\mid \frac{y_i}{\sigma_i} \mid))$ instead of the one-sided one proposed in this work. We deem a one-sided $p$-value to be more appropriate to model the underlying missing data mechanism for a beneficial effect of treatment, as it would be unlikely for significant outcomes, but in the wrong direction, to be reported \citep{HedgesVev, reviewselection, selectionCont}. 
+While this selection function can be found in the PB literature \citep{selection0, selection1, reviewselection}, we note that it is also the one implicitly used in the \citet{Copas2019} adjustment, although the authors do not explicitly frame the ORB adjustment via a selection model framework. Of note, in \citet{Copas2019}, ORB-adjustment is applied by including only the unreported study outcomes classified at HR of bias by the ORBIT classification system. They thus omit the unreported study outcomes classified e.g., at LR of bias, and regard them as missing at random. Furthermore, the authors use the two-sided $p-$value $p = 2 \cdot (1 - \Phi(\mid \frac{y}{\sigma} \mid))$ instead of the one-sided one proposed in this work. We deem a one-sided $p$-value to be more appropriate to model the underlying missing data mechanism for a beneficial effect of treatment, as it would be unlikely for significant outcomes, but in the wrong direction, to be reported \citep{HedgesVev, reviewselection, selectionCont}. 
 
 %However, for the unreported outcomes, \citet{Copas2019} make use of the ORBIT classification in NR/LR/HR of bias. For a beneficial outcome, they assume that an unreported study is missing if it was not measured (in which case it can be regarded as missing at random), or if it was non-significant. They assume that the latter case is correctly classified by the ORBIT methodology as HR. In the methodology, the authors omit the unreported studies that are classified at LR from the likelihood contribution, and regard them as missing at random. Of note, in \citet{Copas2019}, significance is established using a two-sided significance threshold, unlike here where we consider the one-sided p-value as we assume that significance in the harmful direction is unlikely to be reported for a beneficial outcome. This thus transaltes to the following selection function:
 
@@ -260,7 +260,7 @@ While this selection function can be found in the PB literature \citep{selection
 
 %\bigskip
 
-Using the log-likelihood \eqref{lik.rewritten.special.copas.case} and the selection function \eqref{sel0} for a subset of the unreported studies, i.e., those classified as HR of bias, along with a two-sided significance test, we can easily see how we obtain the simplified ORB-adjusted log-likelihood presented for the random effects model in \citet{Copas2019}, namely:
+Using the log-likelihood \eqref{lik.rewritten.special.copas.case} and the selection function \eqref{sel0} for a subset of the unreported studies, i.e., those classified as HR of bias, along with a two-sided $p-$value instead of a one-sided one, we can easily see how we obtain the simplified ORB-adjusted log-likelihood presented for the random effects model in \citet{Copas2019}, namely:
 
 \bigskip
 
@@ -290,7 +290,7 @@ w_B(y \text{;} \beta) =
 \label{special1}
 \end{equation}
 
-The idea of this selection function in the context of PB is that the associated probability of publishing which weights observations is greater than 0 for non-significant outcomes. Here, for the non-significant study outcomes, the associated probability of reporting is a decreasing function of the $p$-value, while significant study outcomes have an associated probability of reporting of 1.
+The idea of this selection function in the context of PB is that the associated probability of publishing, which weighs observations, is greater than 0 for non-significant outcomes. Specifically, when applied to ORB, the unreported study outcomes which were originally non-significant have an underlying probability of reporting which is a decreasing function of the $p$-value, while significant study outcomes have an associated probability of reporting equal to 1.
 
 In the context of ORB we further propose a different selection function, $w_C(y \text{;} \gamma)$ with tuning parameter $\gamma > 0$ in \eqref{special2}, for which the rationale is inverted compared to $w_B(y \text{;} \beta)$ in \eqref{special1}, as we assume that non-significant study outcomes have an associated probability of reporting 0, while significant study outcomes have an associated probability of reporting which is a decreasing function of the $p$-value. This can be motivated by scenarios where ORB results from prioritizing more impactful or clinically relevant findings in a published study \citep{moreORBreasons, ORBreasons}, leading to only highly significant outcomes being reported. This could be interpreted as a lower threshold for not reporting compared to PB, and thus a higher level of bias. At the same time, given that the selection function allows for significant unreported outcomes, it can also account for settings in which outcomes are missing because they were deemed less relevant, resulting in a more random pattern of missing data and less bias \citep{mythesis}. Understanding the exact cause of unreporting can be challenging, and information on the strength of evidence for other outcomes in the meta-analysis could help clarify the likely cause of unreporting.
 
