@@ -2121,9 +2121,9 @@ The $\texttt{R}$ code for the simulation study presented in this research can be
 
 \begin{figure*}[!hbt]
 \centering
-\caption{Bias in the estimation of the treatment effect $\mu$ for ORB simulated according to DGM function \eqref{simORB} with $\gamma=1.5$, using different estimation methods, i.e., naive or ORB-adjusted according to the various selection functions indicated in the legend. The bias is shown for varying meta-analysis study sizes, heterogeneity levels, and increasing true treatment effect on the x-axis of each plot shown.}
+\caption{Bias in the estimation of the treatment effect $\mu$ for ORB simulated according to DGM function \eqref{simORB} with $\gamma=1.5$, using different estimation methods, i.e., naive or ORB-adjusted according to the various selection functions indicated in the legend. The bias is shown for varying meta-analysis study sizes, heterogeneity levels, and increasing true treatment effect on the x-axis of each plot shown.\\[0.5em]}
 %\hline
-<<echo=FALSE, results='asis', fig.height=11, fig.width=9, message=FALSE, warning=FALSE>>=
+<<echo=FALSE, results='asis', fig.height=11.5, fig.width=9, message=FALSE, warning=FALSE>>=
 
 #Plots
 library(ggplot2)
@@ -2255,9 +2255,9 @@ invisible(final_plot)
 
 \begin{figure*}[!hbt]
 \centering
-\caption{Bias in the estimation of the treatment effect $\mu$ for ORB simulated according to DGM function \eqref{simORB} with $\gamma=0.5$, using different estimation methods, i.e., naive or ORB-adjusted according to the various selection functions indicated in the legend. The bias is shown for varying meta-analysis study sizes, heterogeneity levels, and increasing true treatment effect on the x-axis of each plot shown.}
+\caption{Bias in the estimation of the treatment effect $\mu$ for ORB simulated according to DGM function \eqref{simORB} with $\gamma=0.5$, using different estimation methods, i.e., naive or ORB-adjusted according to the various selection functions indicated in the legend. The bias is shown for varying meta-analysis study sizes, heterogeneity levels, and increasing true treatment effect on the x-axis of each plot shown.\\[0.5em]}
 %\hline
-<<echo=FALSE, results='asis', fig.height=11, fig.width=9, message=FALSE, warning=FALSE>>=
+<<echo=FALSE, results='asis', fig.height=11.5, fig.width=9, message=FALSE, warning=FALSE>>=
 
 #Plots
 library(ggplot2)
@@ -2410,9 +2410,9 @@ invisible(final_plot)
 
 \begin{figure*}[!hbt]
 \centering
-\caption{Coverage in the estimation of the treatment effect $\mu$ for ORB simulated according to DGM function \eqref{simORB} with $\gamma=1.5$, using different estimation methods, i.e., naive or ORB-adjusted according to the various selection functions indicated in the legend. The coverage is shown for varying meta-analysis study sizes, heterogeneity levels, and increasing true treatment effect on the x-axis of each plot shown.}
+\caption{Coverage in the estimation of the treatment effect $\mu$ for ORB simulated according to DGM function \eqref{simORB} with $\gamma=1.5$, using different estimation methods, i.e., naive or ORB-adjusted according to the various selection functions indicated in the legend. The coverage is shown for varying meta-analysis study sizes, heterogeneity levels, and increasing true treatment effect on the x-axis of each plot shown.\\[0.5em]}
 %\hline
-<<echo=FALSE, results='asis', fig.height=11, fig.width=9, message=FALSE, warning=FALSE>>=
+<<echo=FALSE, results='asis', fig.height=11.5, fig.width=9, message=FALSE, warning=FALSE>>=
 
 #Plots
 library(ggplot2)
@@ -2551,9 +2551,9 @@ invisible(final_plot)
 
 \begin{figure*}[!hbt]
 \centering
-\caption{Bias in the estimation of the heterogeneity variance $\tau^2$ for ORB simulated according to DGM function \eqref{simORB} with $\gamma=1.5$, using different estimation methods, i.e., naive or ORB-adjusted according to the various selection functions indicated in the legend. The bias is shown for varying meta-analysis study sizes, true treatment effect values, and increasing heterogeneity on the x-axis of each plot shown.}
+\caption{Bias in the estimation of the heterogeneity variance $\tau^2$ for ORB simulated according to DGM function \eqref{simORB} with $\gamma=1.5$, using different estimation methods, i.e., naive or ORB-adjusted according to the various selection functions indicated in the legend. The bias is shown for varying meta-analysis study sizes, true treatment effect values, and increasing heterogeneity on the x-axis of each plot shown.\\[0.5em]}
 %\hline
-<<echo=FALSE, results='asis', fig.height=11, fig.width=9, message=FALSE, warning=FALSE>>=
+<<echo=FALSE, results='asis', fig.height=11.5, fig.width=9, message=FALSE, warning=FALSE>>=
 
 #Plots
 library(ggplot2)
