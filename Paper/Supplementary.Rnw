@@ -25,7 +25,7 @@ Sys.setenv(TEXINPUTS=getwd(),
 
 @
 
-\title{ \huge{\textbf{Addressing Outcome Reporting Bias in Meta-analysis: A Selection Model Perspective}}\\
+\title{ \Large{\textbf{Addressing Outcome Reporting Bias in Meta-analysis: A Selection Model Perspective}}\\
 \large{\textbf{Supplementary Figures and Results}}
 }
 
