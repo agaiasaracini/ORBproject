@@ -2005,7 +2005,7 @@ grid.arrange(p1, p, ncol = 2, widths = c(3.4, 3.2))
 
 \subsubsection{Application to Motivating Example}
 
-We apply the ORB-adjustment framework to the Epilepsy meta-analysis data affected by ORB from \citet{topiramate, Copas2019}, using the selection functions proposed in this research. These selection functions utilize a one-sided $p$-value for significance with a threshold of $\alpha=0.05$, in contrast to \citet{Copas2019}, which used a two-sided $p$-value. Of note, while a one-sided threshold is used withing the selection functuons to define the underlying missing data mechanism, two-sided significance is used to construct profile likelihood (PL) confidence intervals (CIs) for treatment effect estimation.
+We apply the ORB-adjustment framework to the Epilepsy meta-analysis data affected by ORB from \citet{topiramate, Copas2019}, using the selection functions proposed in this research. These selection functions utilize a one-sided $p$-value for significance with a threshold of $\alpha=0.05$, in contrast to \citet{Copas2019}, which used a two-sided $p$-value. Of note, while a one-sided threshold is used within the selection function to define the underlying missing data mechanism, two-sided significance is used to construct profile likelihood (PL) confidence intervals (CIs) for treatment effect estimation.
 
 Figure \ref{example} presents the point estimates and $95\%$ CI for the log RR of the treatment effect for two beneficial outcomes in the meta-analysis: a $50\%$ reduction in seizure frequency and seizure freedom. For both outcomes, the naive log RR estimate shows a significant positive treatment effect compared to the control.
 
