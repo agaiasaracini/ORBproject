@@ -34,6 +34,27 @@
 #upper - vector of length 2 for the upper bound of the optimization if "L-BFGS-B" is used
 #gam - parameter used in DGM and consequently to be used in DGM selection function for correct model specification
 
+#Outputs
+#mu_unadjusted = naive estimate of treatment effect, no ORB adjustment
+#LR_mu_unadjusted_low = lower bound of PL CI for naive estimate of treatment effect
+#LR_mu_unadjusted_up = upper bound of PL CI for naive estimate of treatment effect
+#CI_unadjusted_low_WALD = lower bound of Wald CI for naive estimate of treatment effect
+#CI_unadjusted_up_WALD = upper bound of Wald CI for naive estimate of treatment effect
+#mu_adjusted_benefit = ORB-adjusted estimate of treatment effect
+#LR_mu_adjusted_low = lower bound of PL CI for ORB-adjusted estimate of treatment effect
+#LR_mu_adjusted_up = upper bound of PL CI for ORB-adjusted estimate of treatment effect
+#CI_adjusted_benefit_low_WALD = lower bound of Wald CI for ORB-adjusted estimate of treatment effect
+#CI_adjusted_benefit_up_WALD = upper bound of Wald CI for ORB-adjusted estimate of treatment effect
+#tau_squared_unadjusted = naive estimate of heterogeneity variance
+#LR_tau_squared_unadjusted_low = lower bound of PL CI for naive estimate of heterogeneity variance
+#LR_tau_squared_unadjusted_up = upper bound of PL CI for naive estimate of heterogeneity variance
+#tau_squared_adjusted = ORB-adjusted estimate of heterogeneity variance
+#LR_tau_squared_adjusted_low = lower bound of PL CI for ORB-adjusted estimate of heterogeneity variance
+#LR_tau_squared_adjusted_up = upper bound of PL CI for ORB-adjusted estimate of heterogeneity variance
+#average_sigma_squared_unadjusted = average of imputed and reported variances with naive estimation
+#sigma_squared_average_adjusted = average of imputed and reported variances with ORB-adjusted estimation
+
+
 reORBadj <- function(a=NULL, 
                      c=NULL,
                      mu1=NULL, 
