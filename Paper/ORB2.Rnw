@@ -41,8 +41,7 @@ Sys.setenv(TEXINPUTS=getwd(),
 ]
 
 \footnotetext[1]{Corresponding author: Alessandra Gaia Saracini\\
-ETH Zurich\\
-Department of Mathematics\\
+ETH Zurich Department of Mathematics\\
 alessandragaia.saracini@gmail.com}
 \footnotetext[2]{Leonhard Held, Professor\\
 University of Zurich\\
