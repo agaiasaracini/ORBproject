@@ -287,7 +287,7 @@ Using the log-likelihood \eqref{lik.rewritten.special.copas.case} and the select
 
 \bigskip
 
-The selection function \eqref{sel0} results in a simple shape of the ORB-adjusted log-likelihood; however, the underlying assumption regarding the missing data mechanism is somewhat strict, and extensions which relax its assumption are commonly found in the PB literature \citep{selection1, reviewselection}. One example is the function $w_B(y \text{; } \beta)$ with tuning parameter $\beta >0$:
+The selection function \eqref{sel0} results in a simple shape of the ORB-adjusted log-likelihood; however, the underlying assumption regarding the missing data mechanism is somewhat strict, and extensions which relax its assumption are commonly found in the PB literature \citep{selection1, reviewselection}. One example is the function $w_B(p \text{; } \beta)$ with tuning parameter $\beta >0$:
 
 \begin{equation}
 w_B(p \text{; } \beta) = 
@@ -300,12 +300,12 @@ w_B(p \text{; } \beta) =
 
 The idea of this selection function in the context of PB is that the associated probability of publishing, which weighs observations, is greater than 0 for non-significant outcomes. Specifically, when applied to ORB, for the unreported study outcomes which were originally non-significant, the underlying probability of reporting is a decreasing function of the $p$-value, while significant study outcomes have an associated probability of reporting equal to 1.
 
-In the context of ORB we further propose a different selection function, $w_C(y \text{; } \gamma)$ with tuning parameter $\gamma > 0$ presented in \eqref{special2}, for which the rationale is inverted compared to $w_B(y \text{; } \beta)$ in \eqref{special1}. With selection function $w_C(y \text{; } \gamma)$ we assume that non-significant study outcomes have an associated probability of reporting 0, while significant study outcomes have an associated probability of reporting which is a decreasing function of the $p$-value. This can be motivated by scenarios where ORB results from prioritizing more impactful or clinically relevant findings in a published study \citep{moreORBreasons, ORBreasons}, leading to only highly significant outcomes being reported. This could be interpreted as a lower threshold for not reporting compared to PB, and thus a higher level of bias. At the same time, given that the selection function allows for significant unreported outcomes, it can also account for settings in which outcomes are missing because they were deemed less relevant, resulting in a more random pattern of missing data and less bias \citep{mythesis}. Understanding the exact cause of unreporting can be challenging, and information on the strength of evidence for other outcomes in the meta-analysis could help clarify the likely cause of unreporting.
+In the context of ORB we further propose a different selection function, $w_C(p \text{; } \gamma)$ with tuning parameter $\gamma > 0$ presented in \eqref{special2}, for which the rationale is inverted compared to $w_B(p \text{; } \beta)$ in \eqref{special1}. With selection function $w_C(p \text{; } \gamma)$ we assume that non-significant study outcomes have an associated probability of reporting 0, while significant study outcomes have an associated probability of reporting which is a decreasing function of the $p$-value. This can be motivated by scenarios where ORB results from prioritizing more impactful or clinically relevant findings in a published study \citep{moreORBreasons, ORBreasons}, leading to only highly significant outcomes being reported. This could be interpreted as a lower threshold for not reporting compared to PB, and thus a higher level of bias. At the same time, given that the selection function allows for significant unreported outcomes, it can also account for settings in which outcomes are missing because they were deemed less relevant, resulting in a more random pattern of missing data and less bias \citep{mythesis}. Understanding the exact cause of unreporting can be challenging, and information on the strength of evidence for other outcomes in the meta-analysis could help clarify the likely cause of unreporting.
 
 \bigskip
 
 \begin{equation}
-w_C(y \text{; } \gamma) = 
+w_C(p \text{; } \gamma) = 
 \begin{cases}
 1 - \frac{p^{\gamma}}{\alpha^{\gamma}} & \text{if } p \leq \alpha \\
 0 & \text{if } p > \alpha
@@ -315,12 +315,12 @@ w_C(y \text{; } \gamma) =
 
 \bigskip
 
-Based on the selection functions $w_B(y \text{; } \beta)$ in \eqref{special1} and $w_C(y \text{; } \gamma)$ in \eqref{special2} one could envisage a combination of these by using e.g., selection function $w_D(y \text{; } \beta, \gamma)$ in \eqref{special3}. In this case, one can flexibly specify both $\gamma$ and $\beta$ parameters, as well as the probability of reporting assumed for a study outcome at the significance threshold $\alpha$, which we note $\omega_{\alpha}$. In the case of \eqref{special1}, $\omega_{\alpha}$ was implicitly 1 and in case of \eqref{special2} this was set to 0. Here, we set $\omega_{\alpha}=0.5$, as a middle value between \eqref{special1} and \eqref{special2}. The selection function $w_D(y \text{; } \beta, \gamma)$ has the potential of being used to conduct extensive sensitivity analyses when adjusting for ORB.
+Based on the selection functions $w_B(p \text{; } \beta)$ in \eqref{special1} and $w_C(p \text{; } \gamma)$ in \eqref{special2} one could envisage a combination of these by using e.g., selection function $w_D(p \text{; } \beta, \gamma)$ in \eqref{special3}. In this case, one can flexibly specify both $\gamma$ and $\beta$ parameters, as well as the probability of reporting assumed for a study outcome at the significance threshold $\alpha$, which we note $\omega_{\alpha}$. In the case of \eqref{special1}, $\omega_{\alpha}$ was implicitly 1 and in case of \eqref{special2} this was set to 0. Here, we set $\omega_{\alpha}=0.5$, as a middle value between \eqref{special1} and \eqref{special2}. The selection function $w_D(p \text{; } \beta, \gamma)$ has the potential of being used to conduct extensive sensitivity analyses when adjusting for ORB.
 
 \bigskip
 
 \begin{equation}
-w_D(y \text{; } \beta, \gamma) = 
+w_D(p \text{; } \beta, \gamma) = 
 \begin{cases}
 1 - (1-\omega_{\alpha})\left(\frac{p^{\gamma}}{\alpha^{\gamma}}\right) & \text{if } p \leq \alpha \\
 \omega_{\alpha}\left(\frac{p^{-\beta}}{\alpha^{-\beta}}\right) & \text{if } p > \alpha
@@ -330,7 +330,7 @@ w_D(y \text{; } \beta, \gamma) =
 
 \bigskip
 
-The selection functions proposed above, namely $w_A(y)$ in \eqref{sel0}, $w_B(y \text{; } \beta, \gamma)$ in \eqref{special1}, $w_C(y \text{; } \gamma)$ in \eqref{special2} and $w_D(y \text{; } \beta, \gamma)$ in \eqref{special3} are plotted in Figure \ref{new.weight.fig} for some example values of the $\gamma > 0$ and $\beta > 0$ parameters. Further rationale for the parameter choices are discussed in the simulation study protocol, available in the \href{https://osf.io/ancdu/}{OSF project repository}.
+The selection functions proposed above, namely $w_A(p)$ in \eqref{sel0}, $w_B(p \text{; } \beta, \gamma)$ in \eqref{special1}, $w_C(p \text{; } \gamma)$ in \eqref{special2} and $w_D(p \text{; } \beta, \gamma)$ in \eqref{special3} are plotted in Figure \ref{new.weight.fig} for some example values of the $\gamma > 0$ and $\beta > 0$ parameters. Further rationale for the parameter choices are discussed in the simulation study protocol, available in the \href{https://osf.io/ancdu/}{OSF project repository}.
 
 \subsubsection{Imputation of Missing Variances} \label{impvar}
 
@@ -359,7 +359,7 @@ With the selection model framework for ORB adjustment presented in this work, on
 %\begin{@twocolumnfalse}
 \begin{figure*}[!hbt]
 \centering
-\caption{Possible Selection Functions for ORB-adjustment. Function $w_A(y)$ from equation \eqref{sel0} in (a), function $w_B(y \text{; } \beta = 3)$ from equation \eqref{special1} in (b), function $w_C(y \text{; } \gamma = 3)$ from equation \eqref{special2} in (c), and functions $w_D(y \text{; } \beta = 1.5, \gamma = 7)$ and $w_D(y \text{; } \beta = 7, \gamma = 1.5)$  from equation \eqref{special3} shown in (d).\\[0.5em]}
+\caption{Possible Selection Functions for ORB-adjustment. Function $w_A(p)$ from equation \eqref{sel0} in (a), function $w_B(p \text{; } \beta = 3)$ from equation \eqref{special1} in (b), function $w_C(p \text{; } \gamma = 3)$ from equation \eqref{special2} in (c), and functions $w_D(p \text{; } \beta = 1.5, \gamma = 7)$ and $w_D(p \text{; } \beta = 7, \gamma = 1.5)$  from equation \eqref{special3} shown in (d).\\[0.5em]}
 %\hline
 <<echo=FALSE, results='asis', fig.height=4.2, fig.width=7, message=FALSE, warning=FALSE>>=
 
@@ -2063,7 +2063,7 @@ Each meta-analysis dataset hence results in $K$ or fewer of the original study o
 
 After having simulated ORB, hence resulting in some treatment effects and standard errors unreported, we use maximum likelihood (ML) estimation to obtain point estimates of the treatment effect $\mu$ and the heterogeneity variance $\tau^2$, along with profile likelihood (PL) confidence intervals (CI) \citep{tauCI, Copas2019, likelihood}. The ML estimate and PL CI for $\mu$ and $\tau^2$ are obtained using different log-likelihoods, depending on the information and/or missing data mechanism assumed, leading to i) naive, ii) complete data, and iii) ORB-adjusted estimation methods. We further differentiate various ORB-adjusted estimates based on the selection function assumed for the probability of reporting.
 
-The naive log-likelihood (i) includes the contribution only from reported study outcomes and disregards the unreported ones. The naive estimate serves as a baseline for comparison of the ORB-adjustment methodologies and quantifies the negative impact of ORB when the latter is not accounted for \citep{reviewselection, Copas2019}. The complete data log-likelihood (ii) uses all studies in the meta-analysis before ORB is simulated, and is a proxy for the true treatment effect if there were no ORB. The various ORB-adjusted estimates (iii) are obtained by maximizing the ORB-adjusted log-likelihood \eqref{lik.rewritten.special.copas.case} using the different selection functions:  $w_A(y)$ from \eqref{sel0}, $w_B(y \text{; } \beta=3)$ from \eqref{special1}, $w_C(y \text{; } \gamma=3)$ from \eqref{special2}, and $w_D(y \text{; } \beta=1.5, \gamma=7)$, $w_D(y \text{; } \beta=7, \gamma=1.5)$ from \eqref{special3}, as well as the selection function \eqref{simORB} used to simulate ORB, so as to include the correct model specification in the adjustment. Since the latter function used to simulate ORB can be indeed seen a selection function, defining a specific missing data mechanism, we note it as $w_{DGM}(y)$ and utilize it in the ORB-adjusted log-likelihood \eqref{lik.rewritten.special.copas.case}. The parameters of the selection functions, i.e., $\beta$ or $\gamma$ used in the adjustment correspond to those illustrated in Figure \ref{new.weight.fig}.\\
+The naive log-likelihood (i) includes the contribution only from reported study outcomes and disregards the unreported ones. The naive estimate serves as a baseline for comparison of the ORB-adjustment methodologies and quantifies the negative impact of ORB when the latter is not accounted for \citep{reviewselection, Copas2019}. The complete data log-likelihood (ii) uses all studies in the meta-analysis before ORB is simulated, and is a proxy for the true treatment effect if there were no ORB. The various ORB-adjusted estimates (iii) are obtained by maximizing the ORB-adjusted log-likelihood \eqref{lik.rewritten.special.copas.case} using the different selection functions:  $w_A(p)$ from \eqref{sel0}, $w_B(p \text{; } \beta=3)$ from \eqref{special1}, $w_C(p \text{; } \gamma=3)$ from \eqref{special2}, and $w_D(p \text{; } \beta=1.5, \gamma=7)$, $w_D(p \text{; } \beta=7, \gamma=1.5)$ from \eqref{special3}, as well as the selection function \eqref{simORB} used to simulate ORB, so as to include the correct model specification in the adjustment. Since the latter function used to simulate ORB can be indeed seen a selection function, defining a specific missing data mechanism, we note it as $w_{DGM}(y)$ and utilize it in the ORB-adjusted log-likelihood \eqref{lik.rewritten.special.copas.case}. The parameters of the selection functions, i.e., $\beta$ or $\gamma$ used in the adjustment correspond to those illustrated in Figure \ref{new.weight.fig}.\\
 \textcolor{white}{T} For each parameter setting, the simulation process is repeated $\text{N}_{\text{sim}} = 3200$ times; the simulation size $\text{N}_{\text{sim}}$ is calculated based on the expected variance of the unknown parameter estimate \citep{IntHout2014, sim} and a desired Monte Carlo Standard Error (MCSE) of 0.005 from \citet{IntHout2014, sim}. The performance measures recorded for the unknown parameter are bias, empirical standard error (ESE), mean squared error (MSE), coverage and power, along with the MCSEs of each \citep{IntHout2014, sim}.
 
 \subsection{Results}
