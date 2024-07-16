@@ -109,7 +109,7 @@ The general form of a selection model in the PB literature involves the use of a
 \begin{equation}
 \label{PB.selection11}
 \begin{aligned}
-f \left( y_i \mid i \in \, \{\text{Pub}\} \right) %\\[0.5em] 
+f \left( y_i \text{;} \theta \mid i \in \, \{\text{Pub}\} \right) %\\[0.5em] 
 = \frac{f(y_i \text{;} \theta) \cdot w(y_i)}{\int^{+\infty}_{-\infty} f(y \text{;} \theta) \cdot w(y) dy,}
 \end{aligned}
 \end{equation}
@@ -161,7 +161,7 @@ We can then adapt the formulation of equation \eqref{PB.selection11} for ORB, by
 \begin{equation}
 \label{ith.rep}
 \begin{aligned}
-f\left(y_i \mid  \, i \in \{\text{Rep}\} \right) = \frac{f\left(y_i \text{;} \theta \right) \cdot w(y_i)}{\int_{-\infty}^{\infty} f\left(y \text{;} \theta \right) \cdot w(y) d y} \text{.}
+f\left(y_i \text{;} \theta \mid  \, i \in \{\text{Rep}\} \right) = \frac{f\left(y_i \text{;} \theta \right) \cdot w(y_i)}{\int_{-\infty}^{\infty} f\left(y \text{;} \theta \right) \cdot w(y) d y} \text{.}
 \end{aligned}
 \end{equation}
 
@@ -174,7 +174,7 @@ Similarly, for the unreported studies $i \in \{\text{Unrep} \}$, we can use the 
 \begin{equation}
 \label{ith.high}
 \begin{aligned}
-f\left(y_i \mid \, i \in \{\text{Unrep} \} \right) = \frac{f \left(y_i \text{;} \theta \right) \cdot \left(1-w(y_i) \right)}{\int_{-\infty}^{\infty} f \left(y \text{;} \theta \right) \cdot \left(1-w(y) \right) d y} \text{.}
+f\left(y_i \text{;} \theta \mid \, i \in \{\text{Unrep} \} \right) = \frac{f \left(y_i \text{;} \theta \right) \cdot \left(1-w(y_i) \right)}{\int_{-\infty}^{\infty} f \left(y \text{;} \theta \right) \cdot \left(1-w(y) \right) d y} \text{.}
 \end{aligned}
 \end{equation}
 
