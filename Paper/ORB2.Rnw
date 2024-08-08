@@ -333,7 +333,7 @@ The selection functions proposed above, namely $w_A(p)$ in \eqref{sel0}, $w_B(p 
 
 \subsubsection{Imputation of Missing Variances} \label{impvar}
 
-When utilizing any of the selection functions presented in the ORB-adjusted log-likelihood \eqref{lik.rewritten.special.copas.case}, we require knowledge of the standard error of the unreported study outcome, which is generally missing. This value hence needs to be imputed; we following the methodology of \citet{Copas2019} and \citet{Bay} and impute the missing standard error of an unreported study $i$ as
+When utilizing any of the selection functions presented in the ORB-adjusted log-likelihood \eqref{lik.rewritten.special.copas.case}, we require knowledge of the standard error of the unreported study outcome, which is generally missing. This value hence needs to be imputed; we follow the methodology of \citet{Copas2019} and \citet{Bay} and impute the missing standard error of an unreported study $i$ as
 
 \begin{equation*}
 \label{k1}
