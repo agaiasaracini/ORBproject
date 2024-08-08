@@ -351,7 +351,7 @@ where $n_i$ is the sample size of study $i$ and
 
 \bigskip
 
-With the selection model framework for ORB adjustment presented in this work, one is thus able to include a likelihood contribution from unreported study outcomes, by specifying the desired missing data assumption via a selection function, representative of the assumed probability of reporting. This framework enables the joint estimation, via maximum likelihood (ML), of the ORB-adjusted parameters of interest in the model, in our case treatment effect, as well the heterogeneity variance.
+With the selection model framework for ORB adjustment presented in this work, one is thus able to include a likelihood contribution from unreported study outcomes, by specifying the desired missing data assumption via a selection function, representative of the assumed probability of reporting. This framework enables the joint estimation, via maximum likelihood (ML), of the ORB-adjusted parameters of interest in the model, in our case treatment effect, as well as the heterogeneity variance.
 
 
 %\twocolumn[
