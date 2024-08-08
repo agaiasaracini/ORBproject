@@ -110,8 +110,8 @@ legend_plot_results <- ggplot() +
       "Naive",
       expression(w[DGM]),
       expression(w[A]),
-      expression(w[B](gamma == 3)),
-      expression(w[C](beta == 3)),
+      expression(w[B](beta == 3)),
+      expression(w[C](gamma == 3)),
       expression(w[D](gamma == 7 ~ "," ~ beta == 1.5)),
       expression(w[D](gamma == 1.5 ~ "," ~ beta == 7))
     )
@@ -304,8 +304,8 @@ legend_plot_mse <- ggplot() +
       expression(Naive),
       expression(w[DGM]),
       expression(w[A]),
-      expression(w[B] ~ gamma == 3),
-      expression(w[C] ~ beta == 3),
+      expression(w[B](beta == 3)),
+      expression(w[C](gamma == 3)),
       expression(w[D] ~ gamma == 7 ~ "," ~ beta == 1.5),
       expression(w[D] ~ gamma == 1.5 ~ "," ~ beta == 7)
     )
@@ -550,8 +550,8 @@ legend_plot_results <- ggplot() +
       "Naive",
       expression(w[DGM]),
       expression(w[A]),
-      expression(w[B](gamma == 3)),
-      expression(w[C](beta == 3)),
+      expression(w[B](beta == 3)),
+      expression(w[C](gamma == 3)),
       expression(w[D](gamma == 7 ~ "," ~ beta == 1.5)),
       expression(w[D](gamma == 1.5 ~ "," ~ beta == 7))
     )
@@ -744,8 +744,8 @@ legend_plot_power <- ggplot() +
       expression(Naive),
       expression(w[DGM]),
       expression(w[A]),
-      expression(w[B] ~ gamma == 3),
-      expression(w[C] ~ beta == 3),
+     expression(w[B](beta == 3)),
+      expression(w[C](gamma == 3)),
       expression(w[D] ~ gamma == 7 ~ "," ~ beta == 1.5),
       expression(w[D] ~ gamma == 1.5 ~ "," ~ beta == 7)
     )
@@ -838,8 +838,8 @@ legend_plot_results <- ggplot() +
       "Naive",
       expression(w[DGM]),
       expression(w[A]),
-      expression(w[B](gamma == 3)),
-      expression(w[C](beta == 3)),
+      expression(w[B](beta == 3)),
+      expression(w[C](gamma == 3)),
       expression(w[D](gamma == 7 ~ "," ~ beta == 1.5)),
       expression(w[D](gamma == 1.5 ~ "," ~ beta == 7))
     )
@@ -1123,8 +1123,8 @@ legend_plot_results <- ggplot() +
       "Naive",
       expression(w[DGM]),
       expression(w[A]),
-      expression(w[B](gamma == 3)),
-      expression(w[C](beta == 3)),
+     expression(w[B](beta == 3)),
+      expression(w[C](gamma == 3)),
       expression(w[D](gamma == 7 ~ "," ~ beta == 1.5)),
       expression(w[D](gamma == 1.5 ~ "," ~ beta == 7))
     )
