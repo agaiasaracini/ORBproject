@@ -2369,8 +2369,8 @@ legend_plot_bias <- ggplot() +
       expression(w[A]),
       expression(w[B](beta == 3)),
       expression(w[C](gamma == 3)),
-      expression(w[D] ~ gamma == 7 ~ "," ~ beta == 1.5),
-      expression(w[D] ~ gamma == 1.5 ~ "," ~ beta == 7)
+      expression(w[D](gamma == 7 ~ "," ~ beta == 1.5)),
+      expression(w[D](gamma == 1.5 ~ "," ~ beta == 7))
     )
   ) +
   
