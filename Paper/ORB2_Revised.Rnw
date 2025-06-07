@@ -1,0 +1,3359 @@
+
+\documentclass[twocolumn]{article}
+\usepackage{booktabs}
+\usepackage{array}
+%\usepackage[T1]{fontenc}
+\usepackage[margin=1in]{geometry}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{todonotes}
+
+\usepackage{hyperref}
+\usepackage[numbers]{natbib}
+%\addbibresource{biblio.bib}
+\newcommand{\abs}[1]{\left\lvert#1\right\rvert} % Absolutbetrag
+
+\date{}
+
+\begin{document}
+
+<<setup, include=FALSE, cache=FALSE, echo=FALSE>>=
+opts_chunk$set(fig.path='figures/plots-', fig.align='center', fig.show='hold', eval=TRUE, echo=TRUE)
+options(replace.assign=TRUE,width=80)
+Sys.setenv(TEXINPUTS=getwd(),
+           BIBINPUTS=getwd(),
+           BSTINPUTS=getwd())
+
+@
+
+\title{ \huge{\textbf{Addressing Outcome Reporting Bias in Meta-analysis: A Selection Model Perspective}}}
+%\author{\textbf{Alessandra Gaia Saracini and Leonhard Held}}
+\author{\textbf{Alessandra Gaia Saracini\textsuperscript{1} and Leonhard Held\textsuperscript{2}}}
+
+
+\twocolumn[
+\begin{@twocolumnfalse}
+  \maketitle
+  \begin{abstract}
+  Outcome Reporting Bias (ORB) poses significant threats to the validity of meta-analytic findings. It occurs when researchers selectively report outcomes based on the significance or direction of results, potentially leading to distorted treatment effect estimates. Despite its critical implications, ORB remains an under-recognized issue, with few comprehensive adjustment methods available. The goal of this research is to investigate ORB-adjustment techniques through a selection model lens, thereby extending some of the existing methodological approaches available in the literature. To gain a better insight into the effects of ORB in meta-analysis of clinical trials, specifically in the presence of heterogeneity, and to assess the effectiveness of ORB-adjustment techniques, we apply the methodology to real clinical data affected by ORB and conduct a simulation study focusing on treatment effect estimation with a secondary interest in heterogeneity quantification.\\
+  \end{abstract}
+\end{@twocolumnfalse}
+]
+
+\footnotetext[1]{Corresponding author: Alessandra Gaia Saracini\\
+ETH Zurich Department of Mathematics\\
+alessandragaia.saracini@gmail.com}
+\footnotetext[2]{Leonhard Held, Professor\\
+University of Zurich\\
+Epidemiology, Biostatistics and Prevention Institute\\
+leonhard.held@uzh.ch}
+
+
+\section{Introduction}
+Meta-analysis is a powerful statistical tool used to combine evidence from multiple studies investigating the same research question \citep{DerSimonian, handbook}. It plays a crucial role in clinical research by providing a more comprehensive and robust analysis of treatment effects, especially when individual studies have limited statistical power. However, like any statistical method, meta-analysis is prone to biases that can affect its validity and reliability \citep{handbook, Schmid2022, Egger2022}. While publication bias (PB) is a well-known issue, with various statistical methods developed to address it, outcome reporting bias (ORB) is less explored but equally problematic \citep{handbook, Schmid2022, Egger2022, protocolORB}. PB occurs when entire studies are not present in the literature due to the lack of significance or direction of results. On the other hand, ORB occurs when reporting decisions within published studies are influenced by results' significance or direction, leading to selective reporting of outcomes \citep{ORBimpact, Copas2014, Copas2019, Schmid2022, Kirkham2012, Egger2022, dutch}. Therefore, unlike PB, studies affected by ORB may still be published, but certain outcomes, especially those with weaker results, may be omitted or reporting may be impartial, leading to inability to include the study outcome in a meta-analysis. 
+
+Studies have shown that ORB is prevalent in the meta-analysis literature, affecting reviews where both primary and secondary outcomes are often inadequately reported \citep{moreORBevidence, ORBimpact, ORBIT_paper}. An investigation on a cohort of Cochrane systematic reviews by \citet{ORBimpact} found that more than half of the reviews did not include full data for the primary outcome of interest from eligible trials, and over a third contained at least one trial with high suspicion of ORB \citep{ORBimpact}. An investigation by \citet{ORBIT_paper}, with a focus on meta-analyses where the primary outcome was a harmful one, found that $86\%$ of Cochrane cohort reviews did not include full outcome data for the main adverse event of the trial, and ORB was suspected in nearly two thirds of the reviews \citep{ORBIT_paper}. A study by \citet{moreORBevidence}, inspecting 1402 outcomes from 48 trials with 68 publications, quantified the association between inadequate reporting of outcomes and statistical significance. They concluded that statistically significant beneficial outcomes have odds of being fully reported which are 2.7 times that of non-significant ones, with a $95 \%$ CI from 1.5 to 5.0 \citep{moreORBevidence}. ORB poses a substantial threat to the integrity of meta-analyses, emphasizing the need for increased awareness and methods to mitigate its impact.\\
+
+%This definition of ORB can also be seen, from a missing data perspective, as a missing not at random (MNAR) scenario, its definition being meaning the probability of non-reporting depends on the (often unfavorable or non-significant) value of the outcome.  itself. This contrasts a missing completely at random (MCAR), i.e., missingness is independent of outcome values. This naive assumption introduces bias when ORB is present, as it is that implicitly made with standard meta-analysis method which do not adjust for ORB.
+
+%$\textcolor{white}{T}$ Currently available statistical methodology to adjust for ORB differs in nature and underlying assumptions, see the works of \citet{Kirkham2012, Copas2014, Copas2019, Bay, dutch}, including a bivariate meta-analysis adjustment of two correlated outcomes \citep{Kirkham2012}, a Bayesian extension of it \citep{Bay}, and a meta-regression approach \citep{dutch}. Extensions of the \citep{Kirkham2012} and citep{Bay} approaches of bivariate meta-analysis are seen in Liu et al. (2017) and Hwang and DeSantis (2018), who use indirect treatment comparison and a network meta-analysis approach with a Baysian method, respectively. Adjusting for ORB in a multivariate meta-analysis setting, where outcomes are assumed to have a correlation/dependence structure, allows for the borrowing of strength across correlated outcomes. This is more aligned with the missing at random (MAR) setting, where the probability of reporting an outcome depends on other observed outcomes in the same study. These multivariate methods can reduce bias when correlations are strong, though estimating the correlation structure (within and between studies) is often challenging. To address this, some studies assume a global correlation coefficient \citet{Kirkham2012, Bay, dutch} and estimate it via Pearson's correlation coefficient \citet{Kirkham2012, Bay} while Liu et al. (2017) apply Clayton copulas. These models have shown bias reduction under MAR and limited success under MNAR, but they do not model the MNAR mechanism directly and can introduce bias in fully observed outcomes due to joint modeling assumptions. Mostly, they do no directly model or account for the missing data mechanism, as noted in Liu et al. (2017).
+
+%The most established ORB-adjustment method, i.e., that of \citet{Copas2019}, has a different approach to the above, in that it adjusts for outcomes separately and models the MNAR missing data mechanism directly. The methodology relies on categorizing unreported outcomes into risk of bias categories - no risk (NR), low risk (LR), and high risk (HR) - based on the Outcome Reporting Bias in Trials (ORBIT) methodology. Given the classification, assumed to be correct, \citet{Copas2019} developed a likelihood-based ORB-adjustment method by adding a contribution from unreported study outcomes classified as HR of bias to the likelihood function, under the assumption that these were originally non-significant. In the \citet{Copas2019} method, it is assumed that treatment effects, and possibly standard errors, are unreported, while sample sizes of the studies are known, and the adjustment is done separately for each outcome in the meta-analysis. 
+
+From a missing data perspective, ORB reflects a missing not at random (MNAR) scenario—meaning that the probability an outcome is unreported depends on its value, typically its statistical significance. This contrasts with the assumption of missing completely at random (MCAR), where missingness is unrelated to the data. Standard meta-analytic methods often implicitly assume MCAR by including only reported outcomes, leading to biased estimates when the true mechanism is MNAR.
+
+A related but distinct setting is missing at random (MAR), where the reporting of one outcome depends on other observed outcomes within the same study. This is particularly relevant in multivariate meta-analysis, where methods have been developed to leverage correlations between outcomes to borrow strength across them \citep{Kirkham2012, Bay, dutch, Hwang2018, Liu2017}. Notable examples include the bivariate meta-analysis of \citet{Kirkham2012} and its Bayesian extension by \citet{Bay}, as well as expansions to indirect treatment comparisons and network meta-analysis by \citet{Hwang2018} and \citet{Liu2017}. These approaches can reduce bias under MAR, especially when outcomes are strongly correlated. However, estimating the between- and within-study correlation structures is often difficult. Some methods address this by assuming a global correlation coefficient \citep{Kirkham2012, Bay, dutch, Hwang2018}, estimated either via Pearson’s correlation \citep{Kirkham2012, dutch}, or, in the case of \citet{Liu2017} using copula models like the Clayton copula or via non-informative priors in a Bayesian setting \citep{Bay, Liu2017, Hwang2018}. Although these strategies offer partial improvements under MNAR, they generally do not model the MNAR mechanism directly and may inadvertently introduce bias into outcomes that are fully observed due to the joint modeling assumptions.
+
+In contrast, the most established MNAR-based ORB adjustment is the method proposed by \citet{Copas2019, Cpas2014}, which adjusts each outcome separately and explicitly models the missing data mechanism. Their method relies on first categorizing unreported outcomes into risk categories—no risk (NR), low risk (LR), and high risk (HR)—based on the Outcome Reporting Bias in Trials (ORBIT) classification system. Assuming these categories are correctly assigned, their likelihood-based model includes contributions from unreported HR outcomes, under the assumption that these would have been non-significant. Of note, this a classification specific to ORB in that it assigns a risk of bias evaluation to each unreported outcome within a study, rather than to the whole study itself. The latter is a risk of bias approach typical of PB \citep{Lunny2024,RiskBias, Begg, Salanti} but does not directly apply to ORB, in that studies are published but different unreported outcomes may be associated with different risk of ORB \citep{Copas2019, Copas2014, Kirkham2012}.
+
+Our work builds on this foundation by reinterpreting ORB adjustment through the lens of selection models, a framework commonly used for PB adjustment \citep{selection2, selection1, reviewselection}. Our proposed method removes the need for ORBIT classification, allows flexible modeling of the missing data mechanism, and incorporates all unreported outcomes in the analysis, not just the ones classified as HR of bias by the ORBI methodology. We also investigate the influence of between-study heterogeneity - a novel aspect in the ORB literature - and assess the effectiveness of our method through simulations. The focus is on treatment effect estimation, with a secondary emphasis on how heterogeneity interacts with ORB and its correction. 
+
+%Our work can be seen as an extension of the \citet{Copas2019} method by presenting ORB-adjustment through a selection model perspective, a framework typically used for PB adjustment \citep{selection2, selection1, reviewselection}. The proposed approach for ORB adjustment offers a more flexible framework that does not require the ORBIT classification system, includes contributions from all unreported study outcomes, and allows for different assumptions on the missing data mechanism. We further consider the impact of between-study heterogeneity on ORB and ORB-adjustment, a novel aspect in the context of ORB, and conduct a simulation study investigating the impact of ORB and the effectiveness of ORB-adjustment, focusing on treatment effect estimation, with a secondary focus on heterogeneity, under different meta-analytic settings. 
+
+Throughout this work, we consider a random effects meta-analysis setting on a single beneficial outcome, i.e., an outcome for which a positive value indicates a beneficial direction of treatment. We assume normality and hence the following model:
+
+\bigskip
+
+\begin{equation}\label{eq:random.eff11}
+y_i \sim \mathcal{N}(\theta_i, \sigma_i^2) \; \; \; \; \; \; \theta_i \sim \mathcal{N}(\mu, \tau^2),
+\end{equation}
+
+\bigskip
+
+where $y_i$ and $\sigma_i^2$ are the observed treatment effect and standard error, respectively, for each study $i$, and the parameters of interest are the treatment effect $\mu$ and the heterogeneity variance $\tau^2$.
+
+As a motivating example of ORB in meta-analysis, we consider the data used by \citet{Copas2019}, wherein a meta-analysis of 12 studies was conducted separately for 14 different outcomes, 2 considered beneficial and 12 harmful. The meta-analysis, originally by \citet{topiramate}, includes studies investigating the effect of Topiramate, an antiepileptic drug first marketed in 1996, when used as an add-on treatment for drug-resistant focal epilepsy. Given that in our research we focus on ORB and ORB correction for beneficial outcomes, we consider the 2 outcomes of the data assumed to have a positive effect, i.e., $50 \%$ seizure frequency reduction, and seizure freedom, illustrated in Table \ref{tab}. We observe that all of the 12 studies in the meta-analysis report the treatment and control arm sample sizes; however, some studies do not report the event frequencies, from which the log risk ratio (RR) is computed and used as the normally distributed treatment effect in \eqref{eq:random.eff11}, using a continuity correction in case of empty cell counts \citep{Copas2019}.
+
+\begin{table}[!h]
+\centering
+\caption{Example meta-analysis data of beneficial outcomes affected by ORB \citep{Copas2019, topiramate}.\\[0.5em]}
+\resizebox{\linewidth}{!}{
+\begin{tabular}{lcccccc}
+\toprule
+\multicolumn{1}{c}{ } & \multicolumn{2}{c}{Sample Size} & \multicolumn{2}{c}{50\% Seizure Reduction} & \multicolumn{2}{c}{Seizure Freedom} \\
+\multicolumn{1}{c}{ } & \multicolumn{1}{c}{T} & \multicolumn{1}{c}{C} & \multicolumn{1}{c}{T} & \multicolumn{1}{c}{C} & \multicolumn{1}{c}{T} & \multicolumn{1}{c}{C} \\
+%  & 1 & 2 & 3 & 4 & 5 & 6 \\
+\midrule
+Ben-Menachem 1996 & 28 & 28 & 12 & 0 & Unrep & Unrep \\
+Elterman 1999 & 41 & 45 & 16 & 9 & 4 & 2 \\
+Faught 1996 & 136 & 45 & 54 & 8 & Unrep & Unrep \\
+Guberman 2002 & 171 & 92 & 77 & 22 & 10 & 2 \\
+Korean 1999 & 91 & 86 & 45 & 11 & 7 & 1 \\
+%\addlinespace
+Privitera 1996 & 143 & 47 & 58 & 4 & Unrep & Unrep \\
+Rosenfeld 1996 & 167 & 42 & 86 & 8 & Unrep & Unrep \\
+Sharief 1996 & 23 & 24 & 8 & 2 & 2 & 0 \\
+Tassinari 1996 & 30 & 30 & 14 & 3 & 0 & 0 \\
+Yen 2000 & 23 & 23 & 11 & 3 & Unrep & Unrep \\
+%\addlinespace
+Zhang 2011 & 46 & 40 & 22 & 3 & 0 & 0 \\
+Coles 1999 & 52 & 51 & Unrep & Unrep & Unrep & Unrep \\
+\bottomrule
+\end{tabular}}
+\label{tab}
+\end{table}
+
+
+\bigskip
+
+This manuscript is organized as follows: Section \ref{selmod} introduces the selection model framework typically used for PB and illustrates how this framework can be adapted to address ORB, considering various possible missing data mechanisms inspired by PB literature. Section \ref{simstudy} presents a simulation study investigating the impact of ORB and the effectiveness of the proposed ORB-adjustment method, with a focus on its application within a random effects meta-analysis model. Finally, Section \ref{disc} summarizes the proposed methodology and findings in a discussion, including limitations and conclusions.
+
+\section{Selection Models for ORB} \label{selmodORB}
+Selection models have gained popularity in the PB adjustment literature \citep{DerSimonian, selection1, selection2, reviewselection, handbook}, as they aim at correcting for the bias in treatment effect estimation by directly modelling the assumed missing data mechanism. Let $y_i$ be the observed treatment effect estimate for study $i$ in the meta-analysis, with distribution $f(y_i \text{; } \theta)$, assumed to be normal, where we denote $\theta$ as the unknown parameter of interest - in the context of the random effects meta-analysis of \eqref{eq:random.eff11}, $\theta$ is $\mu$ and $\tau^2$.
+
+The general form of a selection model in the PB literature involves the use of a weighted likelihood function which takes into account the observations $y_i$ from published studies $i \in \{\text{Pub} \}$ by weighting them with a selection function $w(y_i)$ which describes the probability that study $i$ is published/selected based on its significance \citep{selection1, selection2, reviewselection}. By using the following relation:
+
+%\bigskip
+
+\begin{equation}
+\label{PB.selection11}
+\begin{aligned}
+f \left( y_i \text{; } \theta \mid i \in \, \{\text{Pub}\} \right) %\\[0.5em] 
+= \frac{f(y_i \text{; } \theta) \cdot w(y_i)}{\int^{+\infty}_{-\infty} f(y \text{; } \theta) \cdot w(y) dy,}
+\end{aligned}
+\end{equation}
+
+%\bigskip
+
+the PB-adjusted log-likelihood $\ell_{\text{Adj}}^{\text{PB}} \left( \theta  \right)$ is derived \citep{selection0, HedgesVev, selection1, selection2} as
+
+%. The log-likelihood to be maximized for the parameter $\theta$ in turn has an additional contribution for the published studies, $ \{i \in \text{Published} \}$, wherein $f_i(y)$ is weighted by $w_i(y)$, the selection function representing the probability of publishing.
+
+%\bigskip
+
+\begin{equation*}
+\begin{aligned}
+\label{lik.PB}
+\ell_{\text{Adj}}^{\text{PB}}\left(\theta \right) &= \sum_{i} \log f \left(y_i \text{; } \theta \mid i \in \, \{\text{Pub}\} \right)\\
+& = \sum_{i \in \{\operatorname{Pub}\}} \log f(y_i \text{; } \theta) \\
+& - \sum_{i \in \{\operatorname{Pub}\}} \log \left[ \int_{-\infty}^{\infty} f(y \text{; } \theta) \cdot w(y)  d y \right] \text{.}
+\end{aligned}
+\end{equation*}
+
+
+%\bigskip
+The selection function can take various forms in the context of PB, generally guided by the intuition that in a meta-analysis of a beneficial outcome, for larger $p$-values, the probability of publication/selection decreases \citep{selection0, HedgesVev, selection1, selection2, selectionWeird, selectionCont, reviewselection}. Of note, in the case of a meta-analysis of a harmful outcome, we expect the opposite: small, significant $p$-values are less likely to be reported, as they would indicate harm \citep{ORBIT_paper, Copas2019}. In the following sections, we define the selection functions assuming beneficial outcomes and thus a positive treatment direction.
+
+The selection function $w(y_i)$ in \eqref{PB.selection11} is therefore often defined as a function of the $p$-value $p_i$, providing an intuitive way of understanding the relationship between significance and the probability of selection \citep{selection1, selection2, reviewselection}. Given that the $p$-value is simply a transformation of the observed treatment effect $y_i$ and the standard error $\sigma_i$, we will use the notation $w(p_i)$ when providing definitions of the selection function in terms of the $p$-value.
+
+%\subsection{Selection Models for ORB} \label{selmodORB}
+
+In the PB selection model setting one takes into account only the non-missing studies $i \in \{\text{Pub} \}$ by defining the conditional log-likelihood, i.e., conditional on the studies being published. In the context of ORB adjustment methods, according to the framework developed by \citet{Copas2019}, the likelihood function takes into account studies for which we have both non-missing and missing outcome information. The studies have different log-likelihood contributions, depending on whether a study $i$ reports the outcome, i.e., $i \in \{\text{Rep} \}$, or the study $i$ does not report the outcome, i.e., $i \in \{ \text{Unrep} \}$. The full ORB-adjusted log-likelihood, where $K = K_{\text {Rep}}+ K_{\text {Unrep}}$ is the total number of studies, can be seen as
+
+
+\begin{equation}
+\label{lik.full}
+\begin{aligned}
+%L\left(\theta \right)&=\prod_{i=1}^n L_i\left(\theta \right) \quad \text { where } n=n_{\text {Rep }}+n_{\text {High }} \\
+\ell_{\text{Adj}}^{\text{ORB}} & =\sum_{i=1}^K \ell \left(\theta \right)\\
+& =\sum_{i \in \{ \operatorname{Rep}\} } \ell\left(\theta \right)+\sum_{i \in \{\operatorname{Unrep} \} } \ell\left(\theta \right) \\
+& =\sum_{i \in \{\operatorname{Rep} \} } \log f \left(y_i \text{; } \theta \right)+\sum_{i \in \{\operatorname{Unrep} \} } \log f \left(y_i \text{; } \theta \right) \text{.}
+\end{aligned}
+\end{equation}
+
+\bigskip
+
+We can then adapt the formulation of equation \eqref{PB.selection11} for ORB, by considering, for reported studies $ \{i \in \text{Rep} \}$, the probability $w(y_i)$ of a study reporting an outcome, instead of the probability of a study being published. The following thus holds:
+
+\bigskip
+
+\begin{equation}
+\label{ith.rep}
+\begin{aligned}
+f\left(y_i \text{; } \theta \mid  \, i \in \{\text{Rep}\} \right) = \frac{f\left(y_i \text{; } \theta \right) \cdot w(y_i)}{\int_{-\infty}^{\infty} f\left(y \text{; } \theta \right) \cdot w(y) d y} \text{.}
+\end{aligned}
+\end{equation}
+
+\bigskip
+
+Similarly, for the unreported studies $i \in \{\text{Unrep} \}$, we can use the formulation \eqref{PB.selection11} and consider the probability $1-w(y_i)$ of a study not reporting an outcome. We hence obtain
+
+\bigskip
+
+\begin{equation}
+\label{ith.high}
+\begin{aligned}
+f\left(y_i \text{; } \theta \mid \, i \in \{\text{Unrep} \} \right) = \frac{f \left(y_i \text{; } \theta \right) \cdot \left(1-w(y_i) \right)}{\int_{-\infty}^{\infty} f \left(y \text{; } \theta \right) \cdot \left(1-w(y) \right) d y} \text{.}
+\end{aligned}
+\end{equation}
+
+\bigskip
+
+Using \eqref{ith.rep} and \eqref{ith.high}, and solving for $f(y_i \text{; } \theta)$, we can re-write the ORB-adjusted log-likelihood \eqref{lik.full} as
+
+\bigskip
+
+
+\begin{equation}
+\label{lik.rewritten}
+\begin{aligned}
+\ell_{\text{Adj}}^{\text{ORB}} \left(\theta \right) & = \sum_{i \in \{\operatorname{Rep} \} } \log  f(y_i \text{; } \theta)\\
+& - \sum_{i \in \{\operatorname{Rep} \} } \log \left[ \int_{-\infty}^{\infty} f\left(y \text{; } \theta \right) \cdot w(y) dy \right]\\
+& + \sum_{i \in \{ \operatorname{Unrep} \}} \log \left[ \int_{-\infty}^{\infty} f(y \text{; } \theta) \cdot \left( 1 - w(y) \right) d y \right] \text{.}
+\end{aligned}
+\end{equation}
+
+\bigskip
+
+
+The log-likelihood \eqref{lik.rewritten} is the generic setting using a weight function for the probability of reporting, i.e., for $i \in \{\text{Rep} \}$, and a weight function for the probability of not reporting, i.e, for $i \in \{\text{Unrep} \}$. In the \citet{Copas2019} model formulation, specific assumptions were made regarding the missing data mechanism, which result in a simplification of \eqref{lik.rewritten}. For the reported outcomes, \citet{Copas2019} implicitly do not assume any selection process, i.e., $w(y_i)=1$ when $i \in \{\text{Rep} \}$. This means that no weight function representing the reporting probability based on the $p$-value is associated with the reported observations. In light of this assumption, \eqref{lik.rewritten} can be further simplified to
+
+
+\begin{equation}
+\label{lik.rewritten.special.copas.case}
+\begin{aligned}
+\ell_{\text{Adj}}^{\text{ORB}} \left(\theta \right) & = \sum_{i \in \{\operatorname{Rep} \} } \log f(y_i \text{; } \theta)\\
+&+ \sum_{i \in \{ \operatorname{Unrep} \}} \log \left[ \int_{-\infty}^{\infty} f(y \text{; } \theta) \cdot \left( 1 - w(y) \right) d y \right] \text{.}
+\end{aligned}
+\end{equation}
+
+%\subsubsection{Copas et al. Selection Function}
+
+This is thus the generic form for ORB adjustment, which has different shapes depending on the selection function $w(y_i)$ used, representative of the missing data mechanism assumed for unreported study outcomes. Given the alignment of our ORB adjustment with the PB framework of selection models, one can use similar selection functions which are typically found in the PB literature. 
+
+\subsection{Selection Functions Implemented}
+
+We present a series of selection functions implemented in our methodology, defined as functions of the one-sided $p$-value, $p = \Phi(- y / \sigma)$, where $\alpha$ is the threshold for significance, e.g., $\alpha=0.05$, and the study index $i$ is omitted for ease of notation. As previously noted, given that the selection mechanism in the following section is defined as a function of the $p$-value, we use the notation $w(p)$ instead of $w(y)$. 
+
+\subsubsection{Constant-constant}
+
+We choose a one-sided $p$-value to model the probability of selection, in alignment with selection models of beneficial outcomes in PB \citep{HedgesVev, reviewselection, selectionCont}. One of the simplest selection functions used for PB is:
+
+%\bigskip
+
+\begin{equation}
+\begin{aligned}
+\label{sel0}
+w_A(p)= \begin{cases} 1 & \text{if } p \leq \alpha  \\
+0 & \text{if } p > \alpha \text{,} \end{cases}
+\end{aligned}
+\end{equation}
+
+%\bigskip
+
+
+While this selection function can be found in the PB literature \citep{selection0, selection1, reviewselection}, we note that it is also the one implicitly used in the \citet{Copas2019} adjustment, although the authors do not explicitly frame the ORB adjustment via a selection model framework. Of note, in \citet{Copas2019}, ORB adjustment is applied by including only the unreported study outcomes classified at HR of bias by the ORBIT classification system. They thus omit the unreported study outcomes classified at LR of bias and regard them as missing at random. Furthermore, the authors use the two-sided $p$-value $p = 2 \cdot (1 - \Phi(\abs{\frac{y}{\sigma}}))$ instead of the one-sided one proposed in this work. We deem a one-sided $p$-value to be more appropriate to model the underlying missing data mechanism for a beneficial effect of treatment, as it would be unlikely for significant outcomes, but in the wrong direction, to be reported \citep{HedgesVev, reviewselection, selectionCont}. 
+
+%However, for the unreported outcomes, \citet{Copas2019} make use of the ORBIT classification in NR/LR/HR of bias. For a beneficial outcome, they assume that an unreported study is missing if it was not measured (in which case it can be regarded as missing at random), or if it was non-significant. They assume that the latter case is correctly classified by the ORBIT methodology as HR. In the methodology, the authors omit the unreported studies that are classified at LR from the likelihood contribution, and regard them as missing at random. Of note, in \citet{Copas2019}, significance is established using a two-sided significance threshold, unlike here where we consider the one-sided p-value as we assume that significance in the harmful direction is unlikely to be reported for a beneficial outcome. This thus transaltes to the following selection function:
+
+%\bigskip
+
+
+%\begin{equation}
+%\label{w.copas}
+%\begin{aligned}
+%& w(p_i)= \begin{cases}1 & p_{i} < 0.05 \\
+%0 & p_{i} > 0.05 \end{cases} \\
+%& w(y_i, z_{\alpha}\sigma_i)= \begin{cases}1 &  y_i \in \left(\, -\infty, -z_{\alpha}\sigma_i \, \right] \cup \left[ \, z_{\alpha}\sigma_i, + \infty \, \right)  \\
+%0 & y_i \in  \left( \, -z_{\alpha}\sigma_i, +z_{\alpha}\sigma_i \, \right). \end{cases}
+%\end{aligned}
+%\end{equation}
+
+%\bigskip
+
+%where significance is evaluated based on a two-sided significance hypothesis test. The corresponding probability of not reporting $1- w(y_i, z_{\alpha}\sigma_i)$, which we denote $\Omega_0(y_i, z_{\alpha}\sigma_i)$ for ease of notation is thus
+
+%\begin{equation}
+%\label{w1.copas}
+%\begin{aligned}
+%1- w(y_i, z_{\alpha}\sigma_i) \\
+%& = \begin{cases} 1 & y_i \in  \left( \, -z_{\alpha}\sigma_i, +z_{\alpha}\sigma_i \, \right) \\
+%0 &  y_i \in \left( \, -\infty, -z_{\alpha}\sigma_i \, \right] \cup \left[ \, z_{\alpha}\sigma_i, + \infty \,  \right]. \end{cases}
+%\end{aligned}
+%\end{equation}
+
+%\bigskip
+
+Using the log-likelihood \eqref{lik.rewritten.special.copas.case} and the selection function \eqref{sel0} for a subset of the unreported studies, i.e., those classified as HR of bias, along with a two-sided $p$-value instead of a one-sided one, we can easily see how we obtain the simplified ORB-adjusted log-likelihood presented for the random effects model in \citet{Copas2019}, namely:
+
+\bigskip
+
+\begin{equation*}
+\label{w.copas.der}
+\begin{aligned}
+& \ell_{\text{Adj}}^{\text{ORB}}(\theta) = \sum_{i \in \{\text{Rep} \} } \log f(y_i \text{; } \theta)\\
+& + \sum_{i \in \{ \text{HR} \}} \log \left[\int_{-\infty}^{+\infty} f(y \text{; } \theta) (1-w(y)) dy\right] \\
+%& = \sum_{i \in \text{Rep}} \log f_i(y_i; \theta) + \sum_{i \in \text{HR}} \log \left[\int_{-z_{\alpha} \sigma_i}^{+z_{\alpha} \sigma_i} f_i(y ; \theta) \cdot 1 \cdot dy\right] \\
+%& = \sum_{i \in \text{Rep}} \log f_i(y_i; \theta) + \sum_{i \in \text{HR}} \log \left[F_i(z_{\alpha} \sigma_i; \theta)-F_i(-z_{\alpha} \sigma_i; \theta)\right] \\
+%& = \sum_{i \in \text{Rep}} \log f_i(y_i; \mu, \tau^2) + \sum_{i \in \text{HR}} \log \left[\Phi\left(\frac{z_{\alpha} \sigma_i - \mu}{\sqrt{\sigma_{i}^2 + \tau^2}}\right)-\Phi\left(\frac{-z_{\alpha} \sigma_i-\mu}{\sqrt{\sigma_{i}^2 + \tau^2}}\right)\right]\\
+& = -\frac{1}{2}\sum_{i \in \{\text{Rep} \}  }\left[\log(\sigma_{i}^2 + \tau^{2}) + \frac{(y_{i}-\mu)^2}{\sigma_{i}^2+\tau^2}\right]\\
+& + \sum_{i \in \{\text{HR}\}} \log \left[\Phi\left(\frac{z_{\alpha} \sigma_i - \mu}{\sqrt{\sigma_{i}^2 + \tau^2}}\right)-\Phi\left(\frac{-z_{\alpha} \sigma_i-\mu}{\sqrt{\sigma_{i}^2 + \tau^2}}\right)\right] \text{.}
+\end{aligned}
+\end{equation*}
+
+\bigskip
+
+\subsubsection{Constant-variable}
+
+The selection function \eqref{sel0} results in a simple shape of the ORB-adjusted log-likelihood; however, the underlying assumption regarding the missing data mechanism is somewhat strict, and extensions which relax its assumption are commonly found in the PB literature \citep{selection1, reviewselection}. One example is the function $w_B(p \text{; } \beta)$ with tuning parameter $\beta >0$:
+
+\begin{equation}
+w_B(p \text{; } \beta) = 
+\begin{cases}
+1 & \text{if } p \leq \alpha \\
+\frac{p^{-\beta}}{\alpha^{-\beta}} & \text{if } p > \alpha
+\end{cases}
+\label{special1}
+\end{equation}
+
+The idea of this selection function in the context of PB is that the associated probability of publishing, which weighs observations, is greater than 0 for non-significant outcomes. Specifically, when applied to ORB, for the unreported study outcomes which were originally non-significant, the underlying probability of reporting is a decreasing function of the $p$-value, while significant study outcomes have an associated probability of reporting equal to 1.
+
+\subsubsection{Variable-constant}
+
+In the context of ORB we further propose a different selection function, $w_C(p \text{; } \gamma)$ with tuning parameter $\gamma > 0$ presented in \eqref{special2}, for which the rationale is inverted compared to $w_B(p \text{; } \beta)$ in \eqref{special1}. With selection function $w_C(p \text{; } \gamma)$ we assume that non-significant study outcomes have an associated probability of reporting equal to 0, while significant study outcomes have an associated probability of reporting which is a decreasing function of the $p$-value. This can be motivated by scenarios where ORB results from prioritizing more impactful or clinically relevant findings in a published study \citep{moreORBreasons, ORBreasons}, leading to only highly significant outcomes being reported. This could be interpreted as a lower threshold for not reporting compared to PB, and thus a higher level of bias. At the same time, given that the selection function allows for significant unreported outcomes, it can also account for settings in which outcomes are missing because they were deemed less relevant, resulting in a more random pattern of missing data and less bias \citep{mythesis}. Understanding the exact cause of unreporting can be challenging, and information on the strength of evidence for other outcomes in the meta-analysis could help clarify the likely cause of unreporting.
+
+\bigskip
+
+\begin{equation}
+w_C(p \text{; } \gamma) = 
+\begin{cases}
+1 - \frac{p^{\gamma}}{\alpha^{\gamma}} & \text{if } p \leq \alpha \\
+0 & \text{if } p > \alpha
+\end{cases}
+\label{special2}
+\end{equation}
+
+\bigskip
+
+\subsubsection{Variabl-variable}
+
+Based on the selection functions $w_B(p \text{; } \beta)$ in \eqref{special1} and $w_C(p \text{; } \gamma)$ in \eqref{special2} we  envisage a combination of these by using e.g., selection function $w_D(p \text{; } \beta, \gamma)$ in \eqref{special3}. In this case, one can flexibly specify both $\gamma$ and $\beta$ parameters, as well as the probability of reporting assumed for a study outcome at the significance threshold $\alpha$, which we note $\omega_{\alpha}$. In the case of \eqref{special1}, $\omega_{\alpha}$ was implicitly 1 and in case of \eqref{special2} this was set to 0. Here, we set $\omega_{\alpha}=0.5$, as a middle value between \eqref{special1} and \eqref{special2}. The selection function $w_D(p \text{; } \beta, \gamma)$ has the potential of being used to conduct extensive sensitivity analyses when adjusting for ORB.
+
+\bigskip
+
+\begin{equation}
+w_D(p \text{; } \beta, \gamma) = 
+\begin{cases}
+1 - (1-\omega_{\alpha})\left(\frac{p^{\gamma}}{\alpha^{\gamma}}\right) & \text{if } p \leq \alpha \\
+\omega_{\alpha}\left(\frac{p^{-\beta}}{\alpha^{-\beta}}\right) & \text{if } p > \alpha
+\end{cases}
+\label{special3}
+\end{equation}
+
+\bigskip
+
+The selection functions proposed above, namely $w_A(p)$ in \eqref{sel0}, $w_B(p \text{; } \beta, \gamma)$ in \eqref{special1}, $w_C(p \text{; } \gamma)$ in \eqref{special2} and $w_D(p \text{; } \beta, \gamma)$ in \eqref{special3} are plotted in Figure \ref{new.weight.fig} for some example values of the $\gamma > 0$ and $\beta > 0$ parameters. Further rationale for the parameter choices are discussed in the simulation study protocol, available in the \href{https://osf.io/ancdu/}{OSF project repository}.
+
+\subsection{Imputation of Missing Variances} \label{impvar}
+
+When utilizing any of the selection functions presented in the ORB-adjusted log-likelihood \eqref{lik.rewritten.special.copas.case}, we require knowledge of the standard error of the unreported study outcome, which is generally missing. This value hence needs to be imputed; we follow the methodology of \citet{Copas2019} and \citet{Bay} and impute the missing standard error of an unreported study $i$ as
+
+\begin{equation*}
+\label{k1}
+\sigma_{i}^2 \approx \frac{1}{\hat{k} n_i} \text{,}
+\end{equation*}
+
+%\bigskip
+
+where $n_i$ is the sample size of study $i$ and
+
+\begin{equation*}
+\label{k2}
+\hat{k} = \frac{\sum_{i \in \{\text{Rep} \} } \sigma_{i}^{-2}}{\sum_{i \in \{\text{Rep} \}} n_i} \text{.}
+\end{equation*}
+
+\bigskip
+
+The rationale behind this imputation is grounded in the relationship between effect size variances and sample size. For commonly used measures such as the log risk ratio (log RR), the variance is inversely proportional to the sample size. However, this relationship is also influenced by the design of the trial, e.g., the balance between arms and the event rates, captured by the trial-specific design factor \(k_i = \sigma_i^{-2}/n_i\). While this factor varies across trials, it is assumed that the average design factor for the unreported studies is similar to that of the reported studies. Hence, we estimate this average using Equation \eqref{k2} and apply it in Equation \eqref{k1} to impute missing variances. This imputation strategy is particularly suitable in our setting because the total sample size \(n_i\) is typically known even when the outcome is not reported, due to the nature of ORB compared to, e.g., PB, where the whole study is missing from the literature.
+
+\bigskip
+
+With the selection model framework for ORB adjustment presented in this work, one is thus able to include a likelihood contribution from unreported study outcomes, by specifying the desired missing data assumption via a selection function, representative of the assumed probability of reporting. This framework enables the joint estimation, via maximum likelihood (ML), of the ORB-adjusted parameters of interest in the model, in our case treatment effect, as well as the heterogeneity variance.
+
+
+
+%\twocolumn[
+%\begin{@twocolumnfalse}
+\begin{figure*}[!hbt]
+\centering
+\caption{Possible Selection Functions for ORB-adjustment. Function $w_A(p)$ from equation \eqref{sel0} in (a), function $w_B(p \text{; } \beta = 3)$ from equation \eqref{special1} in (b), function $w_C(p \text{; } \gamma = 3)$ from equation \eqref{special2} in (c), and functions $w_D(p \text{; } \beta = 1.5, \gamma = 7)$ and $w_D(p \text{; } \beta = 7, \gamma = 1.5)$  from equation \eqref{special3} shown in (d).\\[0.5em]}
+%\hline
+<<echo=FALSE, results='asis', fig.height=4.2, fig.width=7, message=FALSE, warning=FALSE>>=
+
+
+global_size = 10
+library(ggplot2)
+library(latex2exp)
+library(gridExtra)
+# Set the value of z_alpha and sigma
+z_alpha <- 1.96  # Change this value as needed
+sigma <- 0.1  # Change this value as needed
+
+# use in the thesis to simulate ORB
+sel0 <- function(y) {
+  
+  p = pnorm(-y/sigma)
+  #p = y
+  
+  #ifelse(pnorm(-y/sigma) >= 0.05,
+   #      exp(-7*pnorm(-y/sigma)),
+    #     1)
+
+  ifelse(p <= 0.05, 
+         1,
+         #exp(-7*(p - 0.05)))
+         0)
+
+
+}
+
+
+# use in the thesis to simulate ORB
+sel1 <- function(y) {
+  
+  p = pnorm(-y/sigma)
+  #p = y
+  
+  #ifelse(pnorm(-y/sigma) >= 0.05,
+   #      exp(-7*pnorm(-y/sigma)),
+    #     1)
+
+ifelse(p <= 0.05, 
+         
+        #1 - exp(rho*((p - 0.05)/0.05)),
+       
+       1-(p^3)/(0.05^3),
+        
+        0
+         
+         )
+
+
+}
+
+
+# use in the thesis to simulate ORB
+sel2 <- function(y) {
+  
+  p = pnorm(-y/sigma)
+
+
+ifelse(p <= 0.05, 
+         
+        #1 - exp(rho*((p - 0.05)/0.05)),
+       
+       1,
+       
+       (p^(-3))/(0.05^(-3))
+         
+         )
+
+}
+
+sel3 <- function(y) {
+  
+  p <- pnorm(-y/sigma)
+  
+  
+  ifelse(p <= 0.05, 
+        1 - (1-0.5)*(p^(7))/(0.05^(7)),  # Function before p = 0.05
+        0.5*(p^(-1.5))/(0.05^(-1.5)))
+  
+  
+}
+
+sel33 <- function(y) {
+  
+  p <- pnorm(-y/sigma)
+  
+  ifelse(p <= 0.05, 
+        1 - (1-0.5)*(p^(1.5))/(0.05^(1.5)),  # Function before p = 0.05
+        0.5*(p^(-7))/(0.05^(-7)))
+  
+  
+}
+
+sel4 <- function(y) {
+  
+  p <- pnorm(-y/sigma)
+  exp(-4*(p^(1.5)))
+}
+
+
+
+
+
+
+# Create a sequence of y values
+y_values <- seq(0.1, 0.3, by = 0.0001)
+#y_values <- 1-pnorm(seq(-0.5, 0.5, by = 0.001)/sigma)
+
+# Create a data frame for plotting
+df <- data.frame(y = y_values)
+
+# Add the piece-wise, piecewise2, exponential, and sigmoid function values to the data frame
+df$sel0<- sel0(y_values)
+df$sel1<- sel1(y_values)
+df$sel2<- sel2(y_values)
+df$sel3<- sel3(y_values)
+df$sel33 <- sel33(y_values)
+df$sel4<- sel4(y_values)
+
+
+main_plot0 <- ggplot(df, aes(x = pnorm(-y/sigma))) +
+#main_plot <- ggplot(df, aes(x = y)) +
+   #geom_line(aes(y = p_thesis_stronger), size = 0.1, color = "darkgreen") + # Added piecewise2
+    geom_line(aes(y = sel0), size = 0.5, color = "blue", linetype="solid") +
+  geom_vline(xintercept = 0.01, color="gray", linetype="dashed", size=0.3)+
+  geom_vline(xintercept = 0.025, color="gray", linetype="dashed", size=0.3)+
+  geom_vline(xintercept = 0.05, color="gray", linetype="solid", size=0.3)+
+  geom_vline(xintercept = 0.1, color="gray", linetype="dashed", size=0.3)+
+  annotate("text", x = 0.2, y = 1, label = TeX("(a)"), size = 3, color = "black", hjust = 1, vjust = 1) +
+  #annotate("text", x = 0.2, y = 0.8, label = TeX("$W_A$"), size = 2, color = "blue", hjust = 1, vjust = 1) +
+  #geom_vline(xintercept = 0.2, color="black", linetype="dashed", size=0.1)+
+  #geom_vline(xintercept = 0.1, color="black", linetype="dashed", size=0.1)+
+  #geom_line(aes(y = p_halfnorm), size = 0.5, color = "red", linetype="solid") +
+  #geom_line(aes(y = p_sigmoid), size = 0.5, color= "purple")+
+    #geom_line(aes(y = p_negexp), size = 0.8, color = "green", linetype="dotted") +
+  labs(x = "", y = " ") +
+  scale_x_continuous(breaks = c(0.01, 0.025, 0.05, 0.1),
+                      labels = c("0.01", "0.025", "0.05", "0.1")) +
+  theme_classic() +
+  theme(
+    legend.position = "topright",
+        axis.title.x = element_text(size = 9),
+    axis.text=element_text(size=7, angle=90),
+    axis.title.y = element_text(size = 9)
+  )
+
+
+main_plot1 <- ggplot(df, aes(x = pnorm(-y/sigma))) +
+#main_plot <- ggplot(df, aes(x = y)) +
+   #geom_line(aes(y = p_thesis_stronger), size = 0.1, color = "darkgreen") + # Added piecewise2
+    geom_line(aes(y = sel1), size = 0.5, color = "red", linetype="solid") +
+  geom_vline(xintercept = 0.01, color="gray", linetype="dashed", size=0.3)+
+  geom_vline(xintercept = 0.025, color="gray", linetype="dashed", size=0.3)+
+  geom_vline(xintercept = 0.05, color="gray", linetype="solid", size=0.3)+
+  geom_vline(xintercept = 0.1, color="gray", linetype="dashed", size=0.3)+
+  #geom_vline(xintercept = 0.2, color="black", linetype="dashed", size=0.1)+
+  #geom_vline(xintercept = 0.1, color="black", linetype="dashed", size=0.1)+
+  #geom_line(aes(y = p_halfnorm), size = 0.5, color = "red", linetype="solid") +
+  #geom_line(aes(y = p_sigmoid), size = 0.5, color= "purple")+
+    #geom_line(aes(y = p_negexp), size = 0.8, color = "green", linetype="dotted") +
+  annotate("text", x = 0.2, y = 1, label = TeX("(c)"), size = 3, color = "black", hjust = 1, vjust = 1) +
+  #annotate("text", x = 0.2, y = 0.8, label = TeX("$W_C(\\gamma = 3)$"), size = 2, color = "red", hjust = 1, vjust = 1) +
+  labs(x = "", y = "") +
+  scale_x_continuous(breaks = c(0.01, 0.025, 0.05, 0.1),
+                      labels = c("0.01", "0.025", "0.05", "0.1")) +
+  theme_classic() +
+  theme(
+    legend.position = "topright",
+        axis.title.x = element_text(size = 9),
+    axis.text=element_text(size=7, angle=90),
+    axis.title.y = element_text(size = 9)
+  )
+
+
+main_plot2 <- ggplot(df, aes(x = pnorm(-y/sigma))) +
+#main_plot <- ggplot(df, aes(x = y)) +
+   #geom_line(aes(y = p_thesis_stronger), size = 0.1, color = "darkgreen") + # Added piecewise2
+    geom_line(aes(y = sel2), size = 0.5, color = "#00BA38", linetype="solid") +
+  geom_vline(xintercept = 0.01, color="gray", linetype="dashed", size=0.3)+
+  geom_vline(xintercept = 0.025, color="gray", linetype="dashed", size=0.3)+
+  geom_vline(xintercept = 0.05, color="gray", linetype="solid", size=0.3)+
+  geom_vline(xintercept = 0.1, color="gray", linetype="dashed", size=0.3)+
+  #geom_vline(xintercept = 0.2, color="black", linetype="dashed", size=0.1)+
+  #geom_vline(xintercept = 0.1, color="black", linetype="dashed", size=0.1)+
+  #geom_line(aes(y = p_halfnorm), size = 0.5, color = "red", linetype="solid") +
+  #geom_line(aes(y = p_sigmoid), size = 0.5, color= "purple")+
+    #geom_line(aes(y = p_negexp), size = 0.8, color = "green", linetype="dotted") +
+  annotate("text", x = 0.2, y = 1, label = TeX("(b)"), size = 3, color = "black", hjust = 1, vjust = 1) +
+  #annotate("text", x = 0.2, y = 0.8, label = TeX("$W_B(\\beta = 3)$"), size = 2, color = "#00BA38", hjust = 1, vjust = 1)+
+  labs(x = " ", y = " ") +
+  scale_x_continuous(breaks = c(0.01, 0.025, 0.05, 0.1),
+                      labels = c("0.01", "0.025", "0.05", "0.1")) +
+  theme_classic() +
+  theme(
+    legend.position = "topright",
+        axis.title.x = element_text(size = 9),
+    axis.text=element_text(size=7, angle=90),
+    axis.title.y = element_text(size = 9)
+  )
+
+main_plot3 <- ggplot(df, aes(x = pnorm(-y/sigma))) +
+#main_plot <- ggplot(df, aes(x = y)) +
+   #geom_line(aes(y = p_thesis_stronger), size = 0.1, color = "darkgreen") + # Added piecewise2
+    geom_line(aes(y = sel3), size = 0.5, color = "orange", linetype="solid") +
+  geom_line(aes(y = sel33), size = 0.5, color = "purple", linetype="solid") +
+  geom_vline(xintercept = 0.01, color="gray", linetype="dashed", size=0.3)+
+  geom_vline(xintercept = 0.025, color="gray", linetype="dashed", size=0.3)+
+  geom_vline(xintercept = 0.05, color="gray", linetype="solid", size=0.3)+
+  geom_vline(xintercept = 0.1, color="gray", linetype="dashed", size=0.3)+
+  #geom_vline(xintercept = 0.2, color="black", linetype="dashed", size=0.1)+
+  #geom_vline(xintercept = 0.1, color="black", linetype="dashed", size=0.1)+
+  #geom_line(aes(y = p_halfnorm), size = 0.5, color = "red", linetype="solid") +
+  #geom_line(aes(y = p_sigmoid), size = 0.5, color= "purple")+
+    #geom_line(aes(y = p_negexp), size = 0.8, color = "green", linetype="dotted") +
+  annotate("text", x = 0.2, y = 1, label = TeX("(d)"), size = 3, color = "black", hjust = 1, vjust = 1) +
+  #annotate("text", x = 0.2, y = 0.8, label = TeX("$W_D (\\gamma = 7,  \\beta = 1.5)$"), size = 2, color = "orange", hjust = 1, vjust = 1)+
+  #annotate("text", x = 0.2, y = 0.7, label = TeX("$W_D ( \\gamma = 1.5,  \\beta = 7 ) $"), size = 2, color = "purple", hjust = 1, vjust = 1)+
+  labs(x = " ", y = "") +
+  scale_x_continuous(breaks = c(0.01, 0.025, 0.05, 0.1),
+                      labels = c("0.01", "0.025", "0.05", "0.1")) +
+  theme_classic() +
+  theme(
+    legend.position = "topright",
+        axis.title.x = element_text(size = 9),
+    axis.text=element_text(size=7, angle=90),
+    axis.title.y = element_text(size = 9)
+  )
+
+
+
+legend_plot <- ggplot() +
+  geom_line(aes(x = 0, y = 0, color = "blue")) +
+  geom_line(aes(x = 0, y = 0, color = "#00BA38")) +
+  geom_line(aes(x = 0, y = 0, color = "red")) +
+  geom_line(aes(x = 0, y = 0, color = "orange")) +
+  geom_line(aes(x = 0, y = 0, color = "purple")) +
+  
+  scale_color_manual(
+    values = c(
+      "blue", 
+      "#00BA38", 
+       "red", 
+       "orange",
+       "purple"
+    ),
+    labels = c(
+      expression(w[A]),
+      expression(w[B](beta == 3)),
+      expression(w[C](gamma == 3)),
+      expression(w[D](gamma == 7 ~ "," ~ beta == 1.5)),
+      expression(w[D](gamma == 1.5 ~ "," ~ beta == 7))
+    )
+  ) +
+  
+   
+  theme_void() +
+  theme(
+    legend.text = element_text(size = 6),
+    legend.key.size = unit(2, "mm"),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()
+  ) +
+  guides(color = guide_legend(title = NULL, label.hjust = 0.5))
+
+
+
+final_final_plot <- gridExtra::grid.arrange(arrangeGrob(main_plot0, 
+  main_plot2,
+  main_plot1, 
+  main_plot3,
+  nrow = 2, ncol = 2),
+  legend_plot,
+  nrow = 1,
+  widths = c(5, 1),
+  left = grid::textGrob("Probability of reporting", rot = 90, gp = grid::gpar(fontsize = 10)),
+  bottom = grid::textGrob("One-sided p-value", gp = grid::gpar(fontsize = 10)))
+
+
+ #gridExtra::grid.arrange(
+ #final_plot <- gridExtra::grid.arrange(main_plot0, 
+  #                       main_plot2,
+   #                      main_plot1, 
+    #                     main_plot3,
+     #                    ncol = 2,
+      #                   left = grid::textGrob("Probability of reporting\n",rot=90, gp = grid::gpar(fontsize = 9)), 
+       #      bottom = grid::textGrob("One sided p-value", gp = grid::gpar(fontsize = 9)))
+
+
+invisible(final_final_plot)
+
+@
+%\hline
+\label{new.weight.fig}
+\end{figure*}
+%\end{@twocolumnfalse}
+%]
+
+
+<<echo=FALSE>>=
+
+
+
+
+reORBadj <- function(a=NULL, 
+                     c=NULL,
+                     mu1=NULL, 
+                     mu2=NULL, 
+                     sd1=NULL, 
+                     sd2=NULL,
+                     y=NULL, 
+                     s=NULL,
+                     n1,
+                     n2,
+                     outcome,
+                     init_param,
+                     alpha_ben=NULL,
+                     alpha_ben_one.sided = TRUE,
+                     true.SE=NULL, 
+                     LR.CI = FALSE,
+                     Wald.CI = FALSE,
+                     selection.benefit = "Copas.oneside",
+                     rho1=3,
+                     rho2=3,
+                     opt_method="L-BFGS-B",
+                     lower = c(-5, 0.00001),
+                     upper = c(5,5),
+                     gam = 1.5,
+                     wprob=0.5
+) {
+  
+  #Can take in binary counts and calculate log RR: a, c
+  #Means and calculate differences in means: y1, y2, sd1, sd2
+  #Directly normally distributed effect measure: y, s
+  
+  #Beneficial outcome, i.e., positive direction of treatment
+  
+  #Selection functions for the probability of reporting as a function of pvalue
+  #SS: Constant-constant
+  #ST: Constant-continous
+  #TS: Continous-constant
+  #TT: Continous-continous
+  #DGM: Corresponds to the function to use to generate ORB
+  
+  #If alpha_ben_one.sided=TRUE, we use the one-sided threshold 
+  sel.ben <- selection.benefit
+  
+  #Parameters for contnous parts of selection functions
+  rho1 <- rho1
+  rho2 <- rho2
+  
+  #Parameter used in DGM and consequently to be used in DGM selection function for correct model specification
+  gam <- gam
+  
+  #If FALSE, we do not calculate the Wald CI - they are numerically unstable sometimes
+  if (Wald.CI){
+    my.hessian <- TRUE
+  } else{
+    my.hessian <- FALSE
+  }
+  
+  #Optimization method
+  method <- opt_method
+  lower <- lower
+  upper <- upper
+  
+  
+  #Binary input data to calculate log RR
+  if (!is.null(a) & !is.null(c)){
+    
+    #Reported outcomes
+    #Indecies where we do not have unrepoted outcomes, i.e., we have reported outcomes
+    #If we turn C into numeric, the unreported become NA
+    
+    Rep_index <- which(!is.na(as.numeric(a)))
+    HR_index <- which(a == "unrep")
+    
+    # a,c,n1,n2, n values for the reported studies
+    a_rep <- as.numeric(a[Rep_index])
+    c_rep <- as.numeric(c[Rep_index])
+    n1_rep <- as.numeric(n1[Rep_index])
+    n2_rep <- as.numeric(n2[Rep_index])
+    
+    if (length(a_rep == 0) | length(c_rep == 0) > 0){ #Continuity correction
+      
+      a_0_index <- c(which(a_rep == 0), which(c_rep == 0)) #Where the zero cell counts are
+      a_rep[a_0_index] <- a_rep[a_0_index] + 0.5
+      c_rep[a_0_index] <- c_rep[a_0_index] + 0.5
+      n1_rep[a_0_index] <- n1_rep[a_0_index] + 0.5
+      n2_rep[a_0_index] <- n2_rep[a_0_index] + 0.5 #Add 0.5 to the cell counts with 0
+      
+      a_0_both <- which(a_rep == 0.5 & c_rep == 0.5)
+      
+      if (length(a_0_both)>0){
+        
+        a_rep <- a_rep[-a_0_both]
+        c_rep <- c_rep[-a_0_both]
+        n1_rep <- n1_rep[-a_0_both]
+        n2_rep <- n2_rep[-a_0_both]
+        
+      } else {
+        
+        a_rep <- a_rep
+        c_rep <- c_rep
+        n1_rep <- n1_rep
+        n2_rep <- n2_rep
+        
+      }
+      
+    } else {
+      
+      a_rep <- a_rep
+      c_rep <- c_rep
+      n1_rep <- n1_rep
+      n2_rep <- n2_rep
+    }
+    
+    
+    #How many studies are reported?
+    N_rep <- length(Rep_index)
+    
+    #Unreported study sizes, we might have info from n1,n2 or just the total
+    ntot <- as.numeric(n1) + as.numeric(n2)
+    n_HR <- as.numeric(ntot[HR_index])
+    
+    
+    #log RR and standard error
+    logRR <- log((a_rep*n2_rep)/(c_rep*n1_rep))
+    s <- sqrt(((n1_rep - a_rep)/(n1_rep*a_rep)) + ((n2_rep - c_rep)/(n2_rep*c_rep)))
+    sigma_squared <- s^2
+    
+    
+    
+    #Imputed values of sigma squared for the unreported studies
+    #K value based on the reported studies, see Copas et al. (2019)
+    k <- sum(1/sigma_squared)/sum((n1_rep + n2_rep))
+    
+    #Mean differences as input data (continuous)
+    #Same procedure
+    
+  } else if (!is.null(mu1) & !is.null(mu2) & !is.null(sd1) & !is.null(sd2)){
+    
+    Rep_index <- which(!is.na(as.numeric(mu1)))
+    
+    HR_index <- which(mu1 == "unrep")
+      
+    #Unreported study sizes, we might have info from n1,n2 or just the total
+    ntot <- as.numeric(n1) +as.numeric(n2)
+    n_HR <- as.numeric(ntot[HR_index])
+    
+    #mu1,mu2,n1,n2,n values for the reported studies
+    mu1_rep <- as.numeric(mu1[Rep_index])
+    mu2_rep <- as.numeric(mu2[Rep_index])
+    sd1_rep <- as.numeric(sd1[Rep_index])
+    sd2_rep <- as.numeric(sd2[Rep_index])
+    n1_rep <- as.numeric(n1[Rep_index])
+    n2_rep <- as.numeric(n2[Rep_index])
+    
+    #How many studies are reported?
+    N_rep <- length(Rep_index)
+    
+    #Differenece in means
+    #Standard errors given
+    logRR <- mu1_rep - mu2_rep
+    s <- sqrt((as.numeric(sd1_rep)^2)/(as.numeric(n1_rep)) + (as.numeric(sd2_rep)^2)/(as.numeric(n2_rep)))
+    sigma_squared <- s^2
+    
+    k <- sum(1/sigma_squared)/sum((n1_rep + n2_rep))
+    
+    #We directly have the treatment effect and standard error
+    
+  } else if (!is.null(y) & !is.null(s)) {
+    
+    #Indecies where we have the reported outcomes and the unreported HR
+    Rep_index <- which(!is.na(as.numeric(y)))
+    
+    HR_index <- which(y == "unrep")
+    
+    #Observed treatment effect, standard error^2, and sample sizes of reported outcomes
+    logRR <- as.numeric(y[Rep_index])
+    sigma_squared <- (as.numeric(s[Rep_index]))^2
+    n1_rep <- as.numeric(n1[Rep_index])
+    n2_rep <- as.numeric(n2[Rep_index])
+    
+    
+    #Total sample size of unreported outcomes
+    n_HR <- as.numeric(n1[HR_index]) + as.numeric(n2[HR_index])
+    
+    
+    #k estimation, based on reported studies
+    k <- sum(1/sigma_squared)/sum((n1_rep + n2_rep))
+    
+    
+    
+  } else {
+    
+    return("Error: invalid inputs. Input either a and c values or y1,sd1 and y2,sd2 values.")
+  }
+  
+  
+  #Possibility to pass the true SE to the function
+  if (!is.null(true.SE)){
+    
+    sigma_squared_imputed <- (as.numeric(true.SE)[HR_index])^2
+  } else {
+    #Imputed variances for the HR studies
+    #See Copas et al. (2019)
+    sigma_squared_imputed <- 1/(k*n_HR)
+    
+  }
+  
+  #Average sigma squared value that is used when we do not adjust for ORB and when we do
+  sigma_squared_average_unadjusted <- mean(sigma_squared)
+  sigma_squared_average_adjusted <- mean(c(sigma_squared, sigma_squared_imputed))
+  
+  #Unadjusted log-likelihood function to be maximized
+  f.u <- function(params, logRR, sigma_squared) {
+    mu <- params[1]
+    tau_squared <- params[2]
+    if (tau_squared < 0 ){
+      - Inf
+    } else {
+      
+      -(1/2)*sum(log(sigma_squared + tau_squared) + ((logRR - mu)^2)/(sigma_squared + tau_squared))
+    }
+  }
+  
+  #Set initial values for mu and tau_squared
+  init_params <- init_param
+  
+  #Maximize unadjusted function optim()
+  if (method == "L-BFGS-B"){
+    
+    fit.u <- optim(init_params, f.u, logRR = logRR, sigma_squared = sigma_squared,
+                   #method = "Nelder-Mead",
+                   method=method,
+                   lower = lower,
+                   upper = upper,
+                   control = list(fnscale = -1),
+                   hessian=my.hessian)
+  } else {
+    
+    fit.u <- optim(init_params, f.u, logRR = logRR, sigma_squared = sigma_squared,
+                   method = method,
+                   control = list(fnscale = -1),
+                   hessian=my.hessian)
+    
+  }
+  
+  #Return unadjusted mu and tau_squared
+  mle.u <- fit.u$par[1]
+  mle.tau <- max(fit.u$par[2],0)
+  
+  
+  #Beneficial outcome adjustment for ORB
+  
+  if(outcome == "benefit"){
+    
+    z_alpha.copas <- qnorm(1-alpha_ben/2) #two-sided threshold
+    
+    if (alpha_ben_one.sided == TRUE){ #one-sided threshold (reccomended for consistency with simulation process and literature)
+      
+      z_alpha <- qnorm(1-alpha_ben)
+    } else {
+      z_alpha <- qnorm(1-alpha_ben/2)
+    }
+    
+    #Adjusted log-likelihood function for beneficial outcome to be maximized
+    f.adj.b <- function(params, logRR, sigma_squared, sigma_squared_imputed) {
+      mu <- params[1]
+      tau_squared <- params[2]
+      
+      if(tau_squared < 0){
+        - Inf
+      } else {
+        
+        #The contribution from the reported studies is always present
+        -(1/2)*sum(log(sigma_squared + tau_squared) + ((logRR - mu)^2)/(sigma_squared + tau_squared)) +
+          
+          
+          if (length(sigma_squared_imputed) > 0) {
+            
+            if (sel.ben == "Constant.Constant"){
+              
+              #sum(log(pnorm((z_alpha*sqrt(sigma_squared_imputed) - mu)/sqrt(sigma_squared_imputed + tau_squared))))
+              
+              #Probability of reporting
+              SS <- function(y, sigma_squared_imputed, alpha_ben) {
+                
+                p = pnorm(-y/sqrt(sigma_squared_imputed))
+                
+                ifelse(p <= alpha_ben, 
+                       1,
+                       0)
+              }
+              
+              #Integrand
+              integrand <- function(y, mu, tau_squared, sigma_squared_imputed, alpha_ben) {
+                
+                weight <- 1 - SS(y, sigma_squared_imputed, alpha_ben)
+                (1 / sqrt(2 * pi * (sigma_squared_imputed + tau_squared))) * exp(-0.5 * ((y - mu)^2 / (sigma_squared_imputed + tau_squared))) * weight
+              }
+              
+              #log-lik contribution
+              sum(log(sapply(sigma_squared_imputed, function(sigma_sq_imputed) {
+                integrate(function(y) integrand(y, mu, tau_squared, sigma_sq_imputed, alpha_ben), #change here April 2. added Vectorize
+                          lower = -10, upper = 10, subdivisions = 200, stop.on.error=FALSE)$value
+              })))
+              
+              
+            } else if (sel.ben == "Constant.Continous") {
+              
+              #Probability of reporting
+              TS <- function(y, sigma_squared_imputed, alpha_ben) {
+                
+                p = pnorm(-y/sqrt(sigma_squared_imputed))
+                
+                ifelse(p <= alpha_ben, 
+                       1,
+                       (p^(-rho2))/(alpha_ben^(-rho2)))
+              }
+              
+              #Integrand
+              integrand <- function(y, mu, tau_squared, sigma_squared_imputed, alpha_ben) {
+                
+                weight <- 1 - TS(y, sigma_squared_imputed, alpha_ben)
+                (1 / sqrt(2 * pi * (sigma_squared_imputed + tau_squared))) * exp(-0.5 * ((y - mu)^2 / (sigma_squared_imputed + tau_squared))) * weight
+              }
+              
+              #log-lik contribution
+              sum(log(sapply(sigma_squared_imputed, function(sigma_sq_imputed) {
+                integrate(function(y) integrand(y, mu, tau_squared, sigma_sq_imputed, alpha_ben), #change here April 2. added Vectorize
+                          lower = -10, upper = 10, subdivisions = 200, stop.on.error=FALSE)$value
+              })))
+              
+            } else if (sel.ben == "Continous.Constant") {
+              
+              #Probability of reporting
+              ST <- function(y, sigma_squared_imputed, alpha_ben) {
+                
+                p = pnorm(-y/sqrt(sigma_squared_imputed))
+                
+                ifelse(p <= alpha_ben, 
+                       1-(p^rho1)/(alpha_ben^rho1),
+                       0
+                )
+              }
+              
+              #Integrand
+              integrand <- function(y, mu, tau_squared, sigma_squared_imputed, alpha_ben) {
+                
+                weight <- 1 - ST(y, sigma_squared_imputed, alpha_ben)
+                (1 / sqrt(2 * pi * (sigma_squared_imputed + tau_squared))) * exp(-0.5 * ((y - mu)^2 / (sigma_squared_imputed + tau_squared))) * weight
+              }
+              
+              #log-lik contribution
+              sum(log(sapply(sigma_squared_imputed, function(sigma_sq_imputed) {
+                integrate(function(y) integrand(y, mu, tau_squared, sigma_sq_imputed, alpha_ben),
+                          lower = -10, upper = 10, subdivisions = 200, stop.on.error=FALSE)$value
+              })))
+              
+            } else if (sel.ben == "Continous.Continous") {
+              
+              #Probability of reporting
+              TT <- function(y, sigma_squared_imputed, alpha_ben) {
+                
+                p = pnorm(-y/sqrt(sigma_squared_imputed))
+                
+                ifelse(p <= alpha_ben, 
+                       1 - (1-wprob)*(p^rho1)/(alpha_ben^rho1),
+                       wprob*(p^(-rho2))/(alpha_ben^(-rho2))
+                )
+              }
+              
+              #Integrand
+              integrand <- function(y, mu, tau_squared, sigma_squared_imputed, alpha_ben) {
+                
+                weight <- 1 - TT(y, sigma_squared_imputed, alpha_ben)
+                (1 / sqrt(2 * pi * (sigma_squared_imputed + tau_squared))) * exp(-0.5 * ((y - mu)^2 / (sigma_squared_imputed + tau_squared))) * weight
+              }
+              
+              #log-lik contribution
+              sum(log(sapply(sigma_squared_imputed, function(sigma_sq_imputed) {
+                integrate(function(y) integrand(y, mu, tau_squared, sigma_sq_imputed, alpha_ben),
+                          lower = -10, upper = 10, subdivisions = 200, stop.on.error=FALSE)$value
+              })))
+              
+            
+            } else if (sel.ben == "DGM") {
+              
+              #Probability of reporting
+              DGM <- function(y, sigma_squared_imputed, gam) {
+                
+                p = pnorm(-y/sqrt(sigma_squared_imputed))
+                
+                exp(-4*p^(gam))
+              }
+              
+              #Integrand
+              integrand <- function(y, mu, tau_squared, sigma_squared_imputed, gam) {
+                
+                weight <- 1 - DGM(y, sigma_squared_imputed, gam)
+                (1 / sqrt(2 * pi * (sigma_squared_imputed + tau_squared))) * exp(-0.5 * ((y - mu)^2 / (sigma_squared_imputed + tau_squared))) * weight
+              }
+              
+              #log-lik contribution
+              sum(log(sapply(sigma_squared_imputed, function(sigma_sq_imputed) {
+                integrate(function(y) integrand(y, mu, tau_squared, sigma_sq_imputed, gam),
+                          lower = -10, upper = 10, subdivisions = 200, stop.on.error=FALSE)$value
+              })))
+              
+              
+            } else {
+              
+              stop("Error: Invalid weight function specified. ")
+            }
+            
+            
+            
+          } else {
+            0  # Return 0 if sigma_squared_imputed is empty
+          }
+        
+      }
+      
+      
+    }
+    
+    #Maximize log-likelihood
+    if (method == "L-BFGS-B"){
+      
+      fit.adj.b <- optim(init_params, f.adj.b, logRR = logRR, sigma_squared = sigma_squared, sigma_squared_imputed = sigma_squared_imputed,
+                         method = method,
+                         lower = lower,
+                         upper = upper,
+                         control = list(fnscale = -1),
+                         
+                         hessian=my.hessian)
+    } else {
+      
+      fit.adj.b <- optim(init_params, f.adj.b, logRR = logRR, sigma_squared = sigma_squared, sigma_squared_imputed = sigma_squared_imputed,
+                         method = method,
+                         control = list(fnscale = -1),
+                         hessian=my.hessian)
+      
+      
+    }
+    
+    #Return adjusted mu and tau_squared
+    mle.b <- fit.adj.b$par[1]
+    mle.b.tau <- max(fit.adj.b$par[2],0)
+    
+    
+    #LIKELIHOOD RATIO CONFIDENCE INTERVALS
+    
+    if (LR.CI){
+      
+      #Unadjusted
+      z <- qchisq(1-alpha_ben, df=1) #3.841
+      
+      #Re-write log likelihood with two inputs instead of param = c(mu, tau_squared)
+      ll.u <- function(mu, tau_squared, logRR, sigma_squared) {
+        
+        -(1/2)*sum(log(sigma_squared + tau_squared) + ((logRR - mu)^2)/(sigma_squared + tau_squared))
+      }
+      
+      #Profile log-likelihood
+      pl.u <- function(mu, logRR, sigma_squared) { #take in vector of mus
+        
+        res <- mu
+        
+        for (i in seq_along(mu)) { #for all these values of mu
+          optimResult <- optim(par = init_param[2],
+                               fn = function(tau_squared) ll.u(mu[i], tau_squared, logRR=logRR, sigma_squared = sigma_squared),
+                               method = "Brent",
+                               lower= 0.0001,
+                               upper=10,
+                               control = list(fnscale = -1))
+          
+          res[i] <- optimResult$value
+        }
+        return(res)
+      }
+      
+      f <- function(mu, logRR, sigma_squared){
+        pl.u(mu, logRR=logRR, sigma_squared=sigma_squared) - pl.u(mle.u, logRR=logRR, sigma_squared=sigma_squared) + 1/2*qchisq(0.95, df=1)
+      }
+      
+      
+      eps <- sqrt(.Machine$double.eps)
+      lowerBound.u <- uniroot(f, interval = c(-5, mle.u), logRR=logRR, sigma_squared=sigma_squared)$root
+      upperBound.u <- uniroot(f, interval = c( mle.u, 5), logRR=logRR, sigma_squared=sigma_squared)$root
+      
+      #Profile log-likelihood for tau squared
+      pl.u.tau <- function(tau_squared, logRR, sigma_squared) { #take in vector of tau_squares
+        
+        res <- tau_squared
+        
+        for (i in seq_along(tau_squared)) { #for all these values of mu
+          optimResult <- optim(par = init_param[1],
+                               fn = function(mu) ll.u(tau_squared[i], mu, logRR=logRR, sigma_squared = sigma_squared),
+                               method = "Brent",
+                               lower= -5,
+                               upper=5,
+                               control = list(fnscale = -1))
+          
+          res[i] <- optimResult$value
+        }
+        return(res)
+      }
+      
+      f.tau <- function(tau_squared, logRR, sigma_squared){
+        pl.u.tau(tau_squared, logRR=logRR, sigma_squared=sigma_squared) - pl.u.tau(mle.tau, logRR=logRR, sigma_squared=sigma_squared) + 1/2*qchisq(0.95, df=1)
+      }
+      
+      
+      eps <- sqrt(.Machine$double.eps)
+      lowerBound.u.tau <- max(uniroot(f.tau, interval = c(-10, mle.tau), logRR=logRR, sigma_squared=sigma_squared)$root,0)
+      upperBound.u.tau <- max(uniroot(f.tau, interval = c( mle.tau, 10), logRR=logRR, sigma_squared=sigma_squared)$root,0)
+      
+      
+      #Adjusted benefit
+      
+      #Re-write log likelihood with two inputs instead of param = c(mu, tau_squared)
+      ll.b <- function(mu, tau_squared, logRR, sigma_squared, sigma_squared_imputed) {
+        
+        if(tau_squared < 0){
+          - Inf
+        } else {
+          
+        #The contribution from the reported studies is always present
+        -(1/2)*sum(log(sigma_squared + tau_squared) + ((logRR - mu)^2)/(sigma_squared + tau_squared)) +
+          
+          
+          if (length(sigma_squared_imputed) > 0) {
+            
+            if (sel.ben == "Constant.Constant"){
+              
+              #sum(log(pnorm((z_alpha*sqrt(sigma_squared_imputed) - mu)/sqrt(sigma_squared_imputed + tau_squared))))
+              
+              #Probability of reporting
+              SS <- function(y, sigma_squared_imputed, alpha_ben) {
+                
+                p = pnorm(-y/sqrt(sigma_squared_imputed))
+                
+                ifelse(p <= alpha_ben, 
+                       1,
+                       0)
+              }
+              
+              #Integrand
+              integrand <- function(y, mu, tau_squared, sigma_squared_imputed, alpha_ben) {
+                
+                weight <- 1 - SS(y, sigma_squared_imputed, alpha_ben)
+                (1 / sqrt(2 * pi * (sigma_squared_imputed + tau_squared))) * exp(-0.5 * ((y - mu)^2 / (sigma_squared_imputed + tau_squared))) * weight
+              }
+              
+              #log-lik contribution
+              sum(log(sapply(sigma_squared_imputed, function(sigma_sq_imputed) {
+                integrate(function(y) integrand(y, mu, tau_squared, sigma_sq_imputed, alpha_ben), #change here April 2. added Vectorize
+                          lower = -10, upper = 10, subdivisions = 200, stop.on.error=FALSE)$value
+              })))
+              
+              
+            } else if (sel.ben == "Constant.Continous") {
+              
+              #Probability of reporting
+              TS <- function(y, sigma_squared_imputed, alpha_ben) {
+                
+                p = pnorm(-y/sqrt(sigma_squared_imputed))
+                
+                ifelse(p <= alpha_ben, 
+                       1,
+                       (p^(-rho2))/(alpha_ben^(-rho2)))
+              }
+              
+              #Integrand
+              integrand <- function(y, mu, tau_squared, sigma_squared_imputed, alpha_ben) {
+                
+                weight <- 1 - TS(y, sigma_squared_imputed, alpha_ben)
+                (1 / sqrt(2 * pi * (sigma_squared_imputed + tau_squared))) * exp(-0.5 * ((y - mu)^2 / (sigma_squared_imputed + tau_squared))) * weight
+              }
+              
+              #log-lik contribution
+              sum(log(sapply(sigma_squared_imputed, function(sigma_sq_imputed) {
+                integrate(function(y) integrand(y, mu, tau_squared, sigma_sq_imputed, alpha_ben), #change here April 2. added Vectorize
+                          lower = -10, upper = 10, subdivisions = 200, stop.on.error=FALSE)$value
+              })))
+              
+            } else if (sel.ben == "Continous.Constant") {
+              
+              #Probability of reporting
+              ST <- function(y, sigma_squared_imputed, alpha_ben) {
+                
+                p = pnorm(-y/sqrt(sigma_squared_imputed))
+                
+                ifelse(p <= alpha_ben, 
+                       1-(p^rho1)/(alpha_ben^rho1),
+                       0
+                )
+              }
+              
+              #Integrand
+              integrand <- function(y, mu, tau_squared, sigma_squared_imputed, alpha_ben) {
+                
+                weight <- 1 - ST(y, sigma_squared_imputed, alpha_ben)
+                (1 / sqrt(2 * pi * (sigma_squared_imputed + tau_squared))) * exp(-0.5 * ((y - mu)^2 / (sigma_squared_imputed + tau_squared))) * weight
+              }
+              
+              #log-lik contribution
+              sum(log(sapply(sigma_squared_imputed, function(sigma_sq_imputed) {
+                integrate(function(y) integrand(y, mu, tau_squared, sigma_sq_imputed, alpha_ben),
+                          lower = -10, upper = 10, subdivisions = 200, stop.on.error=FALSE)$value
+              })))
+              
+            } else if (sel.ben == "Continous.Continous") {
+              
+              #Probability of reporting
+              TT <- function(y, sigma_squared_imputed, alpha_ben) {
+                
+                p = pnorm(-y/sqrt(sigma_squared_imputed))
+                
+                ifelse(p <= alpha_ben, 
+                       1 - (1-0.5)*(p^rho1)/(alpha_ben^rho1),
+                       0.5*(p^(-rho2))/(alpha_ben^(-rho2))
+                )
+              }
+              
+              #Integrand
+              integrand <- function(y, mu, tau_squared, sigma_squared_imputed, alpha_ben) {
+                
+                weight <- 1 - TT(y, sigma_squared_imputed, alpha_ben)
+                (1 / sqrt(2 * pi * (sigma_squared_imputed + tau_squared))) * exp(-0.5 * ((y - mu)^2 / (sigma_squared_imputed + tau_squared))) * weight
+              }
+              
+              #log-lik contribution
+              sum(log(sapply(sigma_squared_imputed, function(sigma_sq_imputed) {
+                integrate(function(y) integrand(y, mu, tau_squared, sigma_sq_imputed, alpha_ben),
+                          lower = -10, upper = 10, subdivisions = 200, stop.on.error=FALSE)$value
+              })))
+              
+              
+              
+              
+            } else if (sel.ben == "DGM") {
+              
+              #Probability of reporting
+              DGM <- function(y, sigma_squared_imputed, gam) {
+                
+                p = pnorm(-y/sqrt(sigma_squared_imputed))
+                
+                exp(-4*p^(gam))
+              }
+              
+              #Integrand
+              integrand <- function(y, mu, tau_squared, sigma_squared_imputed, gam) {
+                
+                weight <- 1 - DGM(y, sigma_squared_imputed, gam)
+                (1 / sqrt(2 * pi * (sigma_squared_imputed + tau_squared))) * exp(-0.5 * ((y - mu)^2 / (sigma_squared_imputed + tau_squared))) * weight
+              }
+              
+              #log-lik contribution
+              sum(log(sapply(sigma_squared_imputed, function(sigma_sq_imputed) {
+                integrate(function(y) integrand(y, mu, tau_squared, sigma_sq_imputed, gam),
+                          lower = -10, upper = 10, subdivisions = 200, stop.on.error=FALSE)$value
+              })))
+              
+              
+            } else {
+              
+              stop("Error: Invalid weight function specified. ")
+            }
+            
+            
+            
+          } else {
+            0  # Return 0 if sigma_squared_imputed is empty
+          }
+          
+        }
+        
+        
+      }
+      
+      #Adjusted profile log likelihood for mu
+      pl.b <- function(mu, logRR, sigma_squared, sigma_squared_imputed) { #take in vector of mus
+        
+        res <- mu
+        
+        for (i in seq_along(mu)) { #for all these values of mu
+          optimResult <- optim(par = init_param[2],
+                               fn = function(tau_squared) ll.b(mu[i], tau_squared,
+                                                               logRR=logRR,
+                                                               sigma_squared = sigma_squared,
+                                                               sigma_squared_imputed = sigma_squared_imputed),
+                               method = "Brent",
+                               lower=0.00001,
+                               upper=10,
+                               
+                               control = list(fnscale = -1))
+          
+          res[i] <- optimResult$value
+        }
+        return(res)
+      }
+      
+      f.b <- function(mu, logRR, sigma_squared, sigma_squared_imputed){
+        
+        pl.b(mu, logRR=logRR, sigma_squared=sigma_squared, sigma_squared_imputed = sigma_squared_imputed) - pl.b(mle.b, logRR=logRR, sigma_squared=sigma_squared, sigma_squared_imputed = sigma_squared_imputed) + 1/2*qchisq(0.95, df=1)
+      }
+      
+      lowerBound.b <- uniroot(f.b, interval = c(-10, mle.b), logRR=logRR,
+                              sigma_squared=sigma_squared,
+                              sigma_squared_imputed=sigma_squared_imputed)$root
+      upperBound.b <- uniroot(f.b, interval = c(mle.b, 10), logRR=logRR,
+                              sigma_squared=sigma_squared,
+                              sigma_squared_imputed = sigma_squared_imputed)$root
+      
+      #Adjusted profile log likelihood for tau squared
+      pl.b.tau <- function(tau_squared, logRR, sigma_squared, sigma_squared_imputed) { #take in vector of tau_squares
+        
+        res <- tau_squared
+        
+        for (i in seq_along(tau_squared)) { #for all these values of tau_squared
+          optimResult <- optim(par = init_param[1],
+                               fn = function(mu) ll.b(tau_squared[i], mu,
+                                                               logRR=logRR,
+                                                               sigma_squared = sigma_squared,
+                                                               sigma_squared_imputed = sigma_squared_imputed),
+                               method = "Brent",
+                               lower=-5,
+                               upper=5,
+                               
+                               control = list(fnscale = -1))
+          
+          res[i] <- optimResult$value
+        }
+        return(res)
+      }
+      
+      f.b.tau <- function(tau_squared, logRR, sigma_squared, sigma_squared_imputed){
+        
+        pl.b.tau(tau_squared, logRR=logRR, sigma_squared=sigma_squared, sigma_squared_imputed = sigma_squared_imputed) - pl.b.tau(mle.b.tau, logRR=logRR, sigma_squared=sigma_squared, sigma_squared_imputed = sigma_squared_imputed) + 1/2*qchisq(0.95, df=1)
+      }
+      
+      lowerBound.b.tau <- 0
+      
+      tryCatch({
+        
+      lowerBound.b.tau <- 
+        uniroot(f.b.tau, interval = c(-5, fit.adj.b$par[2]), logRR=logRR,
+                              sigma_squared=sigma_squared, extendInt = "yes")$root
+      }, error = function(e) {
+        
+        lowerBound.b.tau <- 0})
+             
+      upperBound.b.tau <- 0
+      
+      tryCatch({                        
+      
+      upperBound.b.tau <- 
+        uniroot(f.b.tau, interval = c(fit.adj.b$par[2], 5), logRR=logRR,
+                              sigma_squared=sigma_squared, sigma_squared_imputed=sigma_squared_imputed, extendInt="yes")$root
+      }, error = function(e) {
+        
+        upperBound.b.tau <- 0})
+   
+      
+      
+      
+      if (Wald.CI){
+        
+        
+        #WALD CONFIDENCE INTERVALS
+        a <- alpha_ben #for harm Copas et al use 99% conf level
+        #Unadjusted
+        fisher_info.u <- solve(-fit.u$hessian)
+        s.u <- sqrt(diag(fisher_info.u)[1])
+        ci.u <- fit.u$par[1] + qnorm(c(a/2, 1-a/2)) * s.u
+        #Adjusted benefit
+        fisher_info.adj.b <- solve(-fit.adj.b$hessian)
+        s.adj.b <- sqrt(diag(fisher_info.adj.b)[1])
+        ci.u.adj.b <- fit.adj.b$par[1] + qnorm(c(a/2, 1-a/2)) * s.adj.b
+        
+        
+        
+        return(list(mu_unadjusted = mle.u,
+                    LR_mu_unadjusted_low = lowerBound.u,
+                    LR_mu_unadjusted_up = upperBound.u,
+                    
+                    
+                    CI_unadjusted_low_WALD = ci.u[1],
+                    CI_unadjusted_up_WALD = ci.u[2],
+                    
+                    mu_adjusted_benefit = mle.b,
+                    LR_mu_adjusted_low = lowerBound.b,
+                    LR_mu_adjusted_up = upperBound.b,
+                    
+                    tau_squared_unadjusted = mle.tau,
+                    LR_tau_squared_unadjusted_low = lowerBound.u.tau,
+                    LR_tau_squared_unadjusted_up = upperBound.u.tau,
+                    
+                    tau_squared_adjusted = mle.b.tau,
+                    LR_tau_squared_adjusted_low = lowerBound.b.tau,
+                    LR_tau_squared_adjusted_up = upperBound.b.tau,
+                    
+                    
+                    
+                    average_sigma_squared_unadjusted = sigma_squared_average_unadjusted,
+                    sigma_squared_average_adjusted = sigma_squared_average_adjusted,
+                    
+                    
+                    CI_adjusted_benefit_low_WALD = ci.u.adj.b[1],
+                    CI_adjusted_benefit_up_WALD = ci.u.adj.b[2]
+                    
+        ))
+        
+      } else {
+        
+        return(list(mu_unadjusted = mle.u,
+                    LR_mu_unadjusted_low = lowerBound.u,
+                    LR_mu_unadjusted_up = upperBound.u,
+                    
+                    
+                    
+                    mu_adjusted_benefit = mle.b,
+                    LR_mu_adjusted_low = lowerBound.b,
+                    LR_mu_adjusted_up = upperBound.b,
+                    
+                    tau_squared_unadjusted = mle.tau,
+                    LR_tau_squared_unadjusted_low = lowerBound.u.tau,
+                    LR_tau_squared_unadjusted_up = upperBound.u.tau,
+                    
+                    tau_squared_adjusted = mle.b.tau,
+                    LR_tau_squared_adjusted_low = lowerBound.b.tau,
+                    LR_tau_squared_adjusted_up = upperBound.b.tau,
+                    
+                    
+                    
+                    average_sigma_squared_unadjusted = sigma_squared_average_unadjusted,
+                    sigma_squared_average_adjusted = sigma_squared_average_adjusted
+                    
+                    
+                    
+        ))
+        
+        
+      }
+      
+      
+    } else {
+      
+      
+      
+      return(list(
+        mu_unadjusted = mle.u,
+        mu_adjusted_benefit = mle.b,
+        tau_squared_unadjusted = mle.tau,
+        tau_squared_adjusted = mle.b.tau,
+        average_sigma_squared_unadjusted = sigma_squared_average_unadjusted,
+        sigma_squared_average_adjusted = sigma_squared_average_adjusted
+      ))
+      
+      
+    }
+    
+    
+  } else {
+    
+    return("invalid outcome input")
+  }
+  
+  
+}
+
+
+
+@
+
+
+<<echo=FALSE, cache=TRUE, warning=FALSE, message=FALSE>>=
+
+
+#50 % Seizure frequency reduction
+meta_data_miss <- data.frame(Nt = c(28, 41, 136, 171, 91, 143, 167, 23, 30, 23, 46, 52),
+                                Nc = c(28, 45, 45, 92, 86, 47, 42, 24, 30, 23, 40, 51),
+                                a_SeizureRed = c(12, 16, 54, 77, 45, 58, 86, 8, 14, 11, 12, "unrep"),
+                                c_SeizureRed = c(0, 9, 8, 22, 11, 4, 8, 2, 3, 3, 3, "unrep"),
+                                a_SeizureFree = c("unrep", 4, "unrep", 10, 7, "unrep", "unrep", 2, 0, "unrep", 0, "unrep"),
+                                c_SeizureFree = c("unrep", 2, "unrep", 2, 1, "unrep", "unrep", 0, 0, "unrep", 0, "unrep"))
+
+resultLL_SeizureRed <- reORBadj(a = meta_data_miss$a_SeizureRed,
+                                c = meta_data_miss$c_SeizureRed,
+                               n1 = meta_data_miss$Nt,
+                               n2 = meta_data_miss$Nc,
+                               outcome = "benefit",
+                               init_param = c(0.7, 0.01),
+                               alpha_ben = 0.05,
+                               alpha_ben_one.sided = TRUE, 
+                               true.SE = NULL,
+                               LR.CI = TRUE,
+                               rho1 = 3,
+                               rho2 = 3,
+                               selection.benefit = "Constant.Constant",
+                               opt_method = "L-BFGS-B")
+    
+resultLC_SeizureRed <- reORBadj(a = meta_data_miss$a_SeizureRed,
+                                c = meta_data_miss$c_SeizureRed,
+                               n1 = meta_data_miss$Nt,
+                               n2 = meta_data_miss$Nc,
+                               outcome = "benefit",
+                               init_param = c(0.7, 0.37),
+                               alpha_ben = 0.05,
+                               alpha_ben_one.sided = TRUE, 
+                               true.SE = NULL,
+                               LR.CI = TRUE,
+                               rho1 = 3,
+                               rho2 = 3,
+                               selection.benefit = "Constant.Continous",
+                               opt_method = "L-BFGS-B")
+   
+resultCL_SeizureRed <- reORBadj(a = meta_data_miss$a_SeizureRed,
+                                c = meta_data_miss$c_SeizureRed,
+                               n1 = meta_data_miss$Nt,
+                               n2 = meta_data_miss$Nc,
+                               outcome = "benefit",
+                               init_param = c(0.7, 0.37),
+                               alpha_ben = 0.05,
+                               alpha_ben_one.sided = TRUE, 
+                               true.SE = NULL,
+                               LR.CI = TRUE,
+                               rho1 = 3,
+                               rho2 = 3,
+                               selection.benefit = "Continous.Constant",
+                               opt_method = "L-BFGS-B")
+      
+resultCC1_SeizureRed <- reORBadj(a = meta_data_miss$a_SeizureRed,
+                                c = meta_data_miss$c_SeizureRed,
+                               n1 = meta_data_miss$Nt,
+                               n2 = meta_data_miss$Nc,
+                               outcome = "benefit",
+                               init_param = c(0.7, 0.37),
+                               alpha_ben = 0.05,
+                               alpha_ben_one.sided = TRUE, 
+                               true.SE = NULL,
+                               LR.CI = TRUE,
+                               rho1 = 7,
+                               rho2 = 1.5,
+                               selection.benefit = "Continous.Continous",
+                               opt_method = "L-BFGS-B")
+          
+resultCC2_SeizureRed <- reORBadj(a = meta_data_miss$a_SeizureRed,
+                                c = meta_data_miss$c_SeizureRed,
+                               n1 = meta_data_miss$Nt,
+                               n2 = meta_data_miss$Nc,
+                               outcome = "benefit",
+                               init_param = c(0.5, 0.37),
+                               alpha_ben = 0.05,
+                               alpha_ben_one.sided = FALSE, 
+                               true.SE = NULL,
+                               LR.CI = TRUE,
+                               rho1 = 1.5,
+                               rho2 = 7,
+                               selection.benefit = "Continous.Continous",
+                               opt_method = "L-BFGS-B")
+
+
+resultLL_SeizureFree <- reORBadj(a = meta_data_miss$a_SeizureFree,
+                                c = meta_data_miss$c_SeizureFree,
+                               n1 = meta_data_miss$Nt,
+                               n2 = meta_data_miss$Nc,
+                               outcome = "benefit",
+                               init_param = c(0.7, 0.37),
+                               alpha_ben = 0.05,
+                               alpha_ben_one.sided = TRUE, 
+                               true.SE = NULL,
+                               LR.CI = TRUE,
+                               rho1 = 3,
+                               rho2 = 3,
+                               selection.benefit = "Constant.Constant",
+                               opt_method = "L-BFGS-B")
+    
+resultLC_SeizureFree <- reORBadj(a = meta_data_miss$a_SeizureFree,
+                                c = meta_data_miss$c_SeizureFree,
+                               n1 = meta_data_miss$Nt,
+                               n2 = meta_data_miss$Nc,
+                               outcome = "benefit",
+                               init_param = c(0.7, 0.37),
+                               alpha_ben = 0.05,
+                               alpha_ben_one.sided = TRUE, 
+                               true.SE = NULL,
+                               LR.CI = TRUE,
+                               rho1 = 3,
+                               rho2 = 3,
+                               selection.benefit = "Constant.Continous",
+                               opt_method = "L-BFGS-B")
+   
+resultCL_SeizureFree <- reORBadj(a = meta_data_miss$a_SeizureFree,
+                                c = meta_data_miss$c_SeizureFree,
+                               n1 = meta_data_miss$Nt,
+                               n2 = meta_data_miss$Nc,
+                               outcome = "benefit",
+                               init_param = c(0.7, 0.37),
+                               alpha_ben = 0.05,
+                               alpha_ben_one.sided = TRUE, 
+                               true.SE = NULL,
+                               LR.CI = TRUE,
+                               rho1 = 3,
+                               rho2 = 3,
+                               selection.benefit = "Continous.Constant",
+                               opt_method = "L-BFGS-B")
+      
+resultCC1_SeizureFree <- reORBadj(a = meta_data_miss$a_SeizureFree,
+                                c = meta_data_miss$c_SeizureFree,
+                               n1 = meta_data_miss$Nt,
+                               n2 = meta_data_miss$Nc,
+                               outcome = "benefit",
+                               init_param = c(0.7, 0.37),
+                               alpha_ben = 0.05,
+                               alpha_ben_one.sided = TRUE, 
+                               true.SE = NULL,
+                               LR.CI = TRUE,
+                               rho1 = 7,
+                               rho2 = 1.5,
+                               selection.benefit = "Continous.Continous",
+                               opt_method = "L-BFGS-B")
+          
+resultCC2_SeizureFree <- reORBadj(a = meta_data_miss$a_SeizureFree,
+                                c = meta_data_miss$c_SeizureFree,
+                               n1 = meta_data_miss$Nt,
+                               n2 = meta_data_miss$Nc,
+                               outcome = "benefit",
+                               init_param = c(0.7, 0.37),
+                               alpha_ben = 0.05,
+                               alpha_ben_one.sided = TRUE, 
+                               true.SE = NULL,
+                               LR.CI = TRUE,
+                               rho1 = 1.5,
+                               rho2 = 7,
+                               selection.benefit = "Continous.Continous",
+                               opt_method = "L-BFGS-B")
+
+@
+
+
+
+<<echo=FALSE, cache=TRUE, warning=FALSE, message=FALSE>>=
+
+########### HERE ####################
+
+# Grid of rho1 and rho2 values beta gamma
+rho1_vals <- c(0.001, 0.5, 1, 1.5, 2, 2.5, 3)
+rho2_vals <- c(0.001, 0.5, 1, 1.5, 2, 2.5, 3)
+
+gr <- expand.grid(rho1 = rho1_vals, rho2 = rho2_vals)
+
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(purrr)
+
+################ w=1 ##################
+
+# Function to safely run reORBadj
+safe_reORBadj1 <- function(r1, r2) {
+  res <- tryCatch({
+    out <- reORBadj(
+      a = meta_data_miss$a_SeizureRed,
+      c = meta_data_miss$c_SeizureRed,
+      n1 = meta_data_miss$Nt,
+      n2 = meta_data_miss$Nc,
+      outcome = "benefit",
+      init_param = c(0.5, 0.37),
+      alpha_ben = 0.05,
+      alpha_ben_one.sided = FALSE, 
+      true.SE = NULL,
+      LR.CI = TRUE,
+      rho1 = r1,
+      rho2 = r2,
+      selection.benefit = "Continous.Continous",
+      opt_method = "L-BFGS-B",
+      wprob=1
+    )
+    data.frame(rho1 = r1, rho2 = r2,
+               mu = out$mu_adjusted,
+               ci_low = out$LR_mu_adjusted_low,
+               ci_up = out$LR_mu_adjusted_up)
+  }, error = function(e) {
+    data.frame(rho1 = r1, rho2 = r2, mu = NA, ci_low = NA, ci_up = NA)
+  })
+  return(res)
+}
+
+# Apply function over grid
+resultsSENS1 <- purrr::map2_df(gr$rho1, gr$rho2, safe_reORBadj1)
+
+# Function to safely run reORBadj
+safe_reORBadj21 <- function(r1, r2) {
+  res <- tryCatch({
+    out <- reORBadj(
+      a = meta_data_miss$a_SeizureFree,
+      c = meta_data_miss$c_SeizureFree,
+      n1 = meta_data_miss$Nt,
+      n2 = meta_data_miss$Nc,
+      outcome = "benefit",
+      init_param = c(0.5, 0.37),
+      alpha_ben = 0.05,
+      alpha_ben_one.sided = FALSE, 
+      true.SE = NULL,
+      LR.CI = TRUE,
+      rho1 = r1,
+      rho2 = r2,
+      selection.benefit = "Continous.Continous",
+      opt_method = "L-BFGS-B",
+      wprob=1
+    )
+    data.frame(rho1 = r1, rho2 = r2,
+               mu = out$mu_adjusted,
+               ci_low = out$LR_mu_adjusted_low,
+               ci_up = out$LR_mu_adjusted_up)
+  }, error = function(e) {
+    data.frame(rho1 = r1, rho2 = r2, mu = NA, ci_low = NA, ci_up = NA)
+  })
+  return(res)
+}
+
+# Apply function over grid
+resultsSENS21 <- purrr::map2_df(gr$rho1, gr$rho2, safe_reORBadj21)
+
+
+############# w=0.5 ######################
+
+# Function to safely run reORBadj
+safe_reORBadj <- function(r1, r2) {
+  res <- tryCatch({
+    out <- reORBadj(
+      a = meta_data_miss$a_SeizureRed,
+      c = meta_data_miss$c_SeizureRed,
+      n1 = meta_data_miss$Nt,
+      n2 = meta_data_miss$Nc,
+      outcome = "benefit",
+      init_param = c(0.5, 0.37),
+      alpha_ben = 0.05,
+      alpha_ben_one.sided = FALSE, 
+      true.SE = NULL,
+      LR.CI = TRUE,
+      rho1 = r1,
+      rho2 = r2,
+      selection.benefit = "Continous.Continous",
+      opt_method = "L-BFGS-B",
+      wprob=0.5
+    )
+    data.frame(rho1 = r1, rho2 = r2,
+               mu = out$mu_adjusted,
+               ci_low = out$LR_mu_adjusted_low,
+               ci_up = out$LR_mu_adjusted_up)
+  }, error = function(e) {
+    data.frame(rho1 = r1, rho2 = r2, mu = NA, ci_low = NA, ci_up = NA)
+  })
+  return(res)
+}
+
+# Apply function over grid
+resultsSENS <- purrr::map2_df(gr$rho1, gr$rho2, safe_reORBadj)
+
+# Function to safely run reORBadj
+safe_reORBadj2 <- function(r1, r2) {
+  res <- tryCatch({
+    out <- reORBadj(
+      a = meta_data_miss$a_SeizureFree,
+      c = meta_data_miss$c_SeizureFree,
+      n1 = meta_data_miss$Nt,
+      n2 = meta_data_miss$Nc,
+      outcome = "benefit",
+      init_param = c(0.5, 0.37),
+      alpha_ben = 0.05,
+      alpha_ben_one.sided = FALSE, 
+      true.SE = NULL,
+      LR.CI = TRUE,
+      rho1 = r1,
+      rho2 = r2,
+      selection.benefit = "Continous.Continous",
+      opt_method = "L-BFGS-B",
+      wprob=0.5
+    )
+    data.frame(rho1 = r1, rho2 = r2,
+               mu = out$mu_adjusted,
+               ci_low = out$LR_mu_adjusted_low,
+               ci_up = out$LR_mu_adjusted_up)
+  }, error = function(e) {
+    data.frame(rho1 = r1, rho2 = r2, mu = NA, ci_low = NA, ci_up = NA)
+  })
+  return(res)
+}
+
+# Apply function over grid
+resultsSENS2 <- purrr::map2_df(gr$rho1, gr$rho2, safe_reORBadj2)
+
+
+########## w=0 #########################
+
+# Function to safely run reORBadj
+safe_reORBadj0 <- function(r1, r2) {
+  res <- tryCatch({
+    out <- reORBadj(
+      a = meta_data_miss$a_SeizureRed,
+      c = meta_data_miss$c_SeizureRed,
+      n1 = meta_data_miss$Nt,
+      n2 = meta_data_miss$Nc,
+      outcome = "benefit",
+      init_param = c(0.5, 0.37),
+      alpha_ben = 0.05,
+      alpha_ben_one.sided = FALSE, 
+      true.SE = NULL,
+      LR.CI = TRUE,
+      rho1 = r1,
+      rho2 = r2,
+      selection.benefit = "Continous.Continous",
+      opt_method = "L-BFGS-B",
+      wprob=0
+    )
+    data.frame(rho1 = r1, rho2 = r2,
+               mu = out$mu_adjusted,
+               ci_low = out$LR_mu_adjusted_low,
+               ci_up = out$LR_mu_adjusted_up)
+  }, error = function(e) {
+    data.frame(rho1 = r1, rho2 = r2, mu = NA, ci_low = NA, ci_up = NA)
+  })
+  return(res)
+}
+
+# Apply function over grid
+resultsSENS0 <- purrr::map2_df(gr$rho1, gr$rho2, safe_reORBadj0)
+
+# Function to safely run reORBadj
+safe_reORBadj20 <- function(r1, r2) {
+  res <- tryCatch({
+    out <- reORBadj(
+      a = meta_data_miss$a_SeizureFree,
+      c = meta_data_miss$c_SeizureFree,
+      n1 = meta_data_miss$Nt,
+      n2 = meta_data_miss$Nc,
+      outcome = "benefit",
+      init_param = c(0.5, 0.37),
+      alpha_ben = 0.05,
+      alpha_ben_one.sided = FALSE, 
+      true.SE = NULL,
+      LR.CI = TRUE,
+      rho1 = r1,
+      rho2 = r2,
+      selection.benefit = "Continous.Continous",
+      opt_method = "L-BFGS-B",
+      wprob=0
+    )
+    data.frame(rho1 = r1, rho2 = r2,
+               mu = out$mu_adjusted,
+               ci_low = out$LR_mu_adjusted_low,
+               ci_up = out$LR_mu_adjusted_up)
+  }, error = function(e) {
+    data.frame(rho1 = r1, rho2 = r2, mu = NA, ci_low = NA, ci_up = NA)
+  })
+  return(res)
+}
+
+# Apply function over grid
+resultsSENS20 <- purrr::map2_df(gr$rho1, gr$rho2, safe_reORBadj20)
+
+
+@
+
+
+
+%\subsubsection{Application to Motivating Example}
+
+%We apply the ORB-adjustment framework to the epilepsy meta-analysis data affected by ORB from \citet{topiramate, Copas2019}, using the selection functions proposed in this research. These selection functions utilize a one-sided $p$-value for significance with a threshold of $\alpha=0.05$, in contrast to \citet{Copas2019}, which used a two-sided $p$-value. Of note, while a one-sided threshold is used within the selection function to define the underlying missing data mechanism, two-sided significance is used to construct profile likelihood (PL) confidence intervals (CIs) for treatment effect estimation.
+
+%Figure \ref{example} presents the point estimates and $95\%$ CI for the log RR of the treatment effect for two beneficial outcomes in the meta-analysis: a $50\%$ reduction in seizure frequency and seizure freedom. For both outcomes, the naive log RR estimate, i.e., that obtained with standard meta-analysis methods, thereby excluding any contribution from unreported study outcomes, shows a significant positive treatment effect compared to the control.
+
+%For the $50\%$ seizure frequency reduction outcome, the ORB-adjusted estimates are slightly shifted towards the null value and are consistent across different selection functions. Only a minor shift is expected since only one study does not report this outcome. However, for the seizure freedom outcome, with several studies not reporting it, the ORB-adjusted estimates show a substantial shift towards the null, even altering the significance of the results by causing the $95\%$ CI to overlap with 0. The differences between the ORB-adjusted estimates using various selection functions are more pronounced for the seizure freedom outcome.
+
+%The strictness of different ORB-adjustments, obtained by using the various selection functions, is intuitive and stems from the underlying assumptions about unreported study outcomes. The estimate obtained using selection function $w_B(\beta=3)$ is more conservative than that obtained with $w_A$. The selection function $w_A$ assumes a probability of unreporting of 1 for non-significant studies, regardless of the $p$-value magnitude, while $w_B(\beta=3)$ assumes a higher probability of unreporting for larger $p$-values, implying greater bias and thus stricter correction. Conversely, $w_C(\gamma=3)$ is less conservative than $w_A$, as it assumes that some unreported outcomes may still be significant, indicating less bias and thus a less strict adjustment. The functions $w_D(\gamma=1.5, \beta=7)$ and $w_D(\gamma=7, \beta=1.5)$ produce results similar to $w_B(\beta=3)$ and $w_C(\gamma=3)$, respectively, suggesting that the larger parameter, whether $\gamma$ or $\beta$, primarily drives the ORB-adjusted estimate.
+
+%Since the true underlying data mechanism is unknown in this example, we further investigate the ORB-adjustment effect in a simulation study. This allows us to evaluate the ORB adjustment implementation using both correctly specified and misspecified models of the missing data mechanism.
+%\vspace{-\baselineskip} % Adjusts space before the section header
+\section{Simulation Study} \label{simstudy}
+%\vspace{-\baselineskip} % Adjusts space after the section header
+It is of interest to assess the extent to which ORB negatively impacts meta-analytic findings and the extent to which the ORB-adjustment methodology presented in the previous section of this work is effective in reducing bias. Our primary interest lies in bias detection and mitigation for treatment effect estimation under different meta-analysis settings, e.g., varying levels of heterogeneity and meta-analysis study sizes. A secondary interest of the investigation is the possible impact of ORB on heterogeneity variance estimation. In pursuit of these objectives, we conduct a simulation study wherein we first simulate a random effects meta-analysis of a single beneficial outcome and subsequently mimic selective reporting by removing some observed treatment effects and standard errors from the meta-analysis dataset based on the strength and/or direction of the results, favoring the reporting of studies with small $p$-values. We then utilize different estimation methods for the parameters of interest and assess the performance of the methods using performance measures on a large number of simulations. 
+
+The details of the simulation study can be found in the simulation study protocol (already available in the \href{https://osf.io/ancdu/}{OSF project repository}) and are summarized in the following setting description section.
+
+\subsection{Setting}
+
+The first step of the simulation process consists of simulating random effects meta-analysis datasets in the presence of ORB. We first simulate a random effects meta-analysis study comprising $K$ studies, each with treatment and control arms of equal sizes $n_i = n = 50$, and reported treatment effects $y_i$ with standard errors $\sigma_i$. We first obtain the study-specific true treatment effects $\theta$ from
+
+\begin{equation*}\label{eq:random.eff2}
+\theta_i \sim \mathcal{N}(\mu, \tau^2) \text{,}
+\end{equation*}
+
+where $\mu$ is the overall treatment effect and $\tau^2$ is the between-study heterogeneity variance. The observed treatment effects $y_i$ are then given by 
+
+\begin{equation*}\label{eq:random.eff1}
+y_i \sim \mathcal{N}(\theta_i, \sigma^2) \text{,}
+\end{equation*}
+
+where $\sigma^2= 2/n$, while the standard errors are generated from a scaled $\chi^2$ distribution
+
+\begin{equation*}
+\label{sigma.sq.sim}
+\sigma_i^2 \sim \frac{\chi^2_{2n_i - 2}}{(n_i -1)n_i} \text{.}
+\end{equation*}
+
+These values are generated independently for each study, assuming no correlation between studies. We then simulate ORB by selectively excluding certain studies from the meta-analysis based on the direction and significance of treatment effects. The ORB simulation process involves removing study outcomes with a probability of reporting determined by a decreasing function of the one-sided $p$-value, i.e., $p_i = \Phi(- y_i / \sigma_i)$. The function \eqref{simORB} used to simulate ORB is taken from simulation studies on PB, for consistency with our selection model approach, typical of PB settings. We simulate under two ORB settings, i.e., $\gamma=1.5$ typical in PB simulation studies \citep{selection2, Begg, BeggUse1, selectionCont} and $\gamma=0.5$, resulting in a steeper decreasing function of the $p$-value. 
+
+\begin{equation}
+P( i \in \{\text{Rep}\})= e^{-4 \cdot p_i^{\gamma}} \text{.}
+\label{simORB}
+\end{equation}
+
+Each meta-analysis dataset hence results in $K$ or fewer of the original study outcomes. If for some meta-analysis dataset less than two study outcomes are reported, the simulation is repeated until at least two reported study outcomes are obtained \citep{selection2, Begg, BeggUse1, FernandezSim}. The ORB-affected meta-analysis datasets are generated under different settings; we vary the number of studies in the meta-analysis, $K \in \{5, 15, 30 \}$, the amount of between-study heterogeneity $\text{I}^2 \in \{0 \%, 25 \%, 50 \%, 75 \%, 90 \% \}$ and the true underlying treatment effect $\mu \in \{0, 0.2, 0.4, 0.6, 0.8 \}$, based on simulation studies found in the literature \citep{MorenoSim, IntHout2014, FernandezSim}.
+
+It is important to note that while our simulation assumes a known missingness mechanism—selective reporting based on a continuous function of the one-sided p-value—no information about the cause of missingness is assumed to be available once the data are generated. This reflects the practical setting in which some outcomes are unreported, but their classification into high or low risk of bias is unknown. This differs from our previous simulation approach \citep{mythesis}, where unreported outcomes were classified using ORBIT into high or low risk of bias based on significance. That design allowed a direct comparison with the method of \citet{Copas2019}, which requires such classification to adjust only for outcomes deemed at high risk. In contrast, our current simulation avoids this additional layer of information and instead models ORB as a continuous function of statistical significance, consistent with the selection model literature. As a result, the \citet{Copas2019} method is not applicable in this setting, but in previous work we found similar performance when comparing both approaches under aligned assumptions \citep{mythesis}.
+
+After having simulated ORB, hence resulting in some treatment effects and standard errors unreported, we use maximum likelihood (ML) estimation to obtain point estimates of the treatment effect $\mu$ and the heterogeneity variance $\tau^2$, along with profile likelihood (PL) confidence intervals (CI) \citep{tauCI, Copas2019, likelihood}. The ML estimate and PL CI for $\mu$ and $\tau^2$ are obtained using different log-likelihoods, depending on the information and/or missing data mechanism assumed, leading to i) naive, ii) complete data, and iii) ORB-adjusted estimation methods. We further differentiate various ORB-adjusted estimates based on the selection function assumed for the probability of reporting.
+
+The naive log-likelihood (i) includes the contribution only from reported study outcomes and disregards the unreported ones. The naive estimate serves as a baseline for comparison of the ORB-adjustment methodologies and quantifies the negative impact of ORB when the latter is not accounted for \citep{reviewselection, Copas2019}. The complete data log-likelihood (ii) uses all studies in the meta-analysis before ORB is simulated, and is a proxy for the true treatment effect if there were no ORB. The various ORB-adjusted estimates (iii) are obtained by maximizing the ORB-adjusted log-likelihood \eqref{lik.rewritten.special.copas.case} using the different selection functions:  $w_A(p)$ from \eqref{sel0}, $w_B(p \text{; } \beta=3)$ from \eqref{special1}, $w_C(p \text{; } \gamma=3)$ from \eqref{special2}, and $w_D(p \text{; } \beta=1.5, \gamma=7)$, $w_D(p \text{; } \beta=7, \gamma=1.5)$ from \eqref{special3}, as well as the selection function \eqref{simORB} used to simulate ORB, so as to include the correct model specification in the adjustment. Since the latter function used to simulate ORB can be viewed as a selection function, defining a specific missing data mechanism, we note it as $w_{DGM}(y)$ and utilize it in the ORB-adjusted log-likelihood \eqref{lik.rewritten.special.copas.case}. The parameters of the selection functions, i.e., $\beta$ or $\gamma$ used in the adjustment correspond to those illustrated in Figure \ref{new.weight.fig}.\\
+\textcolor{white}{T} For each parameter setting, the simulation process is repeated $\text{N}_{\text{sim}} = 3200$ times; the simulation size $\text{N}_{\text{sim}}$ is calculated based on the expected variance of the unknown parameter estimate \citep{IntHout2014, sim} and a desired Monte Carlo Standard Error (MCSE) of 0.005 from \citet{IntHout2014, sim}. The performance measures recorded for the unknown parameter are bias, empirical standard error (ESE), mean squared error (MSE), coverage and power, along with the MCSEs of each \citep{IntHout2014, sim}.
+
+
+\subsection{Results}
+
+%%%%%% bias with naive estimation
+\subsubsection{Bias in Naive Estimation}
+The results demonstrate a significant bias in the estimation of the treatment effect when using naive methods that do not account for ORB, as shown in Figures \ref{res1} and \ref{res2}. The bias decreases as the true treatment effect size $\mu$ increases, which aligns with existing literature \citep{Copas2019, Bay, dutch} and prior exploratory analysis \citep{mythesis}; as treatment effect increases, results are more likely to be significant and are thus less prone to ORB. Study size variations ($K=5, 15, 30$) do not significantly affect the bias, while heterogeneity has a substantial impact. High heterogeneity settings, particularly with $I^2=90$, exhibit larger biases, reinforcing findings from previous work \citep{mythesis}. The effect of heterogeneity on ORB is interesting and novel compared to \citet{Copas2019}, who focused primarily on a fixed effect meta-analysis framework. The patterns observed for naive estimation are consistent across both ORB simulation processes, i.e., for $\gamma=1.5$ and $\gamma=0.5$ in the DGM function \eqref{simORB}.
+
+%%%% bias reduction with DGM and other selection functions
+%%%% NB for k=5 not good
+\subsubsection{Bias Reduction with ORB-adjustment}
+When applying the ORB-adjustment framework using selection functions, we first note that the effectiveness in bias reduction varies by meta-analysis study size. For $K=15$ and $K=30$, the bias obtained with naive estimation is eliminated when the selection function matches the ORB DGM, i.e., when using the correctly specified selection function $w_{DGM}$ in Figures \ref{res1} and \ref{res2}. Different selection functions ($w_A, w_B, w_C, w_D$) show varying degrees of bias reduction. For the DGM with $\gamma=1.5$, shown in Figure \ref{res1}, the ORB-adjusted estimates shift the bias towards the null but do not fully eliminate it unless the exact DGM function is used. The ORB-adjusted estimate using selection function $w_B$ performs slightly better than $w_A$, and $w_C$ performs the least well. However, it is important to note that the different functions ($w_A, w_B, w_C, w_D$) overall achieved very similar results, particularly in low heterogeneity settings. Similar patterns are observed in the DGM with $\gamma=0.5$ setting shown in Figure \ref{res2}, with selection function $w_B$ being the least strict and $w_C$ the most strict in bias reduction. The ORB-adjustment here tends to reduce the treatment effect size excessively, indicating potential overcorrection due to the steep $p$-value dependence in the ORB DGM, resulting in some unreported studies with significant $p$-values. 
+
+For the small meta-analysis size, $K=5$, the ORB-adjustment reduces the bias but does not eliminate it, even with the correctly specified model. This finding holds in general for both ORB DGM settings; notably for the DGM with $\gamma=1.5$, the correctly specified selection function shows the least bias, while for the DGM with $\gamma=0.5$, it shows the most bias, although, overall, the ORB-adjusted estimates are similar. Based on these observations, we thus recommend to use ORB-adjustment with caution when only few studies are present in a meta-analysis affected by ORB.
+
+\subsubsection{Other Performance Measures}
+
+Beyond bias, other performance measures such as coverage, mean squared error (MSE), power, and empirical standard error (ESE) were evaluated. Coverage, shown for the ORB DGM $\gamma=1.5$ in Figure \ref{Cov1}, can be substantially low for naive estimation. Overall, the coverage in naive estimation decreases as heterogeneity increases. For small treatment effect sizes (e.g., $\mu=0$), coverage is higher for small meta-analysis sizes ($K=5$) and decreases as the meta-analysis size increases. This can be explained by larger CI for the $K=5$ setting, which in turn cover the true underlying value. The ORB-adjusted estimates show higher coverage: the correct DGM selection function has the highest one, while others exhibit slightly lower coverage, especially when $\mu$ is small. 
+
+Other performance measures confirm the findings observed for naive and ORB-adjusted estimates, e.g., the MSE of the naive estimate of the treatment effect is substantially reduced in high heterogeneity settings for all ORB-adjusted estimates. Furthermore, naive estimation results in severely inflated power, particularly in high heterogeneity settings and for large meta-analysis study sizes. ORB-adjusted estimates correct this inflation, with variations depending on the DGM and selection function used. The ESE of the naive estimate is generally consistent with expected SE calculations from the simulation study protocol. Naive estimates have slightly higher SE due to unreported study outcomes. For small meta-analysis sizes ($K=5$) and high heterogeneity ($I^2=90$), ORB-adjusted estimates have a similar ESE, which is lower than the naive estimate. For detailed results and further plots of the additional performance measures considered and briefly mentioned in this section, please refer to the supplementary material.
+
+\subsubsection{Bias in Heterogeneity Variance}
+
+%%%% Some comments on tau^2, but only bias
+Although the primary parameter of interest was the treatment effect $\mu$, we also investigated the bias in the estimation of the heterogeneity variance $\tau^2$ in the presence of ORB, as shown in Figure \ref{biastau1}, showcasing the results for the ORB DGM with $\gamma=1.5$. Heterogeneity is generally underestimated across most estimation methods, except for the ORB-adjusted method using the correctly specified model ($w_{DGM}$) for $K=15,30$. For the small meta-analysis setting $K=5$, the correctly specified model reduces the bias but does not fully eliminate, similarly to results observed for the main parameter of interest $\mu$. Of note, the estimation of $\tau^2$ is done with maximum likelihood (ML) estimation, which, overall, tends to underestimate the between study-heterogeneity \citep{REML2, REML}; a more comprehensive methodological approach to heterogeneity estimation in the presence of ORB should thus be conducted to solidify and confirm these findings. The plots of the heterogeneity variance for ORB setting $\gamma=0.5$ can be found in the supplementary material.
+
+%shown the bias in the estimation for the various meta-analysis sizes and for different true treatment effect values, we observe that as heterogeneity increases, the bias in its estimation for increases, i.e., in high heterogeneity settings, naive estimation underestimates the heterogeneity variance. For no heterogeneity or really low, this does not seem to be an issue. The ORB-adjusted estimate using the correct DGM mechanism appears to reduce this bias, while the other misspecified functions only partially reduce the bias, with no remarkable differences noted. We observe that this bias is more prominent for low values of the true underlying treatment effect, while for high values of $\mu$ the bias in the estimation of the heterogeneity is minimal, which can be attributed to the lack of ORB issue as there is less likelihood of unreporting.
+
+\subsection{Application to Example Data}
+
+We apply the ORB-adjustment framework to the epilepsy meta-analysis data affected by ORB from \citet{topiramate, Copas2019}, using the selection functions proposed in this research. These selection functions utilize a one-sided $p$-value for significance with a threshold of $\alpha=0.05$, in contrast to \citet{Copas2019}, which used a two-sided $p$-value. Of note, while a one-sided threshold is used within the selection function to define the underlying missing data mechanism, two-sided significance is used to construct profile likelihood (PL) confidence intervals (CIs) for treatment effect estimation.
+
+Figure \ref{example} presents the point estimates and $95\%$ CI for the log RR of the treatment effect for two beneficial outcomes in the meta-analysis: a $50\%$ reduction in seizure frequency and seizure freedom. For both outcomes, the naive log RR estimate, i.e., that obtained with standard meta-analysis methods, thereby excluding any contribution from unreported study outcomes, shows a significant positive treatment effect compared to the control.
+
+For the $50\%$ seizure frequency reduction outcome, the ORB-adjusted estimates are slightly shifted towards the null value and are consistent across different selection functions. Only a minor shift is expected since only one study does not report this outcome. However, for the seizure freedom outcome, with several studies not reporting it, the ORB-adjusted estimates show a substantial shift towards the null, even altering the significance of the results by causing the $95\%$ CI to overlap with 0. The differences between the ORB-adjusted estimates using various selection functions are more pronounced for the seizure freedom outcome.
+
+The strictness of different ORB-adjustments, obtained by using the various selection functions, is intuitive and stems from the underlying assumptions about unreported study outcomes. The estimate obtained using selection function $w_B(\beta=3)$ is more conservative than that obtained with $w_A$. The selection function $w_A$ assumes a probability of unreporting of 1 for non-significant studies, regardless of the $p$-value magnitude, while $w_B(\beta=3)$ assumes a higher probability of unreporting for larger $p$-values, implying greater bias and thus stricter correction. Conversely, $w_C(\gamma=3)$ is less conservative than $w_A$, as it assumes that some unreported outcomes may still be significant, indicating less bias and thus a less strict adjustment. The functions $w_D(\gamma=1.5, \beta=7)$ and $w_D(\gamma=7, \beta=1.5)$ produce results similar to $w_B(\beta=3)$ and $w_C(\gamma=3)$, respectively, suggesting that the larger parameter, whether $\gamma$ or $\beta$, primarily drives the ORB-adjusted estimate.
+
+Since the true underlying data mechanism is unknown in this example, we recommend to adopt a sensitivity analysis approach to the ORB-adjustment. Figure \ref{exampleSENS} showcases the ORB-adjustment using three different selection functions \eqref{special1}, \eqref{special2} and \eqref{special3}, for a range of values of $\gamma$ and $\beta$ parameters.
+
+\begin{figure*}[!hbt]
+\centering
+\caption{Application of ORB-adjustment to example epilepsy data \citep{Copas2019, topiramate}, using the different selection functions showcased in Figure \ref{new.weight.fig}. In addition, the naive estimate, without ORB-adjustment, is shown for comparison. The plot shows the risk ratio (RR) estimates and $95\%$ profile likelihood (PL) confidence intervals (CI).}
+%\hline
+<<example, echo=FALSE, results='asis', fig.height=3.3, fig.width=7, message=FALSE, warning=FALSE>>=
+
+library(ggplot2)
+library(gridExtra)
+
+################################################################################
+
+# Extract the data
+results <- list(
+  LL = resultLL_SeizureRed,
+  LC = resultLC_SeizureRed,
+  CL = resultCL_SeizureRed,
+  CC1 = resultCC1_SeizureRed,
+  CC2 = resultCC2_SeizureRed
+)
+
+# Create a data frame
+data <- do.call(rbind, lapply(names(results), function(name) {
+  result <- results[[name]]
+  data.frame(
+    Method = name,
+    Estimate = result$mu_adjusted,
+    CI_Low = result$LR_mu_adjusted_low,
+    CI_High = result$LR_mu_adjusted_up,
+    stringsAsFactors = FALSE
+  )
+}))
+
+# Add custom labels
+data$CustomLabel <- factor(data$Method, levels = c("LL", "LC", "CL", "CC1", "CC2"),
+                           labels = c(
+                             expression(w[A]),
+                             expression(w[B](gamma == 3)),
+                             expression(w[C](beta == 3)),
+                             expression(w[D](gamma == 1.5, beta == 7)),
+                             expression(w[D](gamma == 7, beta == 1.5))
+                           ))
+
+# Add unadjusted values
+unadjusted <- data.frame(
+  Method = "Naive",
+  Estimate = resultLL_SeizureRed$mu_unadjusted,
+  CI_Low = resultLL_SeizureRed$LR_mu_unadjusted_low,
+  CI_High = resultLL_SeizureRed$LR_mu_unadjusted_up,
+  CustomLabel = "Naive"
+)
+
+# Combine with the original data
+data <- rbind(data, unadjusted)
+
+# Create the plot
+library(ggplot2)
+
+p1 <- ggplot(data, aes(x = Method, y = Estimate, ymin = CI_Low, ymax = CI_High)) +
+  geom_pointrange(aes(color = CustomLabel), size = 0.4) +
+   geom_hline(yintercept = 0, linetype="dotted", 
+                color = "gray", size=0.5)+
+  ylim(c(0,2))+
+  coord_flip() +  # Flips the coordinates to make the CIs horizontal
+  theme_void()+
+  labs(title = " ",
+       x = " ",
+       y = "\n50% Seizure Frequency Reduction\n") +
+  scale_color_manual(
+    values = c("blue", "#00BA38", "red", "purple", "orange", "magenta"),
+    labels = c(
+      expression(w[A]),
+      expression(w[B](gamma == 3)),
+      expression(w[C](beta == 3)),
+      expression(w[D](gamma == 1.5, beta == 7)),
+      expression(w[D](gamma == 7, beta == 1.5)),
+      "Naive"
+    )
+  ) +
+  #scale_y_continuous(trans = "log",  # Keep the scale on the log scale
+   # labels = function(x) round(exp(x), 2),
+   # limits=c(0.3,2)) +  
+   #scale_y_continuous(limits=c(0,2), 
+    #                  breaks= seq(0.6, 1.4,  by=0.2))+
+  #theme(legend.title = element_blank())
+  scale_y_continuous(
+    limits=c(0,2),
+    breaks = 0,  # Specify only one break at x=0
+    labels = "RR=1"  # Label for the break at x=0
+  ) +
+  theme(legend.position = "none",
+        legend.title = element_blank(), 
+         axis.text.y = element_blank(),
+        axis.title=element_text(size=9),
+        axis.text.x = element_text(size=7),
+        axis.ticks.x = element_blank())
+
+# Add text annotations for the point estimates and CIs
+p1 <- p1 + geom_text(aes(y = 1.5, 
+                         label = paste0(" ", round(exp(Estimate), 2), " [", round(exp(CI_Low), 2), ", ", round(exp(CI_High), 2), "]")), 
+                     hjust = +0.05, 
+                     vjust = -0.5,
+                     size = 3,
+                     position = position_nudge(x = -0.25))+
+
+geom_text(aes(x = "Naive", y = 0.2, label = "Naive"), parse = TRUE, 
+           hjust = +0.05, 
+           vjust = -0.5,
+            size = 2.2,
+             position = position_nudge(x = -0.2))+
+  geom_text(aes(x = "LL", y = 0.2, label = paste0(expression(w[A]))), parse = TRUE, 
+            hjust = +0.05, 
+                     vjust = -0.5,
+            size = 2.2,
+             position = position_nudge(x = -0.2))+
+    geom_text(aes(x = "LC", y = 0.2, label = paste0(expression(w[B](beta == 3)))), parse = TRUE, 
+            hjust = +0.05, 
+                     vjust = -0.5,
+            size = 2.2,
+             position = position_nudge(x = -0.2))+
+  geom_text(aes(x = "CL", y = 0.2, label = paste0(expression(w[C](gamma == 3)))), parse = TRUE, 
+           hjust = +0.05, 
+                     vjust = -0.5,
+            size = 2.2,
+             position = position_nudge(x = -0.2))+
+  geom_text(aes(x = "CC2", y = 0.2, label = paste0(expression(w[D](gamma == 7 ~ "," ~ beta == 1.5)))), parse = TRUE, 
+           hjust = +0.05, 
+                     vjust = -0.5,
+            size = 2.2,
+             position = position_nudge(x = -0.2))+
+  geom_text(aes(x = "CC1", y = 0.2, label = paste0(expression(w[D](gamma == 1.5 ~ "," ~ beta == 7)))), parse = TRUE, 
+           hjust = +0.05, 
+                     vjust = -0.5,
+            size = 2.2,
+             position = position_nudge(x = -0.2))
+  
+  
+
+
+
+##################### Plot this too ############################################
+
+
+# Extract the data
+resultsFree <- list(
+  LL = resultLL_SeizureFree,
+  LC = resultLC_SeizureFree,
+  CL = resultCL_SeizureFree,
+  CC1 = resultCC1_SeizureFree,
+  CC2 = resultCC2_SeizureFree
+)
+
+# Create a data frame
+dataFree <- do.call(rbind, lapply(names(resultsFree), function(name) {
+  result <- resultsFree[[name]]
+  data.frame(
+    Method = name,
+    Estimate = result$mu_adjusted,
+    CI_Low = result$LR_mu_adjusted_low,
+    CI_High = result$LR_mu_adjusted_up,
+    stringsAsFactors = FALSE
+  )
+}))
+
+# Add custom labels
+dataFree$CustomLabel <- factor(dataFree$Method, levels = c("LL", "LC", "CL", "CC1", "CC2"),
+                           labels = c(
+                             expression(w[A]),
+                             expression(w[B](gamma == 3)),
+                             expression(w[C](beta == 3)),
+                             expression(w[D](gamma == 1.5, beta == 7)),
+                             expression(w[D](gamma == 7, beta == 1.5))
+                           ))
+
+# Add unadjusted values
+unadjustedFree <- data.frame(
+  Method = "Naive",
+  Estimate = resultLL_SeizureFree$mu_unadjusted,
+  CI_Low = resultLL_SeizureFree$LR_mu_unadjusted_low,
+  CI_High = resultLL_SeizureFree$LR_mu_unadjusted_up,
+  CustomLabel = "Naive"
+)
+
+# Combine with the original data
+dataFree <- rbind(dataFree, unadjustedFree)
+
+# Create the plot
+library(ggplot2)
+
+p <- ggplot(dataFree, aes(x = Method, y = Estimate, ymin = CI_Low, ymax = CI_High)) +
+  geom_pointrange(aes(color = CustomLabel), size=0.4) +
+  geom_hline(yintercept = 0, linetype="dotted", 
+                color = "gray", size=0.5)+
+   ylim(c(-1.2, 4))+
+  coord_flip() +  # Flips the coordinates to make the CIs horizontal
+  theme_void()+
+  labs(title = " ",
+       x = " ",
+       y = "\nSeizure Freedom\n") +
+  scale_color_manual(
+    values = c("blue", "#00BA38", "red", "purple", "orange", "magenta"),
+    labels = c(
+      expression(w[A]),
+      expression(w[B](gamma == 3)),
+      expression(w[C](beta == 3)),
+      expression(w[D](gamma == 1.5, beta == 7)),
+      expression(w[D](gamma == 7, beta == 1.5)),
+      "Naive"
+    ),
+    guide = guide_legend(
+      override.aes = list(shape = NA, linetype = 1, size = 0.7)  # Only lines, smaller size
+    )
+  ) +
+  #scale_y_continuous(limits=c(-2.2, 2.4), breaks= seq(-0.5, 2,  by=0.5))+
+  # scale_y_continuous(trans = "log",  # Keep the scale on the log scale
+  #  labels = function(x) round(exp(x), 2),
+  #  limits=c(-4,2.2)) +  
+   #limits=c(0.1,2), breaks= seq(0.6, 1.4,  by=0.2))+
+  scale_y_continuous(
+    limits=c(-1.2,4),
+    breaks = 0,  # Specify only one break at x=0
+    labels = "RR=1"  # Label for the break at x=0
+  ) +
+  theme(legend.position = "none",
+        legend.title = element_blank(), 
+        axis.title=element_text(size=9),
+        legend.key.size = unit(0, "lines"),
+        legend.text = element_text(size = 8),
+         axis.text.y = element_blank(),
+        axis.text.x = element_text(size=7),
+        axis.ticks.x = element_blank())
+
+# Add text annotations for the point estimates and CIs
+p <- p + geom_text(aes(y = 2.2, 
+                       label = paste0(" ", round(exp(Estimate), 2), " [", round(exp(CI_Low), 2), ", ", round(exp(CI_High), 2), "]")), 
+              hjust = -0.1, vjust = -0.8, size = 3,
+              position = position_nudge(x = -0.3))
+  
+  
+
+  
+
+#print(p)
+
+
+legend_plot_example <- ggplot() +
+  geom_line(aes(x = 0, y = 0, color = "magenta")) +
+  geom_line(aes(x = 0, y = 0, color = "blue")) +
+  geom_line(aes(x = 0, y = 0, color = "#00BA38")) +
+  geom_line(aes(x = 0, y = 0, color = "red")) +
+  geom_line(aes(x = 0, y = 0, color = "orange")) +
+  geom_line(aes(x = 0, y = 0, color = "purple")) +
+  
+  scale_color_manual(
+    values = c(
+      "magenta",
+      "blue", 
+      "#00BA38", 
+       "red", 
+       "orange",
+       "purple"
+    ),
+    labels = c(
+      "Naive",
+      expression(w[A]),
+      expression(w[B](gamma == 3)),
+      expression(w[C](beta == 3)),
+      expression(w[D](gamma == 7 ~ "," ~ beta == 1.5)),
+      expression(w[D](gamma == 1.5 ~ "," ~ beta == 7))
+    )
+  ) +
+  
+   
+  theme_void() +
+  theme(
+    legend.text = element_text(size = 6),
+    legend.key.size = unit(2, "mm"),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()
+  ) +
+  guides(color = guide_legend(title = NULL, label.hjust = 0.5))
+
+
+
+#final_final_plot <- gridExtra::grid.arrange(arrangeGrob(main_plot0, 
+ # main_plot2,
+#  main_plot1, 
+ # main_plot3,
+#  nrow = 2, ncol = 2),
+#  legend_plot,
+#  nrow = 1,
+ # widths = c(5, 1))
+
+
+#grid.arrange(p1, p, legend_plot_example, ncol = 3, widths = c(3, 3.5, 1))
+            # left = grid::textGrob("", rot = 90, gp = grid::gpar(fontsize = 8)),
+             #bottom = grid::textGrob("log OR", gp = grid::gpar(fontsize = 8)))
+
+grid.arrange(p1, p, ncol = 2, widths = c(3.4, 3.2))
+
+  
+
+@
+%\hline
+\label{example}
+\end{figure*}
+
+
+\begin{figure*}[!hbt]
+\centering
+\caption{Application of ORB-adjustment sensitivity analysis to example epilepsy data \citep{Copas2019, topiramate}, using selection function \eqref{special1} in (a), selection function \eqref{special3} in (b), and selection function \eqref{special2} in (c).\\[0.5mm]}
+<<exampleSENS, echo=FALSE, results='asis', fig.height=7, fig.width=7, message=FALSE, warning=FALSE>>=
+
+#####w=1######
+
+# Plot using ggplot2
+g11 <- ggplot(resultsSENS1, aes(x = rho1, y = rho2)) +
+  geom_tile(aes(fill = exp(mu))) +
+  geom_contour(aes(z = exp(mu)), color = "black", bins = 10) +
+  #geom_contour(aes(z = ci_low), color = "blue", linetype = "dashed", bins = 5) +
+  #geom_contour(aes(z = ci_up), color = "red", linetype = "dashed", bins = 5) +
+  labs(title = "(a) 50% Seizure Frequency Reduction",
+       x = "",
+       y = expression(beta)) +
+  scale_fill_viridis_c(
+  name = expression(mu[adj]),
+  option = "D",
+  n.breaks = 5  # More discrete steps in the legend
+)+
+  scale_x_continuous(breaks = NULL) +
+scale_y_continuous(breaks = seq(min(round(resultsSENS$rho2)), max(round(resultsSENS$rho2)), by = 0.5))+
+  theme_minimal()+
+  theme(
+    legend.title = element_text(size = 8),
+    legend.text = element_text(size = 7),
+    legend.key.size = unit(0.4, "cm"),
+    axis.ticks.x = element_blank()
+  )
+
+# Plot using ggplot2
+g21 <- ggplot(resultsSENS21, aes(x = rho1, y = rho2)) +
+  geom_tile(aes(fill = exp(mu))) +
+  geom_contour(aes(z = exp(mu)), color = "black", bins = 10) +
+  #geom_contour(aes(z = ci_low), color = "blue", linetype = "dashed", bins = 5) +
+  #geom_contour(aes(z = ci_up), color = "red", linetype = "dashed", bins = 5) +
+  #scale_fill_viridis_c(name = expression(mu[adj])) +
+  labs(title = "Seizure Freedom",
+       x = "",
+       y = expression(beta)) +
+  scale_fill_viridis_c(
+  name = expression(mu[adj]),
+  option = "D",
+  n.breaks = 5  # More discrete steps in the legend
+)+
+  scale_x_continuous(breaks = NULL) +
+scale_y_continuous(breaks = seq(min(round(resultsSENS$rho2)), max(round(resultsSENS$rho2)), by = 0.5))+
+  theme_minimal()+
+  theme(
+    legend.title = element_text(size = 8),
+    legend.text = element_text(size = 7),
+    legend.key.size = unit(0.4, "cm"),
+    axis.ticks.x = element_blank()
+  )
+
+
+#Selection function
+#Selection function used
+
+z_alpha <- 1.96  # Change this value as needed
+sigma <- 0.1  # Ch
+
+# Create a sequence of y values
+y_values <- seq(0.1, 0.3, by = 0.0001)
+
+# Gammas to evaluate
+beta_vals <- c(0.5, 2)
+
+sel1 <- function(y, beta) {
+  
+  p <- pnorm(-y/sigma)
+  ifelse(p <= 0.05,
+         1,
+         (p^(-beta))/(0.05^(-beta)))
+         
+}
+
+# Create data for plotting
+#plot_data_sel1 <- lapply(beta_vals, function(beta) {
+ # data.frame(
+  #  y = y_values,
+   # sel = sel1(y_values, beta),
+  #  beta = beta
+  #)
+#}) %>% bind_rows()
+
+# Convert beta to factor for discrete color scale
+#plot_data_sel1$beta <- factor(plot_data_sel1$beta, levels = beta_vals)
+
+# Plot
+#gsel1 <- ggplot(plot_data_sel1, aes(x = pnorm(-y/sigma), y = sel, color = beta)) +
+ # geom_line(size = 1) +
+  #labs(
+   # title = "",
+  #  x = "One-sided p-value",
+   # y = "Probability of reporting",
+    #    color = expression(beta)
+   #   ) +
+   #   scale_color_manual(
+   #     values = c("0.5" = "purple", "2" = "yellow")
+   #   ) +
+    #  theme_minimal() +
+    #  theme(
+    #    legend.title = element_text(size = 8),
+    #    #    legend.text = element_text(size = 7),
+    #    legend.key.size = unit(0.4, "cm"),
+    #    axis.title.x = element_text(size = 6.5), 
+    #    axis.title.y = element_text(size = 6.5)
+    #  )
+
+########w=0.5###########
+# Plot using ggplot2
+g1 <- ggplot(resultsSENS, aes(x = rho1, y = rho2)) +
+  geom_tile(aes(fill = exp(mu))) +
+  geom_contour(aes(z = exp(mu)), color = "black", bins = 10) +
+  #geom_contour(aes(z = ci_low), color = "blue", linetype = "dashed", bins = 5) +
+  #geom_contour(aes(z = ci_up), color = "red", linetype = "dashed", bins = 5) +
+  labs(title = "(b)",
+       x = expression(gamma),
+       y = expression(beta)) +
+  scale_fill_viridis_c(
+  name = expression(mu[adj]),
+  option = "D",
+  n.breaks = 5  # More discrete steps in the legend
+)+
+  scale_x_continuous(breaks = seq(min(round(resultsSENS$rho1)), max(round(resultsSENS$rho1)), by = 0.5)) +
+scale_y_continuous(breaks = seq(min(round(resultsSENS$rho2)), max(round(resultsSENS$rho2)), by = 0.5))+
+  theme_minimal()+
+  theme(
+    legend.title = element_text(size = 8),
+    legend.text = element_text(size = 7),
+    legend.key.size = unit(0.4, "cm")
+  )
+
+# Plot using ggplot2
+g2 <- ggplot(resultsSENS2, aes(x = rho1, y = rho2)) +
+  geom_tile(aes(fill = exp(mu))) +
+  geom_contour(aes(z = exp(mu)), color = "black", bins = 10) +
+  #geom_contour(aes(z = ci_low), color = "blue", linetype = "dashed", bins = 5) +
+  #geom_contour(aes(z = ci_up), color = "red", linetype = "dashed", bins = 5) +
+  #scale_fill_viridis_c(name = expression(mu[adj])) +
+  labs(title = "",
+       x = expression(gamma),
+       y = expression(beta)) +
+  scale_fill_viridis_c(
+  name = expression(mu[adj]),
+  option = "D",
+  n.breaks = 5  # More discrete steps in the legend
+)+
+  scale_x_continuous(breaks = seq(min(round(resultsSENS$rho1)), max(round(resultsSENS$rho1)), by = 0.5)) +
+scale_y_continuous(breaks = seq(min(round(resultsSENS$rho2)), max(round(resultsSENS$rho2)), by = 0.5))+
+  theme_minimal()+
+  theme(
+    legend.title = element_text(size = 8),
+    legend.text = element_text(size = 7),
+    legend.key.size = unit(0.4, "cm")
+  )
+
+
+#Selection function used
+
+   # z_alpha <- 1.96  # Change this value as needed
+   # sigma <- 0.1  # Ch
+
+   # selection05 <- function(y, gamma, beta) {
+
+   #   p <- pnorm(-y/sigma)
+   #   ifelse(p <= 0.05, 
+   #         1 - (1-0.5)*(p^(gamma))/(0.05^(gamma)),  # Function before p = 0.05
+   #         0.5*(p^(-beta))/(0.05^(-beta)))
+  
+   # }
+
+# Create a sequence of y values
+y_values <- seq(0.1, 0.3, by = 0.0001)
+#y_values <- 1-pnorm(seq(-0.5, 0.5, by = 0.001)/sigma)
+
+# Add the piece-wise, piecewise2, exponential, and sigmoid function values to the data frame
+   # example_combos <- expand.grid(
+   #   gamma = c(0.5, 2),
+  beta = c(0.5, 2)
+   # )
+
+   # plot_data <- purrr::pmap_dfr(example_combos, function(gamma, beta) {
+   #   data.frame(
+   #     y = y_values,
+    #    sel = selection05(y_values, gamma, beta),
+    #    gamma = gamma,
+    #    beta = beta,
+    #    combo = paste0("γ=", gamma, ", β=", beta)
+    #  )
+   # }) %>%
+   #   mutate(
+    #    label = paste0("γ=", gamma, ", β=", beta),
+    #    style = case_when(
+     #     gamma == 0.5 & beta == 0.5 ~ "red_solid",
+     #     gamma == 0.5 & beta == 2   ~ "black_dotted",
+     #     gamma == 2   & beta == 0.5 ~ "blue_dashdot",
+     #     gamma == 2   & beta == 2   ~ "green_solid"
+     #   )
+    #  )
+
+   # plot_data$style <- factor(plot_data$style,
+    #  levels = c("red_solid", "green_solid", "black_dotted", "blue_dashdot")
+   # )
+
+# Create the plot
+
+
+# Create plot with manual style mapping
+   # gsel05 <- ggplot(plot_data, aes(x = pnorm(-y/sigma), y = sel, group = style)) +
+   #   geom_line(
+   #     aes(color = style, linetype = style),
+   #     linewidth = 1
+   #   ) +
+    #  scale_color_manual(
+    #    name = expression(paste(gamma, ", ", beta)),
+    #    values = c(
+    #      red_solid = "yellow",
+    #      black_dotted = "black",
+    #      blue_dashdot = "blue",
+    #      green_solid = "purple"
+    #    ),
+     #   labels = c(
+     #     red_solid = "γ=0.5, β=0.5",
+     #     black_dotted = "γ=0.5, β=2",
+     #     blue_dashdot = "γ=2, β=0.5",
+     #     green_solid = "γ=2, β=2"
+    #    )
+   #   ) +
+    #  scale_linetype_manual(
+    #    name = expression(paste(gamma, ", ", beta)),
+    #    values = c(
+    #      red_solid = "solid",
+    #      black_dotted = "dotted",
+    #      blue_dashdot = "dotdash",
+    #      green_solid = "solid"
+   #     ),
+   #     labels = c(
+    #      red_solid = "γ=0.5, β=0.5",
+    #      black_dotted = "γ=0.5, β=2",
+    #      blue_dashdot = "γ=2, β=0.5",
+    #      green_solid = "γ=2, β=2"
+   #     )
+   #   ) +
+    #  labs(
+   #     title = "",
+   #     x = "One-sided p-value",
+   #     y = "Probability of reporting"
+   #   ) +
+    #  theme_minimal() +
+   #   theme(
+   #     legend.title = element_text(size = 8),
+   #     legend.text = element_text(size = 7),
+   #     legend.key.size = unit(0.4, "cm"),
+    #    axis.title.x = element_text(size = 6.5), 
+    #    axis.title.y = element_text(size = 6.5)
+   #   )
+
+########w=0#########à
+
+# Plot using ggplot2
+g10 <- ggplot(resultsSENS0, aes(x = rho1, y = rho2)) +
+  geom_tile(aes(fill = exp(mu))) +
+  geom_contour(aes(z = exp(mu)), color = "black", bins = 10) +
+  #geom_contour(aes(z = ci_low), color = "blue", linetype = "dashed", bins = 5) +
+  #geom_contour(aes(z = ci_up), color = "red", linetype = "dashed", bins = 5) +
+  labs(title = "(c)",
+       x = expression(gamma),
+       y = "") +
+  scale_fill_viridis_c(
+  name = expression(mu[adj]),
+  option = "D",
+  n.breaks = 5  # More discrete steps in the legend
+)+
+  scale_x_continuous(breaks = seq(min(round(resultsSENS$rho1)), max(round(resultsSENS$rho1)), by = 0.5)) +
+#scale_y_continuous(breaks = NULL) +
+  scale_y_continuous(breaks = seq(min(round(resultsSENS$rho2)), max(round(resultsSENS$rho2)), by = 0.5))+
+  theme_minimal()+
+  theme(
+    legend.title = element_text(size = 8),
+    legend.text = element_text(size = 7),
+    legend.key.size = unit(0.4, "cm"),
+    #axis.ticks.y = element_blank()
+    axis.ticks.y = element_line(color = "white"),
+    axis.text.y = element_text(color = "white")
+  )
+
+# Plot using ggplot2
+g20 <- ggplot(resultsSENS20, aes(x = rho1, y = rho2)) +
+  geom_tile(aes(fill = exp(mu))) +
+  geom_contour(aes(z = exp(mu)), color = "black", bins = 10) +
+  #geom_contour(aes(z = ci_low), color = "blue", linetype = "dashed", bins = 5) +
+  #geom_contour(aes(z = ci_up), color = "red", linetype = "dashed", bins = 5) +
+  #scale_fill_viridis_c(name = expression(mu[adj])) +
+  labs(title = "",
+       x = expression(gamma),
+       y = "") +
+  scale_fill_viridis_c(
+  name = expression(mu[adj]),
+  option = "D",
+  n.breaks = 5  # More discrete steps in the legend
+)+
+  scale_x_continuous(breaks = seq(min(round(resultsSENS$rho1)), max(round(resultsSENS$rho1)), by = 0.5)) +
+#scale_y_continuous(breaks = NULL) +
+  scale_y_continuous(breaks = seq(min(round(resultsSENS$rho2)), max(round(resultsSENS$rho2)), by = 0.5))+
+  theme_minimal()+
+  theme(
+    legend.title = element_text(size = 8),
+    legend.text = element_text(size = 7),
+    legend.key.size = unit(0.4, "cm"),
+    #axis.ticks.y = element_blank()
+    axis.ticks.y = element_line(color = "white")
+  )
+
+
+#Selection function
+#Selection function used
+
+z_alpha <- 1.96  # Change this value as needed
+sigma <- 0.1  # Ch
+
+# Create a sequence of y values
+y_values <- seq(0.1, 0.3, by = 0.0001)
+
+# Gammas to evaluate
+gamma_vals <- c(0.5, 2)
+
+sel0 <- function(y, gamma) {
+  
+  p <- pnorm(-y/sigma)
+  ifelse(p <= 0.05,
+         1-(p^gamma)/(0.05^gamma),
+         0)
+         
+}
+
+# Create data for plotting
+   # plot_data_sel0 <- lapply(gamma_vals, function(gamma) {
+   #   data.frame(
+   #     y = y_values,
+   #     sel = sel0(y_values, gamma),
+   #     gamma = gamma
+   #   )
+   # }) %>% bind_rows()
+
+# Convert beta to factor for discrete color scale
+   # plot_data_sel0$gamma <- factor(plot_data_sel0$gamma, levels = gamma_vals)
+
+# Plot
+   # gsel0 <- ggplot(plot_data_sel0, aes(x = pnorm(-y/sigma), y = sel, color = gamma)) +
+     # geom_line(size = 1) +
+   #   labs(
+    #    title = "",
+    #    x = "One-sided p-value",
+    #    y = "Probability of reporting",
+   #     color = expression(gamma)
+   #   ) +
+    #  scale_color_manual(
+    #    values = c("0.5" = "yellow", "2" = "purple")
+    #  ) +
+    #  theme_minimal() +
+    #  theme(
+    #    legend.title = element_text(size = 8),
+    #    legend.text = element_text(size = 7),
+    #    legend.key.size = unit(0.4, "cm"),
+   #     axis.title.x = element_text(size = 6.5), 
+    #    axis.title.y = element_text(size = 6.5)
+    #  )
+
+
+library(gridExtra)
+
+
+
+
+grid.arrange(g11, g21, #gsel1,
+             g1, g2, #gsel05,
+             g10, g20, #gsel0,
+             ncol = 2)
+
+@
+\label{exampleSENS}
+\end{figure*}
+
+\section{Discussion} \label{disc}
+
+This study addresses Outcome Reporting Bias (ORB), where the significance of study outcomes influences their reporting, leading to overestimation of beneficial treatment effects in meta-analyses of clinical trials. We approached ORB adjustment through a selection model framework, a common method in publication bias (PB) literature. This methodology allows one to incorporate contributions from unreported study outcomes based on different assumed missing data mechanisms, specified via selection functions. Our proposed selection functions expand on existing methods, including those from previous works like \citet{Copas2019}, by being more flexible in the missing data mechanisms assumed, utilizing information from all identified unreported study outcomes, and jointly estimating both treatment effect and heterogeneity variance via a random effects model.
+
+We applied our ORB-adjustment methodology to a real-world meta-analysis of epilepsy trials \citep{Copas2019, topiramate} affected by ORB. The ORB-adjusted estimates of the treatment effect were substantially shifted towards null values, compared to the naive estimate, i.e., the standard estimation not accounting for ORB. This shift was particularly significant in the presence of numerous unreported study outcomes.
+
+The findings of our simulation study reveal several critical insights regarding the impact of ORB on the estimation of treatment effects and the efficacy of ORB-adjustment techniques. Naive estimation methods that do not account for ORB exhibit substantial bias, particularly in high heterogeneity settings, underscoring the importance of incorporating ORB adjustments. 
+
+Our results demonstrate that ORB-adjustment frameworks using selection functions can significantly reduce bias, although their effectiveness may vary with meta-analysis study size and the underlying method used to simulate ORB. For larger meta-analyses ($K= 15, 30$), correctly specified ORB-adjustment models effectively eliminate bias. Different misspecifications of the assumed missing data mechanism can be either slightly too lenient or slightly too strict, though their performance does not vary significantly. For smaller meta-analyses ($K=5$), we must be cautious as bias reduction is limited even with correctly specified models. 
+
+Other measures of performance confirm these findings, demonstrating, e.g., substantial improvements in the coverage and power of the treatment effect estimates with ORB-adjustment. These findings highlight the necessity of using ORB-adjustment methods to achieve more accurate treatment effect estimates. Additionally, they suggest that heterogeneity estimation is impacted by ORB, warranting further attention to improve the robustness of meta-analyses in the presence of ORB. 
+
+The ORB-adjustment methodology via selection models proposed in this research is flexible and broadly applicable. Although promising results have been observed, several limitations exist and should be noted to promote future research in this field. Firstly, our framework operates on individual outcomes in meta-analyses, not accounting for correlations between outcomes. Future research could explore methods to incorporate such correlations, although \citet{Bay, Kirkham2012} noted some limitations in the estimation of correlations in the presence of ORB. Another possible avenue of improvement in our current approach is the imputation of missing variances, as described in Section \ref{impvar} and done in previous works \citep{Copas2014, Copas2019, Bay, mythesis}. While this did not greatly impact our results due to equal study sizes in the simulation study setup, alternative ways to estimate the missing variances, e.g., via multiple imputation, could be considered \citep{var_imp, var_imp2}. Additionally, our ORB-adjustment methodology assumes normally distributed outcomes, which might not be precise for binary data \citep{Copas2014, Copas2019}, especially in cases of zero/low event numbers such as the epilepsy data example from \citet{Copas2019}. Exploring a binomial likelihood for ORB-adjustment could be a potential avenue, as noted in \citet{mythesis}. In \citet{mythesis} we set-up the binomial likelihood contribution of reported studies, which can be extended to include a term from unreported studies with a specified probability of reporting.
+
+We established that heterogeneity variance estimation is affected by ORB, and, at the same time, the true underlying heterogeneity influences the bias in the treatment effect estimate due to ORB. Therefore, considering heterogeneity in ORB and ORB adjustments is of paramount importance. To address this, we focused on and conducted simulations using the random effects model, in contrast to \citet{Copas2019}, which concentrated on the fixed effects model. Maximum likelihood estimation (MLE) was used for estimating heterogeneity variance due to its connection to ORB-adjustment, i.e.,  the ORB adjustment itself is defined via a likelihood function contribution. More sophisticated methods in the likelihood framework, such as restricted maximum likelihood (REML), could be considered \citep{REML, tauCI, REML2, mythesis}. An exploratory REML approach was proposed in previous work \citep{mythesis}, but a more robust derivation could be investigated. Obtaining accurate estimates of $\tau^2$ is crucial, and while challenging to intertwine it with ORB-adjustment outside the likelihood framework of joint estimation with $\mu$, novel methods could be investigated \citep{tauCI, REML, REML2}. Another potential area for future research is the effect of ORB on prediction intervals \citep{PI_coverage} and how ORB adjustments impact them, as mentioned in previous work \citep{mythesis}.
+
+One additional avenue for future research on ORB is the multiple imputation (MI) of missing study outcomes, which has also been used in publication bias (PB). In the context of PB, \citet{MI_PB_Carpenter2011} fit a model to the observed study data and impute missing studies using a missing at random assumption. They then use a re-weighting scheme that follows similar selection function assumptions to those made in this work. In the context of ORB, the possibility to impute not at random by sampling from a different distribution that directly models the selection process could be considered. Additionally, in the PB context, \citet{MI_PB_Carpenter2011} had to impute the study sizes,  which are known in the ORB setting proposed here. Hence, this could be a compelling avenue for future research. In this sense, MI would benefit from modelling outcomes that are correlated to borrow strength in case of missing outcomes \citep{MI_PB_Carpenter2011}, as done in previous work on ORB \citep{Bay, Kirkham2012}. This could be of particular interest in cases such as our motivating example from \citet{Copas2019, topiramate}, where numerous outcomes are considered in the meta-analysis. The challenge in this approach, as previously noted, lies in the estimation of the correlation coefficients \citep{mythesis, Bay, Kirkham2012}.
+
+Our focus was on ORB-adjustment of beneficial outcomes, but the methodology proposed in this work can be easily extended to harmful outcomes by adjusting the selection functions for a different missing data mechanism accordingly. This could mean changing the assumed selection mechanism for unreported outcomes to, for example, assuming that a positive value of the treatment effect for a harmful outcome, or a significant one, results in a lower probability of reporting \citep{Copas2019, Copas2014, ORBIT_paper}. Future implementations of this ORB-adjustment framework could hence investigate which missing data assumptions are reasonable to make for harmful outcomes and, e.g., conduct a simulation study similar to the one done here for various, flexible, selection functions.
+
+For future research on ORB, we encourage the refinement and further exploration of simulation studies and strongly recommend using a pre-defined protocol for transparency and reproducibility. The simulation study conducted in this work utilized a limited range of data-generating mechanism (DGM) parameters and ORB-adjustment selection functions. Future research could involve extensive sensitivity analyses and varying sample sizes to enhance the robustness of the findings, as well as comparisons with new potential approaches, such as the MI ones above-described.
+
+Overall, this study highlights the significant impact of ORB on treatment effect estimation, as well as heterogeneity variance, and demonstrates the efficacy of a flexible ORB-adjustment framework based on selection models. This framework allows the inclusion of contributions from unreported study outcomes and the specification of the desired assumed missing data mechanism via the selection function. The methodology shows promise in mitigating ORB across various settings, with potential for further refinement and broader application.
+
+\section{Code Availability}
+
+The $\texttt{R}$ code for the simulation study presented in this research can be accessed in the \href{https://github.com/agaiasaracini/ORBproject}{ORBproject GitHub repository}. This repository includes all the scripts used in the simulation, featuring the key function $\texttt{reORBadj}$, which implements the ORB-adjustment following the selection model framework described in this study. This function is thus applicable to any meta-analysis dataset with unreported study outcomes that might indicate ORB. By making the simulation study code accessible in the \href{https://github.com/agaiasaracini/ORBproject}{ORBproject GitHub repository} and providing a pre-defined simulation study protocol in the \href{https://osf.io/ancdu/}{OSF project repository}, this research underscores the importance of reproducibility and transparency in scientific investigations.
+
+
+\bibliographystyle{mywiley} % Choose natbib-compatible bibliography style
+\bibliography{biblio} % Replace 'biblio' with your actual BibTeX file name
+
+\newpage
+
+%%%%%%%%%% Bias %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{figure*}[!hbt]
+\centering
+\caption{Bias in the estimation of the treatment effect $\mu$ for ORB simulated according to DGM function \eqref{simORB} with $\gamma=1.5$, using different estimation methods, i.e., naive or ORB-adjusted according to the various selection functions indicated in the legend. The bias is shown for varying meta-analysis study sizes, heterogeneity levels, and increasing true treatment effect on the x-axis of each plot shown.\\[0.5em]}
+%\hline
+<<echo=FALSE, results='asis', fig.height=11.5, fig.width=9, message=FALSE, warning=FALSE>>=
+
+#Plots
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+
+dat.new <- readRDS("../Simulation/AdjustResults3200k_15.rds")
+
+##################### Bias #####################################################
+
+#################### Bias setting 1.5 ##########################################
+
+
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+
+legend_plot_results <- ggplot() +
+  geom_line(aes(x = 0, y = 0, color = "pink"))+
+  geom_line(aes(x = 0, y = 0, color = "gray"))+
+  geom_line(aes(x = 0, y = 0, color = "#619CFF")) +
+  geom_line(aes(x = 0, y = 0, color = "#00BA38")) +
+  geom_line(aes(x = 0, y = 0, color = "red")) +
+  geom_line(aes(x = 0, y = 0, color = "orange")) +
+  geom_line(aes(x = 0, y = 0, color = "purple")) +
+  
+  scale_color_manual(
+    values = c(
+      "pink",
+      "gray",
+      "#619CFF", 
+      "#00BA38", 
+       "red", 
+       "orange",
+       "purple"
+    ),
+    labels = c(
+      "Naive",
+      expression(w[DGM]),
+      expression(w[A]),
+      expression(w[B](beta == 3)),
+      expression(w[C](gamma == 3)),
+      expression(w[D](gamma == 7 ~ "," ~ beta == 1.5)),
+      expression(w[D](gamma == 1.5 ~ "," ~ beta == 7))
+    )
+  ) +
+  
+   
+  theme_void() +
+  theme(
+    legend.text = element_text(size = 8),
+    legend.key.size = unit(3, "mm"),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()
+  ) +
+  guides(color = guide_legend(title = NULL, label.hjust = 0.5))
+
+
+
+wrap_plot_bias <- function(data) {
+  ggplot(data) +
+    geom_line(aes(x = mu_values, y = Unadj_bias), color = "pink", linewidth = 0.6) + #Naive
+    geom_point(aes(x = mu_values, y = Unadj_bias), color = "pink", linewidth = 0.6) + #Naive
+    
+    geom_line(aes(x = mu_values, y = DGM_bias), color = "gray", linewidth = 0.6) + #DGM
+    geom_point(aes(x = mu_values, y = DGM_bias), color = "gray", linewidth = 0.6) + #DGM
+    
+    geom_line(aes(x = mu_values, y = CL_bias), color = "red", linewidth = 0.6) + #w_{C, beta=3}
+    geom_point(aes(x = mu_values, y = CL_bias), color = "red", linewidth = 0.6) + #w_{C, beta=3}
+    
+    geom_line(aes(x = mu_values, y = CC1_bias), color = "orange", linewidth = 0.6) + #w_{D, gamma=7, beta=1.5}
+    geom_point(aes(x = mu_values, y = CC1_bias), color = "orange", linewidth = 0.6) + #w_{D, gamma=7, beta=1.5}
+    
+    geom_line(aes(x = mu_values, y = CC2_bias), color = "purple", linewidth = 0.6) + #w_{D, gamma=1.5, beta=7}
+    geom_point(aes(x = mu_values, y = CC2_bias), color = "purple", linewidth = 0.6) + #w_{D, gamma=1.5, beta=7}
+    
+    geom_line(aes(x = mu_values, y = LL_bias), color = "#619CFF", linewidth = 0.6) + #w_{A}
+    geom_point(aes(x = mu_values, y = LL_bias), color = "#619CFF", linewidth = 0.6) + #w_{A}
+    
+    geom_line(aes(x = mu_values, y = LC_bias), color = "#00BA38", linewidth = 0.6) + #w_{B, gamma=3}
+    geom_point(aes(x = mu_values, y = LC_bias), color = "#00BA38", linewidth = 0.6) + #w_{B, gamma=3}
+    
+    geom_hline(yintercept = 0, color = "black", linetype = "dashed", linewidth = 0.4) +
+    labs(
+      x = "", 
+      y = "", 
+      title = bquote("K" == .(data$k_values) ~ "," ~ I^2 == .(round(data$tau_squared_values / (data$tau_squared_values + 2 / 50), 2)))
+    ) +
+    ylim(-0.2, 0.7) +
+    theme_minimal() +
+    theme(
+      legend.position = "none",
+      axis.text = element_text(size = 7),
+      axis.title = element_text(size = 7),
+      plot.title = element_text(size = 8)
+    )
+}
+
+
+# Filter the data for gamma = 1.5
+parDATA_15 <- dat.new %>% filter(gamma == 1.5)
+
+# Generate plots
+plots_bias <- parDATA_15 %>%
+  group_by(tau_squared_values, k_values) %>%
+  do(plot = wrap_plot_bias(.)) %>%
+  pull(plot)
+
+# Arrange the plots and legend
+final_plot <- grid.arrange(
+  arrangeGrob(grobs = plots_bias, nrow = 5, ncol = 3),
+  legend_plot_results,
+  nrow = 1,
+  widths = c(4.8, 0.7),
+  left = grid::textGrob("Bias", rot = 90, gp = grid::gpar(fontsize = 10)),
+  bottom = grid::textGrob(expression(mu), gp = grid::gpar(fontsize = 12))
+)
+
+invisible(final_plot)
+
+
+
+
+@
+%\hline
+\label{res1}
+\end{figure*}
+
+
+\begin{figure*}[!hbt]
+\centering
+\caption{Bias in the estimation of the treatment effect $\mu$ for ORB simulated according to DGM function \eqref{simORB} with $\gamma=0.5$, using different estimation methods, i.e., naive or ORB-adjusted according to the various selection functions indicated in the legend. The bias is shown for varying meta-analysis study sizes, heterogeneity levels, and increasing true treatment effect on the x-axis of each plot shown.\\[0.5em]}
+%\hline
+<<echo=FALSE, results='asis', fig.height=11.5, fig.width=9, message=FALSE, warning=FALSE>>=
+
+#Plots
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+
+dat.new <- readRDS("../Simulation/AdjustResults3200k_05.rds")
+
+#dattt <- readRDS("/Users/alessandrasaracini/Downloads/AdjustResults.rds")
+
+##################### Bias #####################################################
+
+
+# Create a separate plot for the legend
+legend_plot_bias <- ggplot() +
+  geom_line(aes(x = 0, y = 0, color =  "Naive")) +
+  geom_line(aes(x = 0, y = 0, color =  "Adj Constant-Constant")) +
+  geom_line(aes(x = 0, y = 0, color =  "Adj Constant-Continuous")) +
+  geom_line(aes(x = 0, y = 0, color = "Adj Continuous-Constant"))+
+  geom_line(aes(x = 0, y = 0, color = "Adj Continuous-Continuous I"))+
+  geom_line(aes(x = 0, y = 0, color = "Adj Continuous-Continuous II"))+
+  geom_line(aes(x = 0, y = 0, color = "Adj DGM"))+
+  
+  theme_void()+
+  theme(
+    legend.text = element_text(size = 4),
+    legend.key.size = unit(2, "mm"), # Adjust the size of plot title
+    axis.title.x = element_blank(),             # Remove x-axis label
+    axis.title.y = element_blank()
+  )+
+  guides(color = guide_legend(title = NULL))
+
+
+#################### Bias setting 0.5 ##########################################
+
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+
+wrap_plot_bias <- function(data) {
+  ggplot(data) +
+    geom_line(aes(x = mu_values, y = Unadj_bias), color = "pink", linewidth = 0.6) + #Naive
+    geom_point(aes(x = mu_values, y = Unadj_bias), color = "pink", linewidth = 0.6) + #Naive
+    
+    geom_line(aes(x = mu_values, y = DGM_bias), color = "gray", linewidth = 0.6) + #DGM
+    geom_point(aes(x = mu_values, y = DGM_bias), color = "gray", linewidth = 0.6) + #DGM
+    
+    
+    geom_line(aes(x = mu_values, y = LL_bias), color = "#619CFF", linewidth = 0.6) + #w_{0}
+    geom_point(aes(x = mu_values, y = LL_bias), color = "#619CFF", linewidth = 0.6) + #w_{0}
+    #geom_line(aes(x = mu_values, y = LC_bias), color = "#00BA38", linewidth = 0.6) + #w_{1, gamma=3}
+    geom_line(aes(x = mu_values, y = CL_bias), color = "red", linewidth = 0.6) + #w_{2, beta=3}
+    geom_point(aes(x = mu_values, y = CL_bias), color = "red", linewidth = 0.6) + #w_{2, beta=3}
+    
+    geom_line(aes(x = mu_values, y = CC1_bias), color = "orange", linewidth = 0.6) + #w_{3, gamma=7, beta=1.5}
+    geom_point(aes(x = mu_values, y = CC1_bias), color = "orange", linewidth = 0.6) +
+    geom_line(aes(x = mu_values, y = CC2_bias), color = "purple", linewidth = 0.6) + #w_{3, gamma=1.5, beta=7}
+    geom_point(aes(x = mu_values, y = CC2_bias), color = "purple", linewidth = 0.6) +
+    geom_line(aes(x = mu_values, y = LC_bias), color = "#00BA38", linewidth = 0.6) + #w_{1, gamma=3}
+    geom_point(aes(x = mu_values, y = LC_bias), color = "#00BA38", linewidth = 0.6) +
+    geom_hline(yintercept = 0, color = "black", linetype = "dashed", linewidth = 0.2) +
+    labs(
+      x = "", 
+      y = "", 
+      title = bquote("K" == .(data$k_values) ~ "," ~ I^2 == .(round(data$tau_squared_values / (data$tau_squared_values + 2 / 50), 2)))
+    ) +
+    ylim(-0.2, 0.7) +
+    theme_minimal() +
+    theme(
+      legend.position = "none",
+      axis.text = element_text(size = 7),
+      axis.title = element_text(size = 7),
+      plot.title = element_text(size = 8)
+    )
+}
+
+# Create a separate plot for the legend
+legend_plot_bias <- ggplot() +
+  geom_line(aes(x = 0, y = 0, color = "pink")) +
+  geom_line(aes(x = 0, y = 0, color = "gray")) +
+  geom_line(aes(x = 0, y = 0, color = "#619CFF")) +
+  geom_line(aes(x = 0, y = 0, color = "#00BA38")) +
+  geom_line(aes(x = 0, y = 0, color = "red")) +
+  geom_line(aes(x = 0, y = 0, color = "orange")) +
+  geom_line(aes(x = 0, y = 0, color = "purple")) +
+  
+  scale_color_manual(
+    values = c(
+      "pink", 
+      "gray", 
+       "#619CFF", 
+       "#00BA38",
+       "red", 
+       "orange", 
+      "purple"
+    ),
+    labels = c(
+      expression(Naive),
+      expression(w[DGM]),
+      expression(w[A]),
+      expression(w[B](beta == 3)),
+      expression(w[C](gamma == 3)),
+      expression(w[D](gamma == 7 ~ "," ~ beta == 1.5)),
+      expression(w[D](gamma == 1.5 ~ "," ~ beta == 7))
+    )
+  ) +
+  
+   
+  theme_void() +
+  theme(
+    legend.text = element_text(size = 8),
+    legend.key.size = unit(3, "mm"),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()
+  ) +
+  guides(color = guide_legend(title = NULL, label.hjust = 0.5))
+
+parDATA_05 <- dat.new %>% filter(gamma == 0.5)
+
+
+# Generate plots
+plots_bias <- parDATA_05 %>%
+  group_by(tau_squared_values, k_values) %>%
+  do(plot = wrap_plot_bias(.)) %>%
+  pull(plot)
+
+# Arrange the plots and legend
+final_plot <- grid.arrange(
+  arrangeGrob(grobs = plots_bias, nrow = 5, ncol = 3),
+  legend_plot_bias,
+  nrow = 1,
+  widths = c(4.8, 0.7),
+  left = grid::textGrob("Bias", rot=90, gp = grid::gpar(fontsize = 10)), 
+             bottom = grid::textGrob(expression(mu), gp = grid::gpar(fontsize = 12)))
+
+
+
+
+invisible(final_plot)
+
+@
+%\hline
+\label{res2}
+\end{figure*}
+
+%%%%%%%%%%% MSE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%% Coverage %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{figure*}[!hbt]
+\centering
+\caption{Coverage in the estimation of the treatment effect $\mu$ for ORB simulated according to DGM function \eqref{simORB} with $\gamma=1.5$, using different estimation methods, i.e., naive or ORB-adjusted according to the various selection functions indicated in the legend. The coverage is shown for varying meta-analysis study sizes, heterogeneity levels, and increasing true treatment effect on the x-axis of each plot shown.\\[0.5em]}
+%\hline
+<<echo=FALSE, results='asis', fig.height=11.5, fig.width=9, message=FALSE, warning=FALSE>>=
+
+#Plots
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+
+dat.new <- readRDS("../Simulation/AdjustResults3200k_15.rds")
+
+##################### Bias #####################################################
+
+#################### Bias setting 1.5 ##########################################
+
+
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+
+legend_plot_results <- ggplot() +
+  geom_line(aes(x = 0, y = 0, color = "pink"))+
+  geom_line(aes(x = 0, y = 0, color = "gray"))+
+  geom_line(aes(x = 0, y = 0, color = "#619CFF")) +
+  geom_line(aes(x = 0, y = 0, color = "#00BA38")) +
+  geom_line(aes(x = 0, y = 0, color = "red")) +
+  geom_line(aes(x = 0, y = 0, color = "orange")) +
+  geom_line(aes(x = 0, y = 0, color = "purple")) +
+  
+  scale_color_manual(
+    values = c(
+      "pink",
+      "gray",
+      "#619CFF", 
+      "#00BA38", 
+       "red", 
+       "orange",
+       "purple"
+    ),
+    labels = c(
+      "Naive",
+      expression(w[DGM]),
+      expression(w[A]),
+     expression(w[B](beta == 3)),
+      expression(w[C](gamma == 3)),
+      expression(w[D](gamma == 7 ~ "," ~ beta == 1.5)),
+      expression(w[D](gamma == 1.5 ~ "," ~ beta == 7))
+    )
+  ) +
+  
+   
+  theme_void() +
+  theme(
+    legend.text = element_text(size = 8),
+    legend.key.size = unit(3, "mm"),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()
+  ) +
+  guides(color = guide_legend(title = NULL, label.hjust = 0.5))
+
+
+
+wrap_plot_cov <- function(data) {
+  ggplot(data) +
+    geom_line(aes(x = mu_values, y = Unadj_cov), color = "pink", linewidth = 0.6) + #Naive
+    geom_point(aes(x = mu_values, y = Unadj_cov), color = "pink", linewidth = 0.6) + #Naive
+    
+    geom_line(aes(x = mu_values, y = DGM_cov), color = "gray", linewidth = 0.6) + #DGM
+    geom_point(aes(x = mu_values, y = DGM_cov), color = "gray", linewidth = 0.6) + #DGM
+    
+    geom_line(aes(x = mu_values, y = CL_cov), color = "red", linewidth = 0.6) + #w_{C, beta=3}
+    geom_point(aes(x = mu_values, y = CL_cov), color = "red", linewidth = 0.6) + #w_{C, beta=3}
+    
+    geom_line(aes(x = mu_values, y = CC1_cov), color = "orange", linewidth = 0.6) + #w_{D, gamma=7, beta=1.5}
+    geom_point(aes(x = mu_values, y = CC1_cov), color = "orange", linewidth = 0.6) + #w_{D, gamma=7, beta=1.5}
+    
+    geom_line(aes(x = mu_values, y = CC2_cov), color = "purple", linewidth = 0.6) + #w_{D, gamma=1.5, beta=7}
+    geom_point(aes(x = mu_values, y = CC2_cov), color = "purple", linewidth = 0.6) + #w_{D, gamma=1.5, beta=7}
+    
+    geom_line(aes(x = mu_values, y = LL_cov), color = "#619CFF", linewidth = 0.6) + #w_{A}
+    geom_point(aes(x = mu_values, y = LL_cov), color = "#619CFF", linewidth = 0.6) + #w_{A}
+    
+    geom_line(aes(x = mu_values, y = LC_cov), color = "#00BA38", linewidth = 0.6) + #w_{B, gamma=3}
+    geom_point(aes(x = mu_values, y = LC_cov), color = "#00BA38", linewidth = 0.6) + #w_{B, gamma=3}
+    
+    geom_hline(yintercept = 0, color = "black", linetype = "dashed", linewidth = 0.4) +
+    labs(
+      x = "", 
+      y = "", 
+      title = bquote("K" == .(data$k_values) ~ "," ~ I^2 == .(round(data$tau_squared_values / (data$tau_squared_values + 2 / 50), 2)))
+    ) +
+    ylim(0, 1) +
+    theme_minimal() +
+    theme(
+      legend.position = "none",
+      axis.text = element_text(size = 7),
+      axis.title = element_text(size = 7),
+      plot.title = element_text(size = 8)
+    )
+}
+
+
+# Filter the data for gamma = 1.5
+parDATA_15 <- dat.new %>% filter(gamma == 1.5)
+
+# Generate plots
+plots_cov <- parDATA_15 %>%
+  group_by(tau_squared_values, k_values) %>%
+  do(plot = wrap_plot_cov(.)) %>%
+  pull(plot)
+
+# Arrange the plots and legend
+final_plot <- grid.arrange(
+  arrangeGrob(grobs = plots_cov, nrow = 5, ncol = 3),
+  legend_plot_results,
+  nrow = 1,
+  widths = c(4.8, 0.7),
+  left = grid::textGrob("Coverage", rot = 90, gp = grid::gpar(fontsize = 10)),
+  bottom = grid::textGrob(expression(mu), gp = grid::gpar(fontsize = 12))
+)
+
+invisible(final_plot)
+
+
+
+
+@
+%\hline
+\label{Cov1}
+\end{figure*}
+
+
+
+%%%%%%%%% Empirical SE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%% Bias tau squared %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{figure*}[!hbt]
+\centering
+\caption{Bias in the estimation of the heterogeneity variance $\tau^2$ for ORB simulated according to DGM function \eqref{simORB} with $\gamma=1.5$, using different estimation methods, i.e., naive or ORB-adjusted according to the various selection functions indicated in the legend. The bias is shown for varying meta-analysis study sizes, true treatment effect values, and increasing heterogeneity on the x-axis of each plot shown.\\[0.5em]}
+%\hline
+<<echo=FALSE, results='asis', fig.height=11.5, fig.width=9, message=FALSE, warning=FALSE>>=
+
+#Plots
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+
+dat.new <- readRDS("../Simulation/AdjustResults3200k_15.rds")
+
+##################### Bias #####################################################
+
+#################### Bias setting 1.5 ##########################################
+
+
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+
+legend_plot_results <- ggplot() +
+  geom_line(aes(x = 0, y = 0, color = "pink"))+
+  geom_line(aes(x = 0, y = 0, color = "gray"))+
+  geom_line(aes(x = 0, y = 0, color = "#619CFF")) +
+  geom_line(aes(x = 0, y = 0, color = "#00BA38")) +
+  geom_line(aes(x = 0, y = 0, color = "red")) +
+  geom_line(aes(x = 0, y = 0, color = "orange")) +
+  geom_line(aes(x = 0, y = 0, color = "purple")) +
+  
+  scale_color_manual(
+    values = c(
+      "pink",
+      "gray",
+      "#619CFF", 
+      "#00BA38", 
+       "red", 
+       "orange",
+       "purple"
+    ),
+    labels = c(
+      "Naive",
+      expression(w[DGM]),
+      expression(w[A]),
+     expression(w[B](beta == 3)),
+      expression(w[C](gamma == 3)),
+      expression(w[D](gamma == 7 ~ "," ~ beta == 1.5)),
+      expression(w[D](gamma == 1.5 ~ "," ~ beta == 7))
+    )
+  ) +
+  
+   
+  theme_void() +
+  theme(
+    legend.text = element_text(size = 8),
+    legend.key.size = unit(3, "mm"),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()
+  ) +
+  guides(color = guide_legend(title = NULL, label.hjust = 0.5))
+
+
+
+wrap_plot_bias_tau <- function(data) {
+  ggplot(data) +
+    geom_line(aes(x = tau_squared_values, y = tau2_Unadj_bias), color = "pink", linewidth = 0.6) + #Naive
+    geom_point(aes(x = tau_squared_values, y = tau2_Unadj_bias), color = "pink", linewidth = 0.6) + #Naive
+    
+    geom_line(aes(x = tau_squared_values, y = tau2_DGM_bias), color = "gray", linewidth = 0.6) + #DGM
+    geom_point(aes(x = tau_squared_values, y = tau2_DGM_bias), color = "gray", linewidth = 0.6) + #DGM
+    
+    geom_line(aes(x = tau_squared_values, y = tau2_CL_bias), color = "red", linewidth = 0.6) + #w_{C, beta=3}
+    geom_point(aes(x = tau_squared_values, y = tau2_CL_bias), color = "red", linewidth = 0.6) + #w_{C, beta=3}
+    
+    geom_line(aes(x = tau_squared_values, y = tau2_CC1_bias), color = "orange", linewidth = 0.6) + #w_{D, gamma=7, beta=1.5}
+    geom_point(aes(x = tau_squared_values, y = tau2_CC1_bias), color = "orange", linewidth = 0.6) + #w_{D, gamma=7, beta=1.5}
+    
+    geom_line(aes(x = tau_squared_values, y = tau2_CC2_bias), color = "purple", linewidth = 0.6) + #w_{D, gamma=1.5, beta=7}
+    geom_point(aes(x = tau_squared_values, y = tau2_CC2_bias), color = "purple", linewidth = 0.6) + #w_{D, gamma=1.5, beta=7}
+    
+    geom_line(aes(x = tau_squared_values, y = tau2_LL_bias), color = "#619CFF", linewidth = 0.6) + #w_{A}
+    geom_point(aes(x = tau_squared_values, y = tau2_LL_bias), color = "#619CFF", linewidth = 0.6) + #w_{A}
+    
+    geom_line(aes(x = tau_squared_values, y = tau2_LC_bias), color = "#00BA38", linewidth = 0.6) + #w_{B, gamma=3}
+    geom_point(aes(x = tau_squared_values, y = tau2_LC_bias), color = "#00BA38", linewidth = 0.6) + #w_{B, gamma=3}
+    
+    geom_hline(yintercept = 0, color = "black", linetype = "dashed", linewidth = 0.4) +
+    labs(
+      x = "", 
+      y = "", 
+      title = bquote("K" == .(data$k_values) ~ "," ~ mu == .(round(data$mu_values, 2))
+    )) +
+    ylim(-0.3, 0.1) +
+    theme_minimal() +
+    theme(
+      legend.position = "none",
+      axis.text = element_text(size = 7),
+      axis.title = element_text(size = 7),
+      plot.title = element_text(size = 8)
+    )
+}
+
+
+# Filter the data for gamma = 1.5
+parDATA_15 <- dat.new %>% filter(gamma == 1.5)
+
+# Generate plots
+plots_bias_tau <- parDATA_15 %>%
+  group_by(mu_values, k_values) %>%
+  do(plot = wrap_plot_bias_tau(.)) %>%
+  pull(plot)
+
+# Arrange the plots and legend
+final_plot <- grid.arrange(
+  arrangeGrob(grobs = plots_bias_tau, nrow = 5, ncol = 3),
+  legend_plot_results,
+  nrow = 1,
+  widths = c(4.8, 0.7),
+  left = grid::textGrob("Bias", rot = 90, gp = grid::gpar(fontsize = 10)),
+  bottom = grid::textGrob(expression(mu), gp = grid::gpar(fontsize = 12))
+)
+
+invisible(final_plot)
+
+
+
+
+@
+%\hline
+\label{biastau1}
+\end{figure*}
+
+
+
+%\bibliographystyle{mywiley} % Choose natbib-compatible bibliography style
+%\bibliography{biblio} % Replace 'biblio' with your actual BibTeX file name
+
+
+
+
+\end{document}
