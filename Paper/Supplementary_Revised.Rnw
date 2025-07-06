@@ -34,9 +34,12 @@ Sys.setenv(TEXINPUTS=getwd(),
 
 \maketitle
 
-\footnotetext[1]{Corresponding author: Alessandra Gaia Saracini, ETH Zurich, Department of Mathematics\\
+\footnotetext[1]{Corresponding author: Alessandra Gaia Saracini\\
+University of Zurich, Epidemiology, Biostatistics and Prevention Institute\\
+ETH Zurich, Department of Mathematics\\
 alessandragaia.saracini@gmail.com}
-\footnotetext[2]{Leonhard Held, Professor, University of Zurich, Epidemiology, Biostatistics and Prevention Institute\\
+\footnotetext[2]{Leonhard Held, Professor\\
+University of Zurich, Epidemiology, Biostatistics and Prevention Institute\\
 leonhard.held@uzh.ch}
 
 In the manuscript’s Results section, we focus primarily on the bias in estimating the treatment effect $\mu$. This supplementary document presents additional performance metrics from the simulation study, including mean squared error (MSE), coverage, power, and empirical standard error (ESE).
