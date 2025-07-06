@@ -1,0 +1,412 @@
+\documentclass{article}\usepackage[]{graphicx}\usepackage[]{xcolor}
+%DIF LATEXDIFF DIFFERENCE FILE
+%DIF DEL Supplementary.tex           Sun Jun 22 13:24:31 2025
+%DIF ADD Supplementary_Revised.tex   Sun Jul  6 23:56:57 2025
+% maxwidth is the original width if it is less than linewidth
+% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\usepackage{booktabs}
+\usepackage{array}
+%\usepackage[T1]{fontenc}
+\usepackage[margin=1in]{geometry}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+
+\usepackage{hyperref}
+%\usepackage[numbers]{natbib}
+%\addbibresource{biblio.bib}
+
+\date{}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+%DIF PREAMBLE EXTENSION ADDED BY LATEXDIFF
+%DIF UNDERLINE PREAMBLE %DIF PREAMBLE
+\RequirePackage[normalem]{ulem} %DIF PREAMBLE
+\RequirePackage{color}\definecolor{RED}{rgb}{1,0,0}\definecolor{BLUE}{rgb}{0,0,1} %DIF PREAMBLE
+\providecommand{\DIFaddtex}[1]{{\protect\color{blue}\uwave{#1}}} %DIF PREAMBLE
+\providecommand{\DIFdeltex}[1]{{\protect\color{red}\sout{#1}}}                      %DIF PREAMBLE
+%DIF SAFE PREAMBLE %DIF PREAMBLE
+\providecommand{\DIFaddbegin}{} %DIF PREAMBLE
+\providecommand{\DIFaddend}{} %DIF PREAMBLE
+\providecommand{\DIFdelbegin}{} %DIF PREAMBLE
+\providecommand{\DIFdelend}{} %DIF PREAMBLE
+\providecommand{\DIFmodbegin}{} %DIF PREAMBLE
+\providecommand{\DIFmodend}{} %DIF PREAMBLE
+%DIF FLOATSAFE PREAMBLE %DIF PREAMBLE
+\providecommand{\DIFaddFL}[1]{\DIFadd{#1}} %DIF PREAMBLE
+\providecommand{\DIFdelFL}[1]{\DIFdel{#1}} %DIF PREAMBLE
+\providecommand{\DIFaddbeginFL}{} %DIF PREAMBLE
+\providecommand{\DIFaddendFL}{} %DIF PREAMBLE
+\providecommand{\DIFdelbeginFL}{} %DIF PREAMBLE
+\providecommand{\DIFdelendFL}{} %DIF PREAMBLE
+%DIF HYPERREF PREAMBLE %DIF PREAMBLE
+\providecommand{\DIFadd}[1]{\texorpdfstring{\DIFaddtex{#1}}{#1}} %DIF PREAMBLE
+\providecommand{\DIFdel}[1]{\texorpdfstring{\DIFdeltex{#1}}{}} %DIF PREAMBLE
+\newcommand{\DIFscaledelfig}{0.5}
+%DIF HIGHLIGHTGRAPHICS PREAMBLE %DIF PREAMBLE
+\RequirePackage{settobox} %DIF PREAMBLE
+\RequirePackage{letltxmacro} %DIF PREAMBLE
+\newsavebox{\DIFdelgraphicsbox} %DIF PREAMBLE
+\newlength{\DIFdelgraphicswidth} %DIF PREAMBLE
+\newlength{\DIFdelgraphicsheight} %DIF PREAMBLE
+% store original definition of \includegraphics %DIF PREAMBLE
+\LetLtxMacro{\DIFOincludegraphics}{\includegraphics} %DIF PREAMBLE
+\newcommand{\DIFaddincludegraphics}[2][]{{\color{blue}\fbox{\DIFOincludegraphics[#1]{#2}}}} %DIF PREAMBLE
+\newcommand{\DIFdelincludegraphics}[2][]{% %DIF PREAMBLE
+\sbox{\DIFdelgraphicsbox}{\DIFOincludegraphics[#1]{#2}}% %DIF PREAMBLE
+\settoboxwidth{\DIFdelgraphicswidth}{\DIFdelgraphicsbox} %DIF PREAMBLE
+\settoboxtotalheight{\DIFdelgraphicsheight}{\DIFdelgraphicsbox} %DIF PREAMBLE
+\scalebox{\DIFscaledelfig}{% %DIF PREAMBLE
+\parbox[b]{\DIFdelgraphicswidth}{\usebox{\DIFdelgraphicsbox}\\[-\baselineskip] \rule{\DIFdelgraphicswidth}{0em}}\llap{\resizebox{\DIFdelgraphicswidth}{\DIFdelgraphicsheight}{% %DIF PREAMBLE
+\setlength{\unitlength}{\DIFdelgraphicswidth}% %DIF PREAMBLE
+\begin{picture}(1,1)% %DIF PREAMBLE
+\thicklines\linethickness{2pt} %DIF PREAMBLE
+{\color[rgb]{1,0,0}\put(0,0){\framebox(1,1){}}}% %DIF PREAMBLE
+{\color[rgb]{1,0,0}\put(0,0){\line( 1,1){1}}}% %DIF PREAMBLE
+{\color[rgb]{1,0,0}\put(0,1){\line(1,-1){1}}}% %DIF PREAMBLE
+\end{picture}% %DIF PREAMBLE
+}\hspace*{3pt}}} %DIF PREAMBLE
+} %DIF PREAMBLE
+\LetLtxMacro{\DIFOaddbegin}{\DIFaddbegin} %DIF PREAMBLE
+\LetLtxMacro{\DIFOaddend}{\DIFaddend} %DIF PREAMBLE
+\LetLtxMacro{\DIFOdelbegin}{\DIFdelbegin} %DIF PREAMBLE
+\LetLtxMacro{\DIFOdelend}{\DIFdelend} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFaddbegin}{\DIFOaddbegin \let\includegraphics\DIFaddincludegraphics} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFaddend}{\DIFOaddend \let\includegraphics\DIFOincludegraphics} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFdelbegin}{\DIFOdelbegin \let\includegraphics\DIFdelincludegraphics} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFdelend}{\DIFOaddend \let\includegraphics\DIFOincludegraphics} %DIF PREAMBLE
+\LetLtxMacro{\DIFOaddbeginFL}{\DIFaddbeginFL} %DIF PREAMBLE
+\LetLtxMacro{\DIFOaddendFL}{\DIFaddendFL} %DIF PREAMBLE
+\LetLtxMacro{\DIFOdelbeginFL}{\DIFdelbeginFL} %DIF PREAMBLE
+\LetLtxMacro{\DIFOdelendFL}{\DIFdelendFL} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFaddbeginFL}{\DIFOaddbeginFL \let\includegraphics\DIFaddincludegraphics} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFaddendFL}{\DIFOaddendFL \let\includegraphics\DIFOincludegraphics} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFdelbeginFL}{\DIFOdelbeginFL \let\includegraphics\DIFdelincludegraphics} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFdelendFL}{\DIFOaddendFL \let\includegraphics\DIFOincludegraphics} %DIF PREAMBLE
+%DIF COLORLISTINGS PREAMBLE %DIF PREAMBLE
+\RequirePackage{listings} %DIF PREAMBLE
+\RequirePackage{color} %DIF PREAMBLE
+\lstdefinelanguage{DIFcode}{ %DIF PREAMBLE
+%DIF DIFCODE_UNDERLINE %DIF PREAMBLE
+  moredelim=[il][\color{red}\sout]{\%DIF\ <\ }, %DIF PREAMBLE
+  moredelim=[il][\color{blue}\uwave]{\%DIF\ >\ } %DIF PREAMBLE
+} %DIF PREAMBLE
+\lstdefinestyle{DIFverbatimstyle}{ %DIF PREAMBLE
+	language=DIFcode, %DIF PREAMBLE
+	basicstyle=\ttfamily, %DIF PREAMBLE
+	columns=fullflexible, %DIF PREAMBLE
+	keepspaces=true %DIF PREAMBLE
+} %DIF PREAMBLE
+\lstnewenvironment{DIFverbatim}{\lstset{style=DIFverbatimstyle}}{} %DIF PREAMBLE
+\lstnewenvironment{DIFverbatim*}{\lstset{style=DIFverbatimstyle,showspaces=true}}{} %DIF PREAMBLE
+%DIF END PREAMBLE EXTENSION ADDED BY LATEXDIFF
+
+\begin{document}
+
+
+
+
+\title{ \huge{\textbf{Addressing Outcome Reporting Bias in Meta-analysis: A Selection Model Perspective}}\\[0.5em]
+\large{Supplementary Figures and Results}
+}
+
+\author{\textbf{Alessandra Gaia Saracini\textsuperscript{1} and Leonhard Held\textsuperscript{2}}}
+
+
+\maketitle
+
+\footnotetext[1]{Corresponding author: Alessandra Gaia Saracini\DIFaddbegin \\
+\DIFadd{University of Zurich}\DIFaddend , \DIFaddbegin \DIFadd{Epidemiology, Biostatistics and Prevention Institute}\\
+\DIFaddend ETH Zurich, Department of Mathematics\\
+alessandragaia.saracini@gmail.com}
+\footnotetext[2]{Leonhard Held, Professor\DIFdelbegin \DIFdel{, }\DIFdelend \DIFaddbegin \\
+\DIFaddend University of Zurich, Epidemiology, Biostatistics and Prevention Institute\\
+leonhard.held@uzh.ch}
+
+In the \DIFdelbegin \DIFdel{Results section of the manuscript, we primarily focus on bias in the estimation of the }\DIFdelend \DIFaddbegin \DIFadd{manuscript’s Results section, we focus primarily on the bias in estimating the }\DIFaddend treatment effect $\mu$. \DIFdelbegin \DIFdel{The following document contains the results of the additional performance measures considered in }\DIFdelend \DIFaddbegin \DIFadd{This supplementary document presents additional performance metrics from }\DIFaddend the simulation study\DIFdelbegin \DIFdel{: }\DIFdelend \DIFaddbegin \DIFadd{, including }\DIFaddend mean squared error (MSE), coverage, power, and empirical standard error (ESE).
+
+\DIFaddbegin \bigskip
+
+\DIFadd{We also include results from a simulation scenario where missingness follows a missing completely at random (MCAR) mechanism. Here, we apply both naive estimation and the ORB-correction methods developed for the MNAR setting. This provides a benchmark for the primary analysis and illustrates the effect of correcting for ORB when no such bias is present. These findings highlight the value of using ORB-adjustment as part of a sensitivity analysis when the true missing data mechanism is uncertain.
+}
+
+\DIFaddend %%%%%% bias with naive estimation
+%Firstly, the results indicate a substantial bias in the estimation of the treatment effect when using naive estimation methods that do not account for ORB, as observable from Figures \ref{res1} and \ref{res2}. This aligns with existing literature \citep{Copas2019, Bay, dutch} and prior exploratory analysis \citep{mythesis}. As the true treatment effect size increases, the bias diminishes, reflecting the reduced likelihood of unreported studies, given the higher change of statistically significant results for large treatment effect sizes. Study size variations ($K=5,15,30$) do not significantly affect the bias, while heterogeneity has a substantial impact. High heterogeneity settings, particularly with $I^2=90$, exhibit larger biases, reinforcing findings from previous exploratory work \citep{mythesis}. Incorporating heterogeneity effects into the ORB framework is thus important and offers novel insights compared to past investigations \citep{Copas2019}. The observed patterns of naive estimation are consistent across both ORB simulation processes, regardless of the DGM parameter $\gamma$ value, whether $\gamma=1.5$ (which results in mostly non-significant unreported studies) or $\gamma=0.5$ (where some significant unreported studies, with larger p-values, exist).
+
+%%%% bias reduction with DGM and other selection functions
+%%%% NB for k=5 not good
+%When applying the ORB-adjustment framework using selection functions, there is a difference to be noted depending on the study size. For $K=15, 30$, the bias is eliminated when the selection function matches the ORB DGM, confirming the model's effectiveness when correctly specified. Different selection functions ($w_A, w_B, w_C, w_D$) show varying degrees of bias reduction. For the DGM with $\gamma=1.5$, these ORB-adjusted estimates shift the bias towards the null but do not fully eliminate it unless the exact DGM function is used. $w_B$ performs slightly better than $w_A$, and $w_C$ performs the least well, with, however, overall minimal differences noted among the functions, particularly in low heterogeneity settings. In the $\gamma=0.5$ setting, similar patterns are observed, with $w_B$ being the least strict and $w_C$ the most strict. The ORB-adjustment here tends to reduce the treatment effect size excessively, indicating potential overcorrection due to the steep $p$-value dependence. For the small meta-analysis size of $K=5$, we observe that the ORB-adjustment is not very successful; the bias is reduced, but not eliminated, even with the correctly specified model, i.e., using the selection function $w_{DGM}$. We should thus use ORB-adjustment with caution when we have very few studies; we note that, $K=5$ is the total number of studies, both reported and unreported; hence the number of reported studies is even smaller. 
+
+%%%% other measures: naive worst, others adjustments perform similar, worst for K=5
+\DIFaddbegin 
+
+\section{\DIFadd{Additional Measures of Primary Simulation (MNAR)}}
+
+\DIFaddend The MSE of the naive estimate of treatment effect is substantially reduced in high heterogeneity settings, for all ORB-adjusted estimates, as can be seen from Figure \ref{MSE1}, for the ORB DGM with $\gamma=1.5$, and from Figure \ref{MSE2}, for the ORB DGM with $\gamma=0.5$. Similar to the results of the bias measures, we note better performance of the ORB-adjusted methods for $K=15,30$, with more limited improvements for the small meta-analysis size $K=5$. 
+
+\DIFaddbegin \bigskip
+
+\DIFaddend Coverage for the ORB DGM with $\gamma=0.5$ is shown in Figure \ref{Cov2}. As for the $\gamma=1.5$ setting, shown in the main manuscript, coverage can be substantially low with naive estimation. There are no substantial differences between the various ORB-adjusted estimates obtained with the different selection functions, including the correct model specification one. Overall, the coverage is very high when adjusting for ORB. We observe a dip in the coverage of the ORB-adjusted estimates around $\mu=0.4$, which can be explained by the fact that, for smaller $\mu$, with various unreported study outcomes, we expect higher widths of the CI and thus higher coverage, while for larger $\mu$, there are fewer unreported studies, so overall less bias and thus higher coverage.
+
+\DIFaddbegin \bigskip
+
+\DIFaddend %%%% Power and empirical SE
+Figures \ref{Pow1} and \ref{Pow2} show the power of the various estimates. We observe that with naive estimation, for both ORB DGM processes $\gamma=1.5$ and $\gamma=0.5$, the power is severely inflated. The power of the naive estimate is particularly high for elevated heterogeneity settings and for large meta-analysis study sizes. For the $\gamma=1.5$ setting, we observe that the correct DGM selection function results in the lowest power among the various ORB-adjusted estimates, with other ORB-adjusted estimates providing in-between results. For the ORB DGM with $\gamma=0.5$, the opposite is observed, i.e., the correctly specified selection function $w_{DGM}$ results in highest power, with other ORB-adjusted estimates being lower. This is consistent with the bias findings, as most ORB-adjusted estimates were too conservative in the adjustment, shifting the estimate towards the null, with a thus increased likelihood of obtaining ORB-adjusted results which are not significant.
+
+\DIFaddbegin \bigskip
+
+\DIFaddend %%% Empirical SE
+The empirical standard error (ESE) performance measure is shown in Figures \ref{SE1} and \ref{SE2}. We first note that the ESE of the naive estimate is overall consistent with the calculations done for the expected SE of $\hat{\mu}$ in the simulation study protocol. In this case, the naive estimate has, overall, slightly higher SE, given the presence of unreported study outcomes; furthermore, the naive ESE in some settings decreases slightly as $\mu$ increases, given the increasing amount of reported study outcomes. In most settings, there are no substantial differences in the ESE between the various ORB-adjusted estimates and the naive one. Some exceptions which can be noted are that for i) the small meta-analysis study size, i.e., $K=5$, and ii) the high heterogeneity, e.g., $I^2=90$, the various ORB-adjusted estimates all have a similar ESE, which is lower than the naive one. On the other hand, for the same heterogeneity level but $K=15, 30$, some ORB-adjusted estimates have higher ESE than the naive one, in particular for the ORB DGM setting $\gamma=0.5$. This could indicate a possible threshold behavior, wherein adding contributions from a few unreported study outcomes can increase precision of the estimate, as we are using additional information which was not known with naive estimation; however, having many unreported outcomes contributing to the likelihood results in less precision due to uncertainty in the information added. 
+
+\DIFaddbegin \bigskip
+
+\DIFaddend The plot \ref{biastau2} shows the bias in the estimation of the heterogeneity variance $\tau^2$ in the presence of ORB, with a DGM for ORB using the parameter setting $\gamma=0.5$. We observe that for $K=15,30$ heterogeneity tends to be overestimated for all estimation methods, while it is underestimated for $K=5$ and large $\mu$ values. The correctly specified ORB-adjusted model estimates the lowest heterogeneity and is closest to the zero-bias line for $K=15$ and $K=30$, but furthest from it for $K=5$. This confirms the somewhat different behavior which can be observed for small meta-analysis of $K=5$, thus encouraging caution in this setting.
+
+
+
+%%%%%%%%%%% MSE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{figure}[!hbt]
+\centering
+\caption{MSE in the estimation of the treatment effect $\mu$ for ORB simulated according to DGM function with $\gamma=1.5$, using different estimation methods, i.e., naive or ORB-adjusted according to the various selection functions indicated in the legend. The MSE is shown for varying meta-analysis study sizes, heterogeneity levels, and increasing true treatment effect on the x-axis of each plot shown.\\[0.5em]}
+%\hline
+
+
+{\centering \includegraphics[width=\maxwidth]{figures/plots-sup1-1} 
+
+}
+
+
+
+%\hline
+\label{MSE1}
+\end{figure}
+
+
+\begin{figure}[!hbt]
+\centering
+\caption{MSE in the estimation of the treatment effect $\mu$ for ORB simulated according to DGM function with $\gamma=0.5$, using different estimation methods, i.e., naive or ORB-adjusted according to the various selection functions indicated in the legend. The MSE is shown for varying meta-analysis study sizes, heterogeneity levels, and increasing true treatment effect on the x-axis of each plot shown.\\[0.5em]}
+%\hline
+
+
+{\centering \includegraphics[width=\maxwidth]{figures/plots-sup2-1} 
+
+}
+
+
+
+%\hline
+\label{MSE2}
+\end{figure}
+
+
+%%%%%%%%% Coverage %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{figure}[!hbt]
+\centering
+\caption{Coverage in the estimation of the treatment effect $\mu$ for ORB simulated according to DGM function with $\gamma=0.5$, using different estimation methods, i.e., naive or ORB-adjusted according to the various selection functions indicated in the legend. The coverage is shown for varying meta-analysis study sizes, heterogeneity levels, and increasing true treatment effect on the x-axis of each plot shown.\\[0.5em]}
+%\hline
+
+
+{\centering \includegraphics[width=\maxwidth]{figures/plots-sup3-1} 
+
+}
+
+
+
+%\hline
+\label{Cov2}
+\end{figure}
+
+%%%%%%% Power %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{figure}[!hbt]
+\centering
+\caption{Power in the estimation of the treatment effect $\mu$ for ORB simulated according to DGM function with $\gamma=1.5$, using different estimation methods, i.e., naive or ORB-adjusted according to the various selection functions indicated in the legend. The power is shown for varying meta-analysis study sizes, heterogeneity levels, and increasing true treatment effect on the x-axis of each plot shown.\\[0.5em]}
+%\hline
+
+
+{\centering \includegraphics[width=\maxwidth]{figures/plots-sup4-1} 
+
+}
+
+
+
+%\hline
+\label{Pow1}
+\end{figure}
+
+
+\begin{figure}[!hbt]
+\centering
+\caption{Power in the estimation of the treatment effect $\mu$ for ORB simulated according to DGM function with $\gamma=0.5$, using different estimation methods, i.e., naive or ORB-adjusted according to the various selection functions indicated in the legend. The power is shown for varying meta-analysis study sizes, heterogeneity levels, and increasing true treatment effect on the x-axis of each plot shown.\\[0.5em]}
+%\hline
+
+
+{\centering \includegraphics[width=\maxwidth]{figures/plots-sup5-1} 
+
+}
+
+
+
+%\hline
+\label{Pow2}
+\end{figure}
+
+
+%%%%%%%%% Empirical SE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{figure}[!hbt]
+\centering
+\caption{Empirical SE in the estimation of the treatment effect $\mu$ for ORB simulated according to DGM function with $\gamma=1.5$, using different estimation methods, i.e., naive or ORB-adjusted according to the various selection functions indicated in the legend. The empirical SE is shown for varying meta-analysis study sizes, heterogeneity levels, and increasing true treatment effect on the x-axis of each plot shown.\\[0.5em]}
+%\hline
+
+
+{\centering \includegraphics[width=\maxwidth]{figures/plots-sup6-1} 
+
+}
+
+
+
+%\hline
+\label{SE1}
+\end{figure}
+
+
+\begin{figure}[!hbt]
+\centering
+\caption{Empirical SE in the estimation of the treatment effect $\mu$ for ORB simulated according to DGM function with $\gamma=0.5$, using different estimation methods, i.e., naive or ORB-adjusted according to the various selection functions indicated in the legend. The empirical SE is shown for varying meta-analysis study sizes, heterogeneity levels, and increasing true treatment effect on the x-axis of each plot shown.\\[0.5em]}
+%\hline
+
+
+{\centering \includegraphics[width=\maxwidth]{figures/plots-sup7-1} 
+
+}
+
+
+
+%\hline
+\label{SE2}
+\end{figure}
+
+\begin{figure*}[!hbt]
+\centering
+\caption{Bias in the estimation of the heterogeneity variance $\tau^2$ for ORB simulated according to DGM function with $\gamma=0.5$, using different estimation methods, i.e., naive or ORB-adjusted according to the various selection functions indicated in the legend. The bias is shown for varying meta-analysis study sizes, true treatment effect values, and increasing heterogeneity on the x-axis of each plot shown.\\[0.5em]}
+%\hline
+
+
+{\centering \includegraphics[width=\maxwidth]{figures/plots-sup8-1} 
+
+}
+
+
+
+%\hline
+\label{biastau2}
+\end{figure*}
+
+%%%%%%%%%%%% Bias tau squared %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%\newpage
+
+%\nocite{*} % Include all entries from the bibliography file
+%\bibliographystyle{mywiley} % Choose natbib-compatible bibliography style
+%\bibliography{biblio} % Replace 'biblio' with your actual BibTeX file name
+
+%\newpage
+\DIFaddbegin 
+
+\section{\DIFadd{Measures of Secondary Simulation (MCAR)}}
+
+\DIFadd{In our primary simulation study, we assessed the impact of outcome reporting bias (ORB), generated under a missing not at random (MNAR) mechanism, on the estimation of the treatment effect $\mu$. The naive estimator, which assumes missing completely at random (MCAR), showed substantial upward bias. In contrast, ORB-adjustment methods, designed for MNAR settings, substantially reduced this bias and, under correct model specification, nearly eliminated it, except in small-sample scenarios (i.e., $K = 5$). As a benchmark, we simulated data under an MCAR mechanism and applied both the naive and ORB-adjusted estimators using the same parameter values (Figure \ref{res1new}). As expected, the naive estimator was unbiased, while the ORB-adjusted estimators produced modest downward bias, particularly under low heterogeneity. These results suggest that ORB adjustment is effective when ORB is present but reasonably robust when it is not. Therefore, we encourgae the application of ORB-adjustment techniques when ORB is suspected, but underscore the importance of treating ORB adjustment as a sensitivity analysis, given the often unknown nature of the missingness mechanism. Of note, even under MCAR, small samples with near-null true treatment effects led to upward bias in the naive estimator, highlighting the need for caution in interpreting results of our simulations for the $K=5$ scenario.
+}
+
+\bigskip
+
+\DIFadd{Regarding the estimation of heterogeneity ($\tau^2$), illustrated in Figure \ref{biastau2new} we found little difference between the naive estimator (correctly assuming MCAR) and the ORB-adjusted estimators (which misspecify the mechanism as MNAR). Across most scenarios, $\tau^2$ was underestimated, likely reflecting the general tendency of maximum likelihood estimation to underestimate heterogeneity. Interestingly, in the primary ORB simulations, $\tau^2$ was also often underestimated, but this bias was largely corrected when the ORB-adjusted model aligned with the true MNAR data-generating mechanism. These findings support the use of ORB-adjusted selection models not only for estimating treatment effects, but also for improving heterogeneity estimation in the presence of outcome reporting bias.
+}
+
+\begin{figure*}[!hbt]
+\centering
+\caption{\DIFaddFL{Bias in the estimation of the treatment effect $\mu$ under a MCAR mechanism for studies in the meta-analysis, using different estimation methods, i.e., naive or ORB-adjusted according to the various selection functions indicated in the legend, i.e., assuming a MNAR mechanism. The bias is shown for varying meta-analysis study sizes, heterogeneity levels, and increasing true treatment effect on the x-axis of each plot shown.}\\[0.5em]}
+%DIF > \hline
+
+
+{\centering \includegraphics[width=\maxwidth]{figures/plots-unnamed-chunk-1-1} 
+
+}
+
+
+
+%DIF > \hline
+\label{res1new}
+\end{figure*}
+
+\begin{figure*}[!hbt]
+\centering
+\caption{\DIFaddFL{Bias in the estimation of the heterogeneity variance $\tau^2$ under a MCAR mechanism for studies in the meta-analysis, using different estimation methods, i.e., naive or ORB-adjusted according to the various selection functions indicated in the legend, i.e., assuming a MNAR mechanism. The bias is shown for varying meta-analysis study sizes, true treatment effect values, and increasing heterogeneity on the x-axis of each plot shown.}\\[0.5em]}
+%DIF > \hline
+
+
+{\centering \includegraphics[width=\maxwidth]{figures/plots-sup81-1} 
+
+}
+
+
+
+%DIF > \hline
+\label{biastau2new}
+\end{figure*}
+\DIFaddend 
+
+\end{document}
+
