@@ -1,7 +1,7 @@
 \documentclass{article}\usepackage[]{graphicx}\usepackage[]{xcolor}
 %DIF LATEXDIFF DIFFERENCE FILE
 %DIF DEL Supplementary.tex           Sun Jun 22 13:24:31 2025
-%DIF ADD Supplementary_Revised.tex   Sun Jul  6 23:56:57 2025
+%DIF ADD Supplementary_Revised.tex   Tue Jul 15 22:10:37 2025
 % maxwidth is the original width if it is less than linewidth
 % otherwise use linewidth (to make sure the graphics do not exceed the margin)
 \makeatletter
@@ -367,7 +367,7 @@ The empirical standard error (ESE) performance measure is shown in Figures \ref{
 
 \section{\DIFadd{Measures of Secondary Simulation (MCAR)}}
 
-\DIFadd{In our primary simulation study, we assessed the impact of outcome reporting bias (ORB), generated under a missing not at random (MNAR) mechanism, on the estimation of the treatment effect $\mu$. The naive estimator, which assumes missing completely at random (MCAR), showed substantial upward bias. In contrast, ORB-adjustment methods, designed for MNAR settings, substantially reduced this bias and, under correct model specification, nearly eliminated it, except in small-sample scenarios (i.e., $K = 5$). As a benchmark, we simulated data under an MCAR mechanism and applied both the naive and ORB-adjusted estimators using the same parameter values (Figure \ref{res1new}). As expected, the naive estimator was unbiased, while the ORB-adjusted estimators produced modest downward bias, particularly under low heterogeneity. These results suggest that ORB adjustment is effective when ORB is present but reasonably robust when it is not. Therefore, we encourgae the application of ORB-adjustment techniques when ORB is suspected, but underscore the importance of treating ORB adjustment as a sensitivity analysis, given the often unknown nature of the missingness mechanism. Of note, even under MCAR, small samples with near-null true treatment effects led to upward bias in the naive estimator, highlighting the need for caution in interpreting results of our simulations for the $K=5$ scenario.
+\DIFadd{In our primary simulation study, we assessed the impact of outcome reporting bias (ORB), generated under a missing not at random (MNAR) mechanism, on the estimation of the treatment effect $\mu$. The naive estimator, which assumes missing completely at random (MCAR), showed substantial upward bias. In contrast, ORB-adjustment methods, designed for MNAR settings, substantially reduced this bias and, under correct model specification, nearly eliminated it, except in small-sample scenarios (i.e., $K = 5$). As a benchmark, we simulated data under a MCAR mechanism and applied both the naive and ORB-adjusted estimators using the same parameter values (Figure \ref{res1new}). As expected, the naive estimator was unbiased, while the ORB-adjusted estimators produced modest downward bias, particularly under low heterogeneity. These results suggest that ORB adjustment is effective when ORB is present but reasonably robust when it is not. Therefore, we encourgae the application of ORB-adjustment techniques when ORB is suspected, but underscore the importance of treating ORB adjustment as a sensitivity analysis, given the often unknown nature of the missingness mechanism. Of note, even under MCAR, small samples with near-null true treatment effects led to upward bias in the naive estimator, highlighting the need for caution in interpreting results of our simulations for the $K=5$ scenario.
 }
 
 \bigskip
